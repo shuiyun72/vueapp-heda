@@ -99,10 +99,6 @@ export default {
     };
   },
   computed: {
-    // 当前的用户信息
-    currentUser() {
-      return JSON.parse(getSessionItem("currentUser"));
-    },
     datePickerEnabled() {
       // 延期
       return this.actionType == 2;
@@ -124,18 +120,7 @@ export default {
     descSelectorEnabled() {
       // 退单、到场
       return [1, 3].includes(this.actionType);
-    },
-    pictureListStr() {
-      if (this.pictureList && this.pictureList.length > 0) {
-        return this.pictureList
-          .map(obj => {
-            return encodeHelper.formatBase64(obj.base64);
-          })
-          .join("$");
-      } else {
-        return "";
-      }
-    },
+    }
   },
   methods: {
     fetchDescSelectorOptions() {
@@ -190,7 +175,6 @@ export default {
           new Date(result.value),
           "yyyy-MM-dd hh:mm:ss"
         );
-        console.log(this.pickedDate)
       });
     },
     onPictureUploaderChange(pictureList) {
@@ -216,9 +200,10 @@ export default {
         descOption: this.descSelectorValue
           ? _.find(this.descSelectorOptions, { value: this.descSelectorValue })
           : undefined,
-        pictureList: this.pictureListStr,
-        speechData: this.speechData,
-        iAdminID:this.currentUser.iAdminID
+        pictureList: this.pictureList.map(picture => {
+          return encodeHelper.formatBase64(picture.base64);
+        }),
+        speechData: this.speechData
       };
     }
   },

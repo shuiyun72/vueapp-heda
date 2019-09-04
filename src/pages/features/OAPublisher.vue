@@ -103,7 +103,7 @@ export default {
     },
     // 当前用户id
     currentUserId() {
-      return this.currentUser.iAdminID;
+      return this.currentUser.PersonId;
     },
     // 当前打开的流程缩写，返回QJ/BY/JY
     currentFlowNameAbbr() {
@@ -162,7 +162,7 @@ export default {
     // 在拼装TaskJson时生成默认的Title存放在TaskJson中
     generateDefaultTitle() {
       // [当前用户名]的[当前流程名]申请
-      return `${this.currentUser.cAdminName}的${this.flowDefinition.Name}申请`;
+      return `${this.currentUser.PersonName}的${this.flowDefinition.Name}申请`;
     },
     getSaveData() {
       let frontendFormData = this.$refs.form.getValue();
@@ -180,10 +180,10 @@ export default {
         GroupID: uuid(),
         Title: frontendFormData.title || this.generateDefaultTitle(),
         SenderID: this.currentUserId,
-        SenderName: this.currentUser.cAdminName,
+        SenderName: this.currentUser.PersonName,
         SenderTime: dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
         ReceiveID: this.currentUserId,
-        ReceiveName: this.currentUser.cAdminName,
+        ReceiveName: this.currentUser.PersonName,
         ReceiveTime: dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
         OpenTime: dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
         Status: 1

@@ -1,45 +1,44 @@
 <template>
   <div class="mui-content login_container" :style="bgImage">
-      <el-form
-          id="loginForm"
-          class="login_form"
-          ref="loginForm"
-          :model="loginFormData"
-          :rules="loginFormValidation"
-          @submit.native.prevent
-          
-      >
-          <el-form-item label="用户名" prop="username">
-              <el-input 
-                  name="username"
-                  v-model.trim="loginFormData.username"
-                  size="large"
-                  class="username_input"
-              ></el-input>
-          </el-form-item>
-          <el-form-item label="密码" prop="password">
-              <el-input 
-                  name="password"
-                  v-model.trim="loginFormData.password"
-                  size="large"
-                  type="password"
-                  @focus="onPasswordInputFocus"
-                  class="password_input"
-              ></el-input>
-          </el-form-item>
-          <el-form-item prop="rememberPassword" border>
-              <el-checkbox v-model="rememberPassword"  size="large" class="remember_box">记住密码</el-checkbox>
-          </el-form-item>
-          <el-form-item>
-              <el-button
-                type="primary" 
-                class="login_button"
-                @click="onLoginClick" 
-                :loading="isLoginLoading"
-                v-html="loginButtonText"
-              ></el-button>
-          </el-form-item>
-      </el-form>
+    <el-form
+      id="loginForm"
+      class="login_form"
+      ref="loginForm"
+      :model="loginFormData"
+      :rules="loginFormValidation"
+      @submit.native.prevent
+    >
+      <el-form-item label="用户名" prop="username">
+        <el-input
+          name="username"
+          v-model.trim="loginFormData.username"
+          size="large"
+          class="username_input"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="password">
+        <el-input
+          name="password"
+          v-model.trim="loginFormData.password"
+          size="large"
+          type="password"
+          @focus="onPasswordInputFocus"
+          class="password_input"
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="rememberPassword" border>
+        <el-checkbox v-model="rememberPassword" size="large" class="remember_box">记住密码</el-checkbox>
+      </el-form-item>
+      <el-form-item>
+        <el-button
+          type="primary"
+          class="login_button"
+          @click="onLoginClick"
+          :loading="isLoginLoading"
+          v-html="loginButtonText"
+        ></el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -75,6 +74,19 @@ export default {
       this.loginFormData = lastLogin;
       this.rememberPassword = true;
     }
+
+    //如果是和达用户登陆
+    // if (
+    //   this.$route.query.HDACC &&
+    //   this.$route.query.HDSTAMP &&
+    //   this.$route.query.HDSSOKEY
+    // ) {
+    //   this.signInWithHdAcc(
+    //     this.$route.query.HDACC,
+    //     this.$route.query.HDSTAMP,
+    //     this.$route.query.HDSSOKEY
+    //   );
+    // }
   },
   data() {
     return {
@@ -107,6 +119,7 @@ export default {
           }
         ]
       },
+
       // 登录按钮相关
       loadingText: "正 在 登 录...",
       defaultText: "登  &nbsp;&nbsp; 录",
@@ -135,8 +148,8 @@ export default {
         .then(res => {
           this.isLoginLoading = false;
           this.loginButtonText = this.defaultText;
-          let resData = res.data;
-          if (resData.Flag === false || resData.Flag === "false") {
+          let resData = res.data[0];
+          if (resData.IsSuccess === false || resData.IsSuccess === "false") {
             // 认证失败
             mui.toast("用户名或密码错误", {
               duration: "long",
@@ -145,22 +158,8 @@ export default {
             this.isLoginLoading = false;
             this.loginButtonText = this.defaultText;
           } else {
-            // 认证成功
-            // 将当前登录用户信息存储到sesstionStorage
-            let userInfo = Object.assign({}, resData.Data.Result, {
-              // 将当前设备信息整合进userInfo
-              deviceInfo: this.deviceInfo
-            });
-            setSessionItem("currentUser", JSON.stringify(userInfo));
-            this.$router.replace({
-              path: "/"
-            });
-            // 勾选了记住密码
-            if (this.rememberPassword) {
-              setLocalItem("lastLogin", JSON.stringify(this.loginFormData));
-            } else {
-              setLocalItem("lastLogin", null);
-            }
+            this.skipToRootRouter(resData);
+            console.log("登陆成功")
           }
         })
         .catch(err => {
@@ -168,6 +167,26 @@ export default {
           this.loginButtonText = this.defaultText;
           mui.toast("网络连接超时");
         });
+    },
+
+    skipToRootRouter(resData) {
+      // 认证成功
+      // 将当前登录用户信息存储到sesstionStorage
+      let userInfo = Object.assign({}, resData, {
+        // 将当前设备信息整合进userInfo
+        deviceInfo: this.deviceInfo
+      });
+      console.log("setSessionItem--179",JSON.stringify(userInfo))
+      setSessionItem("currentUser", JSON.stringify(userInfo));
+      this.$router.replace({
+        path: "/"
+      });
+      // 勾选了记住密码
+      if (this.rememberPassword) {
+        setLocalItem("lastLogin", JSON.stringify(this.loginFormData));
+      } else {
+        setLocalItem("lastLogin", null);
+      }
     }
   }
 };

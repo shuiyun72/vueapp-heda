@@ -2,8 +2,8 @@
   <div class="mui-content index_container">
     <div class="index_image_container" :style="headerBgImageStyle">
       <AccountCard
-        :userName="currentUser.cAdminName"
-        :roleName="currentUser.P_Role.cRoleName"
+        :userName="currentUser.PersonName"
+        :roleName="currentUser.RoleName"
         :avatarPath="currentAvatar"
         class="account_card_position"
       >
@@ -18,15 +18,15 @@
       </AccountCard>
     </div>
     <!-- 功能块 -->
-    <div class="module_section" v-for="section in newPermissionJson" :key="section.index">
+    <div class="module_section" v-for="section in sections" :key="section.index">
       <!-- 功能块Header -->
-      <SectionHeader :sectionTitle="section.cFunName" v-if="section.children.length > 0"></SectionHeader>
+      <SectionHeader :sectionTitle="section.sectionTitle"></SectionHeader>
       <!-- 功能行 -->
-      <div class="mui-row" v-if="section.children.length > 0">
+      <div class="mui-row" v-for="row in section.rows" :key="row.index">
         <!-- 功能项 -->
         <ModuleItem
-          v-for="item in section.children"
-          :key="item.index"
+          v-for="item in row.items"
+          :key="item.id"
           :title="item.title"
           :desc="item.desc"
           :mode="item.mode"
@@ -37,7 +37,7 @@
           :eventCountPatrol="eventCountPatrol"
           :eventCountSelfTask="eventCountSelfTask"
           :eventCountOrders="eventCountOrders"
-          :enabled="permissionJson.length > 0 ? permissionJson.includes(item.iFunID) : ''"
+          :enabled="permissionJson ? permissionJson.includes(item.id) : false"
           @click="switchPage(item)"
         ></ModuleItem>
       </div>
@@ -54,9 +54,8 @@ import apiInspection from "@api/inspection";
 import apiUser from "@api/user";
 import AccountCard from "@comp/common/AccountCard";
 import SectionHeader from "@comp/common/ModuleSectionHeader";
+import apiMaintainNew from "@api/maintain-new";
 import apiMaintain from "@api/maintain";
-// 引入nativeTransfer.js
-import nativeTransfer from "@JS/native/nativeTransfer";
 // 该组件表示首页中一个子功能的入口
 import ModuleItem from "@comp/common/ModuleItem";
 
@@ -67,27 +66,36 @@ export default {
   beforeRouteEnter(to, from, next) {
     if (from.name === "Login") {
       next(instance => {
-        let id = JSON.parse(getSessionItem("currentUser")).iAdminID;
-        // let permissionList = `[{"id":0,"text":"APP系统","children":[{"id":"90049076","text":"维修养护","children":[{"id":"90049089","text":"移动GIS","children":[]},{"id":"90049090","text":"巡检签到","children":[]},{"id":"90049091","text":"维修工单","children":[]},{"id":"90049092","text":"工单分派","children":[]},{"id":"90049093","text":"巡检任务","children":[]},{"id":"90049094","text":"养护任务","children":[]},{"id":"90049095","text":"事件上报","children":[]},{"id":"90049096","text":"个人信息","children":[]},{"id":"90049097","text":"系统管理","children":[]}]}]}]`;
-        let permissionList = JSON.parse(getSessionItem("currentUser"))
-          .UserAuthority;
-        instance.permissionJson = JSON.stringify(permissionList);
-        setSessionItem("permission", instance.permissionJson);
-        // apiUser.GetUserPermission(id).then(res => {
-        //   console.log("权限", res);
-        //   let permissionList = res.data;
-        //   // 拿到的权限列表必须是非空数组
-        //   if (Array.isArray(permissionList) && !_.isEmpty(permissionList)) {
-        //     // json字符串化的权限列表
-        //     instance.permissionJson = JSON.stringify(permissionList);
-        //     // 存储到sessionStorage
-        //     setSessionItem("permission", instance.permissionJson);
-        //   } else {
-        //     instance.$router.push({ name: "Login" });
-        //     mui.toast("获取权限失败，请重新登录", {
-        //       type: "div"
-        //     });
-        //   }
+        let id = JSON.parse(getSessionItem("currentUser")).PersonId;
+        apiUser.GetUserPermission(id).then(res => {
+          console.log("权限", res);
+          let permissionList = res.data;
+          // 拿到的权限列表必须是非空数组
+          if (Array.isArray(permissionList) && !_.isEmpty(permissionList)) {
+            // json字符串化的权限列表
+            instance.permissionJson = JSON.stringify(permissionList);
+            // 存储到sessionStorage
+            setSessionItem("permission", instance.permissionJson);
+            //实时监控巡检任务
+            instance.hintMsgCount();
+            if(!instance.hintMsgCountTimer){
+              instance.hintMsgCountTimer = setInterval(()=>{
+                instance.hintMsgCount();
+              },1500)
+            }
+          } else {
+            instance.$router.push({ name: "Login" });
+            mui.toast("获取权限失败，请重新登录", {
+              type: "div"
+            });
+          }
+        });
+        // .catch(err => {
+        //   console.log("权限错误 ", err);
+        //   instance.$router.push({ name: "Login" });
+        //   mui.toast("获取权限失败，请重新登录", {
+        //     type: "div"
+        //   });
         // });
       });
     } else {
@@ -96,8 +104,14 @@ export default {
       });
     }
   },
+  created(){   
+    this.isHedaUser();
+  },
+  beforeDestroy(){
+    clearInterval(this.hintMsgCountTimer);
+    this.hintMsgCountTimer = null;
+  },
   mounted() {
-    this.isShowPage(); //权限控制要显示的页面及排序
     // 从全局变量读取并恢复滚动条状态
     // 不优雅的实现
     setTimeout(() => {
@@ -106,37 +120,17 @@ export default {
         window.scrollbarState = null;
       }
     }, 110);
-
-    //实时监控巡检任务
-    if (!this.hintMsgCountTimer) {
-      this.hintMsgCountTimer = setInterval(() => {
-        this.hintMsgCount();
-      }, 5000);
-    }
-
-    //上传位置信息
-    if (!this.UploadLocationTimer) {
-      this.UploadLocationTimer = setInterval(() => {
-        this.onUploadLocation();
-      }, 10000);
-    }
-  },
-  beforeDestroy() {
-    clearInterval(this.hintMsgCountTimer);
-    this.hintMsgCountTimer = null;
-    /*clearInterval(this.UploadLocationTimer);
-    this.UploadLocationTimer = null;*/
   },
   data() {
     return {
-      hintMsgCountTimer: null,
-      UploadLocationTimer: null,
-      eventCountPatrol: 0,
-      eventCountSelfTask: 0,
-      eventCountOrders: 0,
+      hintMsgCountTimer:null,   //实时更新任务数据定时器
+      permissionJson:getSessionItem("permission")||"",
+      currentUser:getSessionItem("currentUser") || "",
+      eventCountPatrol:0,
+      eventCountSelfTask:0,
+      eventCountOrders:0,
       permissionJson: "",
       headerBgImagePath: "./static/images/index_header.png",
-      newPermissionJson: [],
       // 首页功能块的配置信息
       sections: [
         //         {
@@ -282,7 +276,7 @@ export default {
               index: 1,
               items: [
                 {
-                  index: 2,
+                  index: 1,
                   id: 90049089,
                   title: "移动GIS",
                   desc: "管网设施浏览",
@@ -296,7 +290,7 @@ export default {
                   class: "mui-col-sm-6 mui-col-xs-6"
                 },
                 {
-                  index: 1,
+                  index: 2,
                   id: 90049090,
                   title: "考勤管理",
                   desc: "个人签到签退",
@@ -309,6 +303,11 @@ export default {
                   withBorder: true,
                   class: "mui-col-sm-6 mui-col-xs-6"
                 },
+            //   ]
+            // },
+            // {
+            //   index: 2,
+            //   items: [
                 {
                   index: 3,
                   id: 90049091,
@@ -323,23 +322,28 @@ export default {
                   withBorder: true,
                   class: "mui-col-sm-6 mui-col-xs-6"
                 },
+                // {
+                //   index: 2,
+                //   id: 90049092,
+                //   title: "个人工单",
+                //   desc: "维修任务分派",
+                //   mode: "horizontal",
+                //   picture: "./static/images/order_assignment.png",
+                //   pictureContainerStyle: {
+                //     "background-size": "80% 95%"
+                //   },
+                //   // destination: "OrderAssignment",
+                //   destination: "SelfTaskManagerIndex",
+                //   withBorder: true,
+                //   class: "mui-col-sm-6 mui-col-xs-6"
+                // }
+            //   ]
+            // },
+            // {
+            //   index: 3,
+            //   items: [
                 {
                   index: 4,
-                  id: 90049092,
-                  title: "个人工单",
-                  desc: "维修任务分派",
-                  mode: "horizontal",
-                  picture: "./static/images/order_assignment.png",
-                  pictureContainerStyle: {
-                    "background-size": "80% 95%"
-                  },
-                  // destination: "OrderAssignment",
-                  destination: "SelfTaskManagerIndex",
-                  withBorder: true,
-                  class: "mui-col-sm-6 mui-col-xs-6"
-                },
-                {
-                  index: 5,
                   id: 90049093,
                   title: "巡检任务",
                   desc: "巡检计划处理",
@@ -352,18 +356,8 @@ export default {
                   withBorder: true,
                   class: "mui-col-sm-6 mui-col-xs-6"
                 },
-                // {
-                //   index: 2,
-                //   title: "养护任务",
-                //   desc: "管网养护处理",
-                //   mode: "horizontal",
-                //   picture: "./static/images/conservation_mission.png",
-                //   destination: "ConservationMission",
-                //   withBorder: true,
-                //   class: "mui-col-sm-6 mui-col-xs-6"
-                // }
                 {
-                  index: 6,
+                  index: 5,
                   id: 90049095,
                   title: "事件上报",
                   desc: "临时计划处理",
@@ -375,7 +369,29 @@ export default {
                   destination: "EventSubmission",
                   withBorder: true,
                   class: "mui-col-sm-6 mui-col-xs-6"
-                },
+                }
+                // {
+                //   index: 2,
+                //   title: "养护任务",
+                //   desc: "管网养护处理",
+                //   mode: "horizontal",
+                //   picture: "./static/images/conservation_mission.png",
+                //   destination: "ConservationMission",
+                //   withBorder: true,
+                //   class: "mui-col-sm-6 mui-col-xs-6"
+                // }
+                
+              ]
+            }
+          ]
+        },
+        {
+          index: 4,
+          sectionTitle: "系统信息",
+          rows: [
+            {
+              index: 1,
+              items: [
                 {
                   index: 1,
                   id: 90049096,
@@ -407,176 +423,166 @@ export default {
     };
   },
   computed: {
-    currentUser() {
-      return JSON.parse(getSessionItem("currentUser"));
-    },
+     /*currentUser() {
+       return JSON.parse(getSessionItem("currentUser")) || this.currentUser;
+     },*/
     // 当前用户id
     currentUserId() {
-      return this.currentUser.iAdminID;
+      return this.currentUser.PersonId;
     },
     currentAvatar() {
       return "./static/images/avatar_male.png";
     },
     headerBgImageStyle() {
       return { "background-image": `url(${this.headerBgImagePath})` };
-    },
-    sectionsValue() {
-      let sectionsCom = [this.sections, this.permissionJson];
-      return sectionsCom;
     }
   },
   methods: {
-    //权限控制要显示的页面及排序
-    isShowPage() {
-      let permissionList = JSON.parse(getSessionItem("currentUser"))
-        .UserAuthority;
-       console.dir(permissionList)
-      this.permissionJson = JSON.stringify(permissionList);
-     
-      let arrParent = [];  //父级对象
-      let sectionsItem = this.sections[0].rows[0].items;
-      _.map(permissionList,per=>{
-          _.map(sectionsItem, res => {
-            if (res.destination == per.cFunUrl) {
-              arrParent.push(_.assignIn({}, per, res));
-            }
+    //验证是否是和达用户
+    isHedaUser(){
+      //如果是和达用户登陆
+      if (
+        this.$route.query.HDACC &&
+        this.$route.query.HDSTAMP &&
+        this.$route.query.HDSSOKEY
+      ) {
+        this.signInWithHdAcc(
+          this.$route.query.HDACC,
+          this.$route.query.HDSTAMP,
+          this.$route.query.HDSSOKEY
+        );
+        console.log("index--$route",this.$route.query)
+      }else{      
+        let sss = getSessionItem("currentUser");
+        if(sss === null || sss === "null" ){
+          this.$router.replace({
+            path: "/login"
           });
-      })
-      //排序
-      arrParent = _.orderBy(arrParent, res => {
-        return res.iFunOrder;
+        }else{
+             console.log("denglu")
+        }  
+      }
+    },
+    //和达登陆
+    signInWithHdAcc(hdAcc, hdStamp, hdSSOKey) {
+      if (apiUser.SignInWithHdAcc(hdAcc, hdStamp, hdSSOKey)) {
+        apiUser
+          .HdUserLogin(hdAcc)
+          .then(res => {
+            //this.isLoginLoading = false;
+            //this.loginButtonText = this.defaultText;
+            let resData = res.data[0];
+            if (resData.IsSuccess === false || resData.IsSuccess === "false") {
+              // 认证失败
+              mui.toast(`没有 ${hdAcc} 该用户`, {
+                duration: "long",
+                type: "div"
+              });
+              //this.isLoginLoading = false;
+              //this.loginButtonText = this.defaultText;
+              this.$router.replace({
+                path: "/login"
+              });
+            } else {
+              this.skipToRootRouter(resData)
+            }
+          })
+          .catch(err => {
+            //this.isLoginLoading = false;
+            //this.loginButtonText = this.defaultText;
+            //mui.toast("网络连接超时");
+            this.$router.replace({
+              path: "/login"
+            });
+          });
+      }
+    },
+    //登陆验证
+    skipToRootRouter(resData) {
+      // 认证成功
+      // 将当前登录用户信息存储到sesstionStorage
+      let userInfo = Object.assign({}, resData, {
+        // 将当前设备信息整合进userInfo
+        deviceInfo: this.deviceInfo
       });
-      let newPermissionJson = [];
-      console.log(permissionList);
-      _.map(permissionList, res => {
-        if (res.cFunUrl == 0 && res.cFunName != "APP管理") {
-          newPermissionJson.push(res);
+      setSessionItem("currentUser", JSON.stringify(userInfo));
+      this.currentUser = userInfo;
+      console.log(this.currentUser)
+      let id = this.currentUser.PersonId;
+      apiUser.GetUserPermission(id).then(res => {
+        console.log("权限", res);
+        let permissionList = res.data;
+        // 拿到的权限列表必须是非空数组
+        if (Array.isArray(permissionList) && !_.isEmpty(permissionList)) {
+          // json字符串化的权限列表
+          this.permissionJson = JSON.stringify(permissionList);
+          // 存储到sessionStorage
+          setSessionItem("permission", this.permissionJson);
+          this.permission = this.permissionJson;
+          //实时监控巡检任务
+          this.hintMsgCount();
+          if(!this.hintMsgCountTimer){
+            this.hintMsgCountTimer = setInterval(()=>{
+              this.hintMsgCount();
+            },1500)
+          }
+        } else {
+          this.$router.push({ name: "Login" });
+          mui.toast("获取权限失败，请重新登录", {
+            type: "div"
+          });
         }
       });
-      console.log(newPermissionJson);
-      _.map(newPermissionJson,newPer=>{  
-          newPer.children = [];  //子级对象
-          _.map(arrParent, res => {
-            if (res.iFunFatherID == newPer.iFunID) {
-              newPer.children.push(res);
-            }
-          });
-        
-      })
-      console.log(newPermissionJson);
-      this.newPermissionJson = newPermissionJson;
     },
     //任务信息推送
-    hintMsgCount() {
+    hintMsgCount(){
       this.getEventCount();
       this.getSelfTask();
       this.getOredes();
     },
-    //上传位置信息
-    onUploadLocation() {
-      if (window.plus != undefined) {
-        window.plus.geolocation.getCurrentPosition(
-          location => {
-            let personIds = JSON.parse(getSessionItem("currentUser"));
-            //console.log("personIds-----",personIds)
-            let personId =
-              JSON.parse(getSessionItem("currentUser")).iAdminID ||
-              this.currentUser.iAdminID;
-            personId = personId || 1;
-            //console.log("geolocation----------",location.coords.longitude,location.coords.latitude,dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),personId)
-            apiInspection
-              .UploadLocation(
-                location.coords.longitude,
-                location.coords.latitude,
-                dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
-                personId,
-                1
-              )
-              .then(res => {
-                console.log("上传位置信息成功", res.data.Msg);
-              });
-          },
-          err => {
-            mui.toast("获取当前位置失败");
-          },
-          {
-            enableHighAccuracy: true,
-            maximumAge: 5000,
-            timeout: 10000,
-            provider: "baidu",
-            coordsType: "gcj02"
-          }
-        );
-      } else {
-        //mui.toast("需要在移动端上传位置");
-        nativeTransfer.getLocation(location => { 
-          if (location) {
-              let personIds = JSON.parse(getSessionItem("currentUser"));
-              //console.log("personIds-----",personIds)
-              let personId =
-                JSON.parse(getSessionItem("currentUser")).iAdminID ||
-                this.currentUser.iAdminID;
-              personId = personId || 1;
-              apiInspection
-                .UploadLocation(
-                  location.lng,
-                  location.lat,
-                  dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
-                  personId,
-                  1
-                )
-                .then(res => {
-                  console.log("上传位置信息成功", res.data.Msg);
-                });
-          }else{
-            mui.toast("获取当前位置失败");
-          }
-        })
-      }
-    },
     //维修工单
-    getOredes() {
-      apiMaintain
-        .GetEventManage(this.currentUserId, 2)
-        .then(res => {
-          if (res.data.Flag) {
-            this.eventCountOrders = res.data.Data.TotalRows;
+    getOredes(){
+      if(this.currentUserId != null && this.currentUserId != "null"){
+        apiMaintain
+        .GetOrderList(this.currentUserId, 1)
+        .then(res => {     
+          if (res.data.result) {
+            this.eventCountOrders = res.data.data.length;
           }
         })
-        .catch(err => {
-          mui.toast("暂无网络");
-        });
+      }     
     },
     //个人工单-代办工单
-    getSelfTask() {
-      apiMaintain
-        .GetOrderList(this.currentUserId, 0)
-        .then(res => {
-          this.fullscreenLoading = false;
-          if (res.data.Flag) {
-            this.eventCountSelfTask = res.data.Data.TotalRows;
-          }else{
-            mui.toast("获取个人工单失败");
+    getSelfTask(){
+      if(this.currentUserId != null && this.currentUserId != "null"){
+        apiMaintainNew.GetOrderList(this.currentUserId,0).then(res => {
+          if (res.data.ErrCode == 0) {
+            this.eventCountSelfTask = res.data.rows.length
+          } else {
+            mui.toast('获取个人工单失败')
           }
-        }).catch(err => {
-          mui.toast("网络错误，获取工单失败");
+        }).catch(err=>{
+          mui.toast('网络错误，获取工单失败')
         });
+      }     
     },
     //监听巡检任务
-    getEventCount() {
-      let userId = this.currentUserId;
-      let currentDayDate = dateHelper.format(new Date(), "yy-MM-dd");
-      apiInspection
-        .GetMissionList(userId, currentDayDate)
-        .then(res => {
-          if (res.data.Flag) {
-            this.eventCountPatrol = res.data.Data.TotalRows;
-          }
-          this.$hideLoading();
-        })
-        .catch(err => {
-          console.log("err", err);
-        });
+    getEventCount(){
+      if(this.currentUserId != null && this.currentUserId != "null"){
+        let userId = this.currentUserId;
+        let currentDayDate = dateHelper.format(new Date(), "yy-MM-dd");
+        apiInspection
+          .GetMissionList(userId, currentDayDate)
+          .then(res => {
+            if (res.data.result === true) {
+              this.eventCountPatrol = res.data.Data.length;
+            }
+            this.$hideLoading();
+          })
+          .catch(err => {        
+              console.log("err", err);
+          });
+      }
     },
     // 点击某个具体功能块时切换路由（页面）
     switchPage(itemConfig) {
@@ -591,14 +597,14 @@ export default {
       window.rr = this.$router;
 
       this.$router.push({ name: destination });
-    },
+    }
   },
   components: {
     AccountCard,
     SectionHeader,
     ModuleItem
   }
-};
+}
 </script>
 
 <style scoped lang="less">

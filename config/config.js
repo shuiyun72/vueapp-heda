@@ -1,16 +1,11 @@
-// 项目前端配置  
+// 项目前端配置
 export default {
   apiPath: {
     // 用户相关
-    //user: 'http://47.104.3.68:9819/api',
-    user: 'http://192.168.88.181:8087/api',
+    user: 'http://218.0.0.33:9923/asmx/admin.asmx',
     // 巡检养护
-    //inspection: 'http://218.0.0.33:9923/asmx/Inspection.asmx',
-    inspection: 'http://192.168.88.181:8087/api',
-    //inspection: 'http://47.104.3.68:9819/api',
-    //inspection: 'http://39.100.62.29:9819/api',
-    //maintain: 'http://218.0.0.33:9923/asmx/Mantain.asmx',
-    maintain: 'http://39.100.62.29:9819/api',
+    inspection: 'http://218.0.0.33:9923/asmx/Inspection.asmx',
+    maintain: 'http://218.0.0.33:9923/asmx/Mantain.asmx',
     maintainNew: 'http://218.0.0.33:9921/Smart_Mantain/WebPages/EventManage/WebAPI',
     gis: 'http://218.0.0.33:9921/GisWeb/PipeManage/GetGisData.aspx',
     //monitor&company为监控类api 巡检可以不用
@@ -20,13 +15,13 @@ export default {
   // 上传文件的可访问的静态资源根目录
   uploadFilePath: {
     // 巡检模块中的图片
-    inspection: 'http://192.168.88.181:8087' 
+    inspection: 'http://218.0.0.33:9923/' 
   },
   // 地图服务sdk Key
   mapKey: 'VunddhrWNA4rloeRPi7KYifYSFBqVwPv',
   // 超图iServer地址
   superMapIServer: {
-    url: 'http://39.100.62.29:8090/iserver/services/map-arcgis-LmFHGWT/rest/maps/图层管理',
+    url: 'http://47.104.3.68:8090/iserver/services/map-arcgis-LmFHGWT/rest/maps/图层管理',
     tablesName: {
       '普通给水管线': '普通给水管线@供水设施#1',
       '阀门': '阀门@供水设施',
@@ -526,168 +521,8 @@ export default {
       ],
     }
   },
-  //图层配置
-  LayerConfiguration: [{
-    layerCName: "标识", //图层中文名称
-    layerName: 'PipeMarkLayer', //图层编号
-    layerIndex: 0, //对应ArcGis图层编号
-    isSpatialSearch:false,
-    layerTableName: "PipeMark", //数据库表名
-    listViewColumn: "E_PipeMark_Columns", //对应前端列表控件列
-    viewIndex: 1, //图层显示顺序
-    isActive: true, //是否显示
-    featureColumn: [ //点选显示
-        {
-            field: "equipment_number",
-            text: "管线编号",
-            type: "Number"
-        },
-        {
-            field: "material_science",
-            text: "材质"
-        },
-        {
-            field: "caliber",
-            text: "口径",
-            type: "Number"
-        },
-        {
-            field: "length",
-            text: "长度",
-            type: "Number"
-        },
-        {
-            field: "startingpoint_elevation",
-            text: "起点高程",
-            type: "Number"
-        },
-        {
-            field: "endpoint_elevation",
-            text: "终点高程",
-            type: "Number"
-        },
-        {
-            field: "Installation_address",
-            text: "道路名"
-        },
-        {
-            field: "construction_unit",
-            text: "施工单位"
-        },
-        {
-            field: "management_unit",
-            text: "管理单位"
-        },
-        {
-            field: "completion_date",
-            text: "竣工日期",
-            type: "Data"
-        },
-        {
-            field: "laying_age",
-            text: "敷设年代",
-            type: "Number"
-        },
-        {
-            field: "startingpoint_depth",
-            text: "起点埋深",
-            type: "Number"
-        },
-        {
-            field: "endpoint_depth",
-            text: "终点埋深",
-            type: "Number"
-        },
-        {
-            field: "embedding_mode",
-            text: "埋设方式"
-        },
-        {
-            field: "Interface_form",
-            text: "接口形式"
-        }
-    ]
-},{
-      layerCName: "管线", //图层中文名称
-      layerName: 'PipeLineLayer', //图层编号
-      layerIndex: 2, //对应ArcGis图层编号
-      isSpatialSearch:false,
-      layerTableName: "Pipe", //数据库表名
-      listViewColumn: "E_Pipe_Columns", //对应前端列表控件列
-      viewIndex: 1, //图层显示顺序
-      isActive: true, //是否显示
-      featureColumn: [ //点选显示
-          {
-              field: "equipment_number",
-              text: "管线编号",
-              type: "Number"
-          },
-          {
-              field: "material_science",
-              text: "材质"
-          },
-          {
-              field: "caliber",
-              text: "口径",
-              type: "Number"
-          },
-          {
-              field: "length",
-              text: "长度",
-              type: "Number"
-          },
-          {
-              field: "startingpoint_elevation",
-              text: "起点高程",
-              type: "Number"
-          },
-          {
-              field: "endpoint_elevation",
-              text: "终点高程",
-              type: "Number"
-          },
-          {
-              field: "Installation_address",
-              text: "道路名"
-          },
-          {
-              field: "construction_unit",
-              text: "施工单位"
-          },
-          {
-              field: "management_unit",
-              text: "管理单位"
-          },
-          {
-              field: "completion_date",
-              text: "竣工日期",
-              type: "Data"
-          },
-          {
-              field: "laying_age",
-              text: "敷设年代",
-              type: "Number"
-          },
-          {
-              field: "startingpoint_depth",
-              text: "起点埋深",
-              type: "Number"
-          },
-          {
-              field: "endpoint_depth",
-              text: "终点埋深",
-              type: "Number"
-          },
-          {
-              field: "embedding_mode",
-              text: "埋设方式"
-          },
-          {
-              field: "Interface_form",
-              text: "接口形式"
-          }
-      ]
-  }, {
+  LayerConfiguration: [
+    {
       layerCName: "点位",
       layerName: 'ExhaustvalveLayer',
       layerIndex: 1,
@@ -773,10 +608,102 @@ export default {
               text: "营业片区"
           }
       ]
-  }],
+  },
+  {
+      layerCName: "点位",
+      layerName: 'ExhaustvalveLayer',
+      layerIndex: 1,
+      isSpatialSearch:true,
+      layerTableName: "Exhaustvalve",
+      listViewColumn: "E_Exhaustvalve_Columns",
+      isActive: true,
+      viewIndex: 2,
+      featureColumn: [{
+              field: "equipment_number",
+              text: "编号",
+              type: "Number"
+          },
+          {
+              field: "material_science",
+              text: "材质"
+          },
+          {
+              field: "caliber",
+              text: "口径",
+              type: "Number"
+          },
+          {
+              field: "elevation",
+              text: "高程",
+              type: "Number"
+          },
+          {
+              field: "depth",
+              text: "埋深",
+              type: "Number"
+          },
+          {
+              field: "Installation_address",
+              text: "安装地址"
+          },
+          {
+              field: "management_unit",
+              text: "管理单位"
+          },
+          {
+              field: "completion_date",
+              text: "竣工日期",
+              type: "Data"
+          },
+          {
+              field: "laying_age",
+              text: "敷设年代",
+              type: "Number"
+          },
+          {
+              field: "embedding_mode",
+              text: "埋设方式"
+          },
+          {
+              field: "equipment_type",
+              text: "设备类型"
+          },
+          {
+              field: "coordinate_x",
+              text: "横坐标",
+              type: "Number"
+          },
+          {
+              field: "coordinate_y",
+              text: "纵坐标",
+              type: "Number"
+          },
+          {
+              field: "Interface_form",
+              text: "接口形式"
+          },
+          {
+              field: "specifications",
+              text: "规格"
+          },
+          {
+              field: "manufacturer",
+              text: "生产厂家"
+          },
+          {
+              field: "businessarea",
+              text: "营业片区"
+          }
+      ]
+  }
+  ],
   // 开启定位功能支持的地理范围
   locationExtent: {
-    longitude: [113.35975811932538, 113.71391131426837],
-    latitude: [34.7501362981023, 34.876861366065775]
+    longitude: [253148.02778593282,330195.44186407],
+    latitude: [38896.28587053032, 122265.53905251468]
   }
+  // locationExtent: {
+  //   longitude: [-627503.44186407,-227503.02778593282],
+  //   latitude: [488896.28587053032, 8822265.53905251468]
+  // }
 }

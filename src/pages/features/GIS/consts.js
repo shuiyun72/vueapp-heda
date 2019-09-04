@@ -47,31 +47,31 @@ export default {
           }
         ]
       },
-      {
-        id: "pick",
-        text: "点选",
-        iconClass: "fas fa-mouse-pointer",
-        iconStyle: combine(OUTER_ICON_STYLE, FA_ICON_PATCH),
-        children: [{
-            id: "pick-pipe",
-            text: "管线",
-            iconClass: "fas fa-code-branch",
-            iconStyle: combine(INNER_ICON_STYLE, FA_ICON_PATCH)
-          },
-          {
-            id: "pick-device",
-            text: "设备",
-            iconClass: "fab fa-delicious",
-            iconStyle: combine(INNER_ICON_STYLE, FA_ICON_PATCH)
-          },
-          {
-            id: "pick-coordinate",
-            text: "坐标",
-            iconClass: "fas fa-map-marker-alt",
-            iconStyle: combine(INNER_ICON_STYLE, FA_ICON_PATCH)
-          },
-        ]
-      },
+      // {
+      //   id: "pick",
+      //   text: "点选",
+      //   iconClass: "fas fa-mouse-pointer",
+      //   iconStyle: combine(OUTER_ICON_STYLE, FA_ICON_PATCH),
+      //   children: [{
+      //       id: "pick-pipe",
+      //       text: "管线",
+      //       iconClass: "fas fa-code-branch",
+      //       iconStyle: combine(INNER_ICON_STYLE, FA_ICON_PATCH)
+      //     },
+      //     {
+      //       id: "pick-device",
+      //       text: "设备",
+      //       iconClass: "fab fa-delicious",
+      //       iconStyle: combine(INNER_ICON_STYLE, FA_ICON_PATCH)
+      //     },
+      //     {
+      //       id: "pick-coordinate",
+      //       text: "坐标",
+      //       iconClass: "fas fa-map-marker-alt",
+      //       iconStyle: combine(INNER_ICON_STYLE, FA_ICON_PATCH)
+      //     },
+      //   ]
+      // },
       {
         id: "reset",
         text: "重 置",

@@ -10,21 +10,21 @@
           <div class="left">
             <li>
               <span class="list_item_label">上报时间：</span>
-              <span class="list_item_content">{{orderInfo.UpTime}}</span>
+              <span class="list_item_content">{{orderInfo.OrderTime}}</span>
             </li>
             <li>
               <span class="list_item_label">所属部门：</span>
-              <span class="list_item_content">{{orderInfoDeptId}}</span>
+              <span class="list_item_content">{{orderInfo.DeptId}}</span>
             </li>
             <li>
               <span class="list_item_label">派单人：</span>
-              <span class="list_item_content">{{orderInfo.ExecPersonName}}</span>
+              <span class="list_item_content">{{DispatchPerson}}</span>
             </li>
             <li>
               <span class="list_item_label">
-                <el-button :type="orderInfo.UrgencyName | urgencyButtonType">{{orderInfo.UrgencyName}}</el-button>
+                <el-button :type="orderInfo.UrgencyId | urgencyButtonType">{{orderInfo.UrgencyId}}</el-button>
               </span>
-              <span class="list_item_content" v-if="orderInfo.HandlerLevelId">
+              <span class="list_item_content">
                 <el-button
                   :type="orderInfo.HandlerLevelId | levelButtonType"
                 >{{orderInfo.HandlerLevelId}}</el-button>
@@ -35,7 +35,7 @@
               <span class="list_item_label addr_span">
                 <span
                   class="list_item_icon fas fa-map-marker-alt position_icon"
-                  style="color: lightgreen;"
+                  :style="{color: isChangeColor?'lightgreen':'#333'}"
                 ></span>
                 <span
                   class="address_info"
@@ -46,15 +46,15 @@
             </li>
             <li>
               <span class="list_item_label">事件来源：</span>
-              <span class="list_item_content">{{orderInfo.EventFromName}}</span>
+              <span class="list_item_content">{{orderInfo.EventFrom}}</span>
             </li>
             <li>
               <span class="list_item_label">事件类型：</span>
-              <span class="list_item_content">{{orderInfo.EventTypeName}}</span>
+              <span class="list_item_content">{{orderInfo.EventType}}</span>
             </li>
             <li>
               <span class="list_item_label">事件内容：</span>
-              <span class="list_item_content">{{orderInfo.EventTypeName2}}</span>
+              <span class="list_item_content">{{orderInfo.EventContent}}</span>
             </li>
           </div>
         </div>
@@ -88,7 +88,7 @@
         class="button button-primary button-rounded button-large full_width_button"
       >审 核 中</button>
       <button
-        v-if="orderOperState == 7"
+        v-if="orderOperState == 8"
         class="button button-rounded button-action button-large full_width_button"
       >已 完 成</button>
       <button
@@ -102,8 +102,8 @@
           type="button"
           class="button custom_bgcolor_light"
           v-for="action in actionList"
-          v-if="!((orderInfo.EventFrom === '热线系统' && action.index===1) || (orderInfo.EventFrom !== '热线系统' && action.index===0))"
           :key="action.name"
+          v-if="!((orderInfo.EventFrom === '热线系统' && action.index===1) || (orderInfo.EventFrom !== '热线系统' && action.index===0))"
           :disabled="action.index > 2 && !(action.index === orderOperState)"
           @click="onActionClick(action)"
         >{{action.name}}</button>
@@ -120,25 +120,28 @@
       <OrderActionsDialog :actionType="activeAction.actionTypeIndex" ref="actionDialogContent"></OrderActionsDialog>
       <div slot="footer">
         <el-button @click="onActionDialogCancel">取 消</el-button>
-        <el-button @click="onActionDialogConfirm" type="primary">提 交</el-button>
+        <el-button @click="onActionDialogConfirm" type="primary" :disabled="!canSubmit">提 交</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import _ from "lodash";
 import config from "@config/config";
 import { getSessionItem } from "@common/util";
 import apiMaintain from "@api/maintain";
+import apiMaintainNew from "@api/maintain-new";
 import apiMonitor from "@api/monitor";
 import OrderActionsDialog from "@comp/order-detail/OrderActionsDialog.vue";
-// 引入nativeTransfer.js
-import nativeTransfer from '@JS/native/nativeTransfer';
-// import encodeHelper from "@common/encodeHelper";
+import BaseMap from "@JS/Map/BaseMap";
+import CoordsHelper from "coordtransform";
+import nativeTransfer from "@JS/native/nativeTransfer";
 
 export default {
   props: {
     orderInfo: [Object, String]
+  },
+  mounted(){
+    this.onPickDeptClick()
   },
   beforeRouteEnter(to, from, next) {
     // 进入该路由的钩子函数，可通过next回调函数拿到组件的实例对象引用
@@ -167,11 +170,13 @@ export default {
   },
   data() {
     return {
+      //所选部门ID 
+      DispatchPerson:null,
       defaultPicture: "./static/images/none.jpg",
       pictureBasePath: config.uploadFilePath.inspection,
       // 本页面的四种操作及其对应调用的restful api
       actionList: [
-        { name: "退 回", index: 0, interface: apiMaintain.RejectOrder },
+        { name: "退 回", index: 0, interface: apiMaintainNew.RejectOrder },
         { name: "退 单", index: 1, interface: apiMaintain.ChargeBackOrder },
         { name: "延 期", index: 2, interface: apiMaintain.DelayOrder },
         { name: "到 场", index: 3, interface: apiMaintain.ChangeMissionStatus },
@@ -189,8 +194,9 @@ export default {
         // Int (1~5: 退单、延期、到场、维修、完工 )
         actionTypeIndex: ""
       },
-      DeptIDList:[],
-      orderInfoDeptId:""
+      isChangeColor:this.orderInfo.EventX,
+      //任务状态中,提交按钮是否可用
+      canSubmit:true
     };
   },
   computed: {
@@ -200,7 +206,7 @@ export default {
     },
     // 当前用户id
     currentUserId() {
-      return this.currentUser.iAdminID;
+      return this.currentUser.PersonId;
     },
     // 当前订单id
     currentOrderId() {
@@ -211,31 +217,63 @@ export default {
       return this.orderInfo.EventType;
     },
     pictureList() {
-      return _.pull(this.splitPicturesStr(this.orderInfo.EventPictures),"");   
+      return this.splitPicturesStr(this.orderInfo.EventPictures);
     }
   },
-  created(){
-    this.GetDepartmentList();
-  },
   methods: {
-    //获取部门信息
-    GetDepartmentList(){
-      apiMaintain.GetDepartmentList().then(res=>{
-        console.log(res)
-        if(res.data.Flag){
-          this.DeptIDList = res.data.Data.Result;
-          this.orderInfoDeptId = _.filter(this.DeptIDList,res=>{
-              return res.iDeptID == this.orderInfo.DeptId
-            })[0].cDepName;
-          console.log(this.orderInfo.DeptId)
-          console.log(_.filter(this.DeptIDList,res=>{
-              return res.iDeptID == this.orderInfo.DeptId
-            })[0])
-        }else{
-          mui.toast("获取部门信息失败，服务器异常");
-        }   
-      })
-    },  
+    onPickDeptClick() {
+      // 调用部门接口
+      apiMaintain
+        .GetDepartmentList()
+        .then(res => {
+          if (res.data.result === true) {
+            // // 打开事件分派dialog
+            // this.assignDialogVisiable = true;
+            let listData = res.data.data;
+            console.log(listData)
+            console.log(this.orderInfo.DeptId)
+            let selectDept =  _.find(listData,res=>{
+              return res.DeptName == this.orderInfo.DeptId
+            }).DeptId;
+            this.onPickPersonClick(selectDept)
+          } else {
+            mui.toast("获取部门数据失败！");
+          }
+        })
+        .catch(err => {
+          this.isLoading = false;
+          mui.toast("网络请求超时，请稍后重试");
+        });
+    },
+    onPickPersonClick(selectDept) {
+      if (!selectDept) {
+        mui.toast("请先选择部门");
+      } else {
+        // 调用人员接口
+        // 请求指定部门人员列表
+        let currentPickedDepartment = selectDept;
+        console.log("当前选择的部门", selectDept);
+        apiMaintain
+          .GetStaffList(currentPickedDepartment)
+          .then(res => {
+            if (res.data.result === true) {
+              let listData = res.data.data;
+              console.log(listData)
+              //指定的处理人员
+              this.DispatchPerson = _.find(listData,res=>{
+                return Number(res.personId) == Number(this.orderInfo.DispatchPerson)
+              }).personName;
+            } else {
+              mui.toast("该部门下暂无人员");
+              this.isLoading = false;
+            }
+          })
+          .catch(err => {
+            this.isLoading = false;
+            mui.toast("网络请求超时，请稍后重试");
+          });
+      }
+    },
     splitPicturesStr(str) {
       if (str && str.length > 0) {
         return str.includes("|") ? str.split("|") : [str];
@@ -243,43 +281,92 @@ export default {
         return [];
       }
     },
-    onAddrRowClick() {
+    GCJ02ToBD09(lng,lat){
+        let x_pi = 3.14159265358979324 * 3000.0 / 180.0;
+        let x = lng;
+        let y = lat;
+        let z =Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
+        let theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
+        let putlng = z * Math.cos(theta) + 0.0065;
+        let putlat = z * Math.sin(theta) + 0.006;
+        return [putlng,putlat];
+    },
+    onAddrRowClick() { 
       // 调用百度地图app导航
       if (this.orderInfo.EventX && this.orderInfo.EventY) {
-        if (window.plus && window.plus.maps && window.plus.geolocation) {
+        let coordinateFenghua = [];
+        if(Number(this.orderInfo.EventX) > 1000){
+          //初始化地图 
+          let mapController = new BaseMap();
+          mapController.Init("event_map");
+
+          //地方投影转换
+          coordinateFenghua = mapController.unDestinationCoordinateProj(
+            [Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)]
+          );
+          console.log("反转coordinateFenghua",coordinateFenghua)
+          coordinateFenghua = CoordsHelper.wgs84togcj02(
+            coordinateFenghua[0],
+            coordinateFenghua[1]
+          );
+          console.log("反转wgs84togcj02",coordinateFenghua)
+          /*coordinateFenghua = CoordsHelper.gcj02tobd09(
+            coordinateFenghua[0],
+            coordinateFenghua[1]
+          );
+          console.log("反转gcj02tobd09",coordinateFenghua)*/
+        }else{
+          coordinateFenghua = [Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)]
+        } 
+        nativeTransfer.startNavi(Number(coordinateFenghua[0]),Number(coordinateFenghua[1]), "", res=>{
+          console.log(res)
+        })
+
+        /*if (window.plus && window.plus.maps && window.plus.geolocation) {
           this.$showLoading();
-          window.plus.geolocation.getCurrentPosition(
-            position => {
+          nativeTransfer.getLocation(position => {
+            if(position){
               let srcPoint = new plus.maps.Point(
-                position.coords.longitude,
-                position.coords.latitude
+                position.lng,
+                position.lat
               );
+              let coordinateFenghua = [];
+              if(Number(this.orderInfo.EventX) > 1000){
+                //初始化地图 
+                let mapController = new BaseMap();
+                mapController.Init("event_map");
+                //地方投影转换
+                coordinateFenghua = mapController.unDestinationCoordinateProj(
+                  [Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)]
+                );
+              }else{
+                coordinateFenghua = [Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)]
+              }   
+              // coordinateFenghua = CoordsHelper.wgs84togcj02(
+              //   coordinateFenghua[0],
+              //   coordinateFenghua[1]
+              // ); 
+              //coordinateFenghua = this.GCJ02ToBD09(coordinateFenghua[0],coordinateFenghua[1])            
               let destDesc = "目标设备";
               let destPoint = new plus.maps.Point(
-                Number(this.orderInfo.EventX),
-                Number(this.orderInfo.EventY)
+                Number(coordinateFenghua[0]),
+                Number(coordinateFenghua[1])
               );
-              window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
+              nativeTransfer.startNavi(Number(coordinateFenghua[0]),Number(coordinateFenghua[1]), "", res=>{
+                console.log(res)
+              })
+              //window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
               this.$hideLoading();
-            },
-            err => {
+            }else{
               this.$hideLoading();
               window.mui.toast("定位失败，无法调起导航");
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 10000,
-              provider: "system",
-              coordsType: "wgs84"
+            }
             }
           );
-        }else{
-           nativeTransfer.startNavi(this.orderInfo.EventX, this.orderInfo.EventY, "");
-        }
+        }*/
       }
     },
     onTakeOrderClick() {
-      console.log(this.orderInfo)
       window.mui.confirm(
         "确定接单吗？",
         "提醒：",
@@ -287,22 +374,22 @@ export default {
         result => {
           if (result.index === 1) {
             // 确认
-            let reqData = 
+            let reqData = Object.assign(
+              {},
               {
-                EventID:this.orderInfo.EventID,
-                StepNum:3,
-                OrderId:this.currentOrderId,
-                DispatchPersonID:"",
-                OperRemarks:"",
-                ExecPersonId:this.currentUser.iAdminID,
-                ExecDetpID:this.currentUser.iDeptID
-              };
-            console.log(reqData)
+                eventId:this.orderInfo.EventId,
+                personId: this.currentUserId,
+                orderId: this.currentOrderId,
+                operationId: 3,
+                description: "",
+                pictureList: [],
+                speechData: ""
+              }
+            );
             apiMaintain
-              .ChangeMissionStatus(reqData,"")
+              .ChangeMissionStatus(reqData)
               .then(res => {
-                console.log(res)
-                if (res.data.Flag) {
+                if (res.data[0].result === true) {
                   this.orderOperState++;
                   mui.toast("接单成功！");
                 } else {
@@ -336,12 +423,10 @@ export default {
     },
     onActionDialogConfirm() {
       let actionData = this.$refs.actionDialogContent.getValue();
-      console.log(actionData)
       let hasDesc = actionData.description.length > 0;
       let hasPicture = actionData.pictureList.length > 0;
       let hasDate = actionData.date.length > 0;
       let hasDescOption = actionData.descOption instanceof Object;
-      let pictureListStr = actionData.pictureList;
       if (this.activeAction.index == 0) {
         // 如果是退回，给出提示，描述必填
         mui.toast("请填写本退回描述信息");
@@ -349,17 +434,10 @@ export default {
         // 如果是退单
         if (!hasDescOption) {
           mui.toast("请选择一个退单原因");
-          return;
-        }
-      } else if (this.activeAction.operationId == 3){
-        if (!hasDesc) {
-          mui.toast("请填写延期原因");
-          return;
         }
       } else if (this.activeAction.operationId === 4) {
         if (!hasDescOption) {
           mui.toast("请选择一个到场描述");
-          return;
         }
       } else if (
         [
@@ -385,60 +463,52 @@ export default {
         }
         actionData.description = desc;
       }
-      /*let reqData = Object.assign({}, actionData, {
+      let reqData = Object.assign({}, actionData, {
+        eventId:this.orderInfo.EventId,
         personId: this.currentUserId,
         orderId: this.currentOrderId,
         eventType: this.currentOrderEventType,
         operationId: this.activeAction.operationId
       });
-      console.log(`${this.activeAction.actionName} req:`, reqData);*/
+      console.log(`${this.activeAction.actionName} req:`, reqData);
       this.$showLoading();
-      console.log(actionData)
-      let reqData = 
-        {
-          EventID:this.orderInfo.EventID,
-          StepNum:this.activeAction.operationId,
-          OrderId:this.currentOrderId,
-          DispatchPersonID:this.currentUser.iDeptID,
-          OperRemarks:actionData.description,
-          iAdminID:this.currentUser.iAdminID,
-          PersonId:this.orderInfo.ExecPersonId,
-          DeptId:this.orderInfo.DeptId,
-          complishTime:actionData.date,
-          ExecPersonId:this.currentUser.iAdminID,
-          ExecDetpID:this.currentUser.iDeptID
-        };
-       console.log(reqData)
       // 发送请求
-      console.log(this.activeAction.interface)
-       this.activeAction.interface(reqData,pictureListStr)
-        .then(res => {
-          console.log("步骤操作请求的数据： ", reqData);
-          console.log("步骤操作返回的数据： ", res);
-          this.actionDialogVisible = false;
-          this.$hideLoading();
-          if (res.data.Flag) {
-            mui.toast("操作成功！");
-            if (
-              this.activeAction.operationId === 2 ||
-              this.activeAction.index == 0
-            ) {
-              // 如果当前是退单或者退回操作，则成功后返回上一级
-              this.$router.go(-1);
+      if(this.canSubmit){
+        if(hasPicture){
+          this.canSubmit = false;
+        } 
+        this.activeAction
+          .interface(reqData)
+          .then(res => {
+            console.log("步骤操作请求的数据： ", reqData);
+            console.log("步骤操作返回的数据： ", res);
+            this.actionDialogVisible = false;
+            this.canSubmit = true;
+            this.$hideLoading();
+            if (res.data[0].result === true) {
+              mui.toast("操作成功！");
+              if (
+                this.activeAction.operationId === 2 ||
+                this.activeAction.index == 0
+              ) {
+                // 如果当前是退单或者退回操作，则成功后返回上一级
+                this.$router.go(-1);
+              }
+              if (![2, 3].includes(this.activeAction.operationId)) {
+                this.orderOperState++;
+              }
+            } else {
+              mui.toast(`操作失败！${res.data.data[0].message}`);
             }
-            if (![2, 3].includes(this.activeAction.operationId)) {
-              this.orderOperState++;
-            }
-          } else {
-            mui.toast(`操作失败！${res.data.data[0].message}`);
-          }
-        })
-        .catch(err => {
-          this.actionDialogVisible = false;
-          this.$hideLoading();
-          mui.toast("服务器异常，请稍后再试");
-          console.log(err);
-        });
+          })
+          .catch(err => {
+            this.actionDialogVisible = false;
+            this.canSubmit = true;
+            this.$hideLoading();
+            mui.toast("服务器异常，请稍后再试");
+            console.log(err);
+          });
+        }
     },
     onActionDialogCancel() {
       this.actionDialogVisible = false;
@@ -508,6 +578,7 @@ export default {
           display: flex;
           .position_icon {
             margin-right: 2%;
+            margin-top: 3px;
           }
         }
         .list_item_label {

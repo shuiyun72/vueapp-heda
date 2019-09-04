@@ -1,42 +1,34 @@
 <template>
-  <div class="repair_orders_container mui-content" v-loading.fullscreen="fullscreenLoading">
+  <div class="repair_orders_container mui-content" 
+      v-loading.fullscreen="fullscreenLoading"
+  >
     <el-tabs v-model="activeTabName" @tab-click="onTabClick" :before-leave="beforeTabSwitch">
       <el-tab-pane class="tab_panel" label="未接工单" name="todo">
         <!-- 未接工单页内容 -->
         <NoContent :visible="todoOrders.length === 0 && !fullscreenLoading" content="暂无未接工单"></NoContent>
-        <el-card
-          v-for="order in todoOrders"
-          :key="order.OrderId"
-          class="order_card mui-table-view-cell"
-          @click.native="onOrderClick(order)"
-        >
+        <el-card v-for="order in todoOrders" :key="order.OrderId" class="order_card mui-table-view-cell" @click.native="onOrderClick(order)">
           <div slot="header" class="clearfix card_header">
-            <span class="header_text text_ellipsis">{{order.EventCode}}</span>
+            <span class="header_text text_ellipsis">{{order.OrderCode}}</span>
             <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
           </div>
           <div class="card_body">
             <div class="left">
-              <img
-                :src="order.EventPictures ? (pictureBasePath + order.EventPictures.split('|')[0]) : defaultPicture"
-                style="width: 35vw; height:35vw"
-              />
+              <img :src="order.EventPictures ? (pictureBasePath + order.EventPictures.split('|')[0]) : defaultPicture"  style="width: 35vw; height:35vw">
             </div>
             <div class="right">
-              <div class="type">{{order.EventTypeName}} | {{order.EventTypeName2}}</div>
+              <div class="type">{{order.EventType}} | {{order.EventContent}}</div>
               <div class="descrition ellipsis">{{order.EventDesc}}</div>
               <div class="address text_ellipsis">
                 <span class="el-icon el-icon-location-outline"></span>
-                <span
-                  :style="{color: order.EventAddress ? '#001d26' : '#aaa'}"
-                >{{order.EventAddress || '暂无位置信息'}}</span>
+                <span :style="{color: order.EventAddress ? '#001d26' : '#aaa'}">{{order.EventAddress || '暂无位置信息'}}</span>
               </div>
-              <div class="status" :style="{color: order.isTimeout ? 'orange' : 'lightgreen'}">
-                <span class="el-icon el-icon-time"></span>
-                {{order.isTimeout ? '已超时' : '进行中'}}
-              </div>
-              <div class="distance" v-if="typeof order.distance === 'number'">
-                <span class="distance_text">距离{{order.distance}}公里</span>
-                <span class="distance_icon fas fa-map-marker-alt" style="color: lightgreen"></span>
+              <div class="status" :style="{color: order.isTimeout ? 'orange' : 'lightgreen'}"><span class="el-icon el-icon-time"></span>{{order.isTimeout ? '已超时' : '进行中'}}</div>
+              <div
+                  class="distance" 
+                  v-if="typeof order.distance === 'number'"
+              >
+                  <span class="distance_text">距离{{order.distance}}公里</span>
+                  <span class="distance_icon fas fa-map-marker-alt" style="color: lightgreen"></span>
               </div>
               <div class="distance" v-else-if="order.distance === false">无法获取距离数据</div>
               <div class="distance" v-else>正在计算目的地距离...</div>
@@ -48,39 +40,29 @@
       <el-tab-pane class="tab_panel" label="已接工单" name="doing">
         <NoContent :visible="doingOrders.length === 0 && !fullscreenLoading" content="暂无进行中的工单"></NoContent>
         <!-- 进行中工单页内容 -->
-        <el-card
-          v-for="order in doingOrders"
-          :key="order.orderId"
-          class="order_card mui-table-view-cell"
-          @click.native="onOrderClick(order)"
-        >
+        <el-card v-for="order in doingOrders" :key="order.orderId" class="order_card mui-table-view-cell" @click.native="onOrderClick(order)">
           <div slot="header" class="clearfix card_header">
-            <span class="header_text text_ellipsis">{{order.EventCode}}</span>
+            <span class="header_text text_ellipsis">{{order.OrderCode}}</span>
             <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
           </div>
           <div class="card_body">
             <div class="left">
-              <img
-                :src="order.EventPictures ? (pictureBasePath + order.EventPictures.split('|')[0]) : defaultPicture"
-                style="width: 35vw; height:35vw"
-              />
+              <img :src="order.EventPictures ? (pictureBasePath + order.EventPictures.split('|')[0]) : defaultPicture"  style="width: 35vw; height:35vw">
             </div>
             <div class="right">
-              <div class="type">{{order.EventTypeName}} | {{order.EventTypeName2}}</div>
+              <div class="type">{{order.EventType}} | {{order.EventContent}}</div>
               <div class="descrition ellipsis">{{order.EventDesc}}</div>
               <div class="address text_ellipsis">
                 <span class="el-icon el-icon-location-outline"></span>
-                <span
-                  :style="{color: order.EventAddress ? '#001d26' : '#aaa'}"
-                >{{order.EventAddress || '暂无位置信息'}}</span>
+                <span :style="{color: order.EventAddress ? '#001d26' : '#aaa'}">{{order.EventAddress || '暂无位置信息'}}</span>
               </div>
-              <div class="status" :style="{color: order.isTimeout ? 'orange' : 'lightgreen'}">
-                <span class="el-icon el-icon-time"></span>
-                {{order.isTimeout ? '已超时' : '进行中'}}
-              </div>
-              <div class="distance" v-if="typeof order.distance === 'number'">
-                <span class="distance_text">距离{{order.distance}}公里</span>
-                <span class="distance_icon fas fa-map-marker-alt" style="color: lightgreen"></span>
+              <div class="status" :style="{color: order.isTimeout ? 'orange' : 'lightgreen'}"><span class="el-icon el-icon-time"></span>{{order.isTimeout ? '已超时' : '进行中'}}</div>
+              <div
+                  class="distance" 
+                  v-if="typeof order.distance === 'number'"
+              >
+                  <span class="distance_text">距离{{order.distance}}公里</span>
+                  <span class="distance_icon fas fa-map-marker-alt" style="color: lightgreen"></span>
               </div>
               <div class="distance" v-else-if="order.distance === false">无法获取距离数据</div>
               <div class="distance" v-else>正在计算目的地距离...</div>
@@ -92,39 +74,30 @@
       <el-tab-pane class="tab_panel" label="完成工单" name="done">
         <NoContent :visible="doneOrders.length === 0 && !fullscreenLoading" content="未查询到已完成工单"></NoContent>
         <!-- 已完成工单页内容 -->
-        <el-card
-          v-for="order in doneOrders"
-          :key="order.orderId"
-          class="order_card mui-table-view-cell"
-          @click.native="onOrderClick(order)"
-        >
+        <el-card v-for="order in doneOrders" :key="order.orderId" class="order_card mui-table-view-cell" @click.native="onOrderClick(order)">
           <div slot="header" class="clearfix card_header">
-            <span class="header_text text_ellipsis">{{order.EventCode}}</span>
+            <span class="header_text text_ellipsis">{{order.OrderCode}}</span>
             <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
           </div>
           <div class="card_body">
             <div class="left">
-              <img
-                :src="order.EventPictures ? (pictureBasePath + order.EventPictures.split('|')[0]) : defaultPicture"
-                style="width: 35vw; height:35vw"
-              />
+              <img :src="order.EventPictures ? (pictureBasePath + order.EventPictures.split('|')[0]) : defaultPicture"  style="width: 35vw; height:35vw">
             </div>
             <div class="right">
-              <div class="type">{{order.EventTypeName}} | {{order.EventTypeName2}}</div>
+              <div class="type">{{order.EventType}} | {{order.EventContent}}</div>
               <div class="descrition ellipsis">{{order.EventDesc}}</div>
               <div class="address text_ellipsis">
                 <span class="el-icon el-icon-location-outline"></span>
-                <span
-                  :style="{color: order.EventAddress ? '#001d26' : '#aaa'}"
-                >{{order.EventAddress || '暂无位置信息'}}</span>
+                <span :style="{color: order.EventAddress ? '#001d26' : '#aaa'}">{{order.EventAddress || '暂无位置信息'}}</span>
               </div>
               <!-- <div class="status" :style="{color: order.isTimeout ? 'orange' : 'lightgreen'}"><span class="el-icon el-icon-time"></span>{{order.isTimeout ? '已超时' : '进行中'}}</div> -->
-              <div class="status" :style="{color: 'lightblue'}">
-                <span class="el-icon el-icon-time"></span>已完成
-              </div>
-              <div class="distance" v-if="typeof order.distance === 'number'">
-                <span class="distance_text">距离{{order.distance}}公里</span>
-                <span class="distance_icon fas fa-map-marker-alt" style="color: lightgreen"></span>
+              <div class="status" :style="{color: 'lightblue'}"><span class="el-icon el-icon-time"></span>已完成</div>
+              <div
+                  class="distance" 
+                  v-if="typeof order.distance === 'number'"
+              >
+                  <span class="distance_text">距离{{order.distance}}公里</span>
+                  <span class="distance_icon fas fa-map-marker-alt" style="color: lightgreen"></span>
               </div>
               <div class="distance" v-else-if="order.distance === false">无法获取距离数据</div>
               <div class="distance" v-else>正在计算目的地距离...</div>
@@ -133,7 +106,7 @@
         </el-card>
       </el-tab-pane>
     </el-tabs>
-  </div>
+  </div> 
 </template>
 
 <script>
@@ -150,6 +123,10 @@ import {
   // 根据经纬度计算公里距离的工具函数
   calcDistance
 } from "@common/util";
+import nativeTransfer from "@JS/native/nativeTransfer";
+import BaseMap from "@JS/Map/BaseMap";
+import CoordsHelper from "coordtransform";
+
 export default {
   created() {
     this.fetchOrdersByStatus((err, rawOrderList) => {
@@ -179,15 +156,13 @@ export default {
     },
     // 当前用户id
     currentUserId() {
-      return this.currentUser.iAdminID;
+      return this.currentUser.PersonId;
     },
     activeTabStatus() {
       let statusNumber =
         this.activeTabName === "todo"
-          ? "2"
-          : this.activeTabName === "doing"
-          ? "3,4,5"
-          : "7";
+          ? 1
+          : this.activeTabName === "doing" ? 2 : 3;
       return statusNumber;
     }
   },
@@ -198,12 +173,12 @@ export default {
       let userId = this.currentUserId;
       let status = this.activeTabStatus;
       apiMaintain
-        .GetEventManage(userId, status)
+        .GetOrderList(userId, status)
         .then(res => {
           this.fullscreenLoading = false;
           console.log("res", res);
-          if (res.data.Flag) {
-            let orderList = res.data.Data.Result;
+          if (res.data.result) {
+            let orderList = res.data.data;
             callback(null, orderList);
           }
         })
@@ -218,6 +193,7 @@ export default {
           } else {
             callback instanceof Function && callback(err);
             mui.toast("暂无网络");
+             console.log("从cache读取未接订单暂无网络")
           }
         });
     },
@@ -241,42 +217,11 @@ export default {
       if (!(callback instanceof Function)) {
         console.error("callback must be a function!");
       }
-      if (window.plus) {
-        window.plus.geolocation.getCurrentPosition(
-          position => {
-            // 当前纬度
-            let currentLatitude = position.coords.latitude;
-            // 当前经度
-            let currentLongitude = position.coords.longitude;
-            let newList = orderList.map(order => {
-              // 目的地纬度
-              let eventLatitude = Number(order.EventY);
-              // 目的地经度
-              let eventLongitude = Number(order.EventX);
-              // 计算距离，输出公里
-              let distance = calcDistance(
-                currentLongitude,
-                currentLatitude,
-                eventLongitude,
-                eventLatitude
-              );
-              return Object.assign({}, order, {
-                distance
-              });
-            });
-            callback(newList);
-          },
-          err => {
-            let newList = orderList.map(order => {
-              return Object.assign({}, order, { distance: false });
-            });
-            callback(newList);
-          })
-      } else {
+      //if (window.plus) {
         nativeTransfer.getLocation(position => {
-          if (position) {
+          if(position){
             // 当前纬度
-            let currentLatitude = position.lat; 
+            let currentLatitude = position.lat;
             // 当前经度
             let currentLongitude = position.lng;
             let newList = orderList.map(order => {
@@ -284,26 +229,45 @@ export default {
               let eventLatitude = Number(order.EventY);
               // 目的地经度
               let eventLongitude = Number(order.EventX);
+
+              //初始化地图 
+              let mapController = new BaseMap();
+              mapController.Init("event_map");
+              //地方投影转换
+              let coordinateFenghua = mapController.unDestinationCoordinateProj(
+                [eventLongitude,eventLatitude]
+              );
+              coordinateFenghua = CoordsHelper.wgs84togcj02(
+                coordinateFenghua[0],
+                coordinateFenghua[1]
+              );
               // 计算距离，输出公里
               let distance = calcDistance(
                 currentLongitude,
                 currentLatitude,
-                eventLongitude,
-                eventLatitude
+                coordinateFenghua[0],
+                coordinateFenghua[1]
               );
+
               return Object.assign({}, order, {
                 distance
               });
             });
             callback(newList);
-          } else {
+          }else{
             let newList = orderList.map(order => {
               return Object.assign({}, order, { distance: false });
             });
             callback(newList);
           }
+         
         });
-      }
+      /*} else {
+        let newList = orderList.map(order => {
+          return Object.assign({}, order, { distance: false });
+        });
+        callback(newList);
+      }*/
     },
     // 点击一个具体的订单卡片，进入详情页面
     onOrderClick(orderInfo) {

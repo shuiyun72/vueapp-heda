@@ -1,55 +1,56 @@
 <template>
-  <div class="flow_monitor_detail_container">
-    <!-- 当前运行数据饼图  -->
-    <div class="current_flow_charts_container" id="ChartWidthTotal">
-      <div class="header">
-        <i class="header_icon fas fa-lg fa-chart-pie"></i>
-        <span>当前瞬时数据</span>
-      </div>
-      <div id="FlowDataChart" class="flow_state_chart"></div>
-      <!-- <div id="FlowNDataChart" class="flow_state_chart"></div>
+    <div class="flow_monitor_detail_container">
+        <!-- 当前运行数据饼图  -->
+        <div class="current_flow_charts_container" id="ChartWidthTotal">
+            <div class="header">
+                <i class='header_icon fas fa-lg fa-chart-pie '></i>
+                <span>当前瞬时数据</span>
+            </div>
+            <div id="FlowDataChart" class="flow_state_chart"></div>
+            <!-- <div id="FlowNDataChart" class="flow_state_chart"></div>
             <div id="FlowADataChart" class="flow_state_chart"></div>
-      <div id="FlowANDataChart" class="flow_state_chart"></div>-->
+            <div id="FlowANDataChart" class="flow_state_chart"></div> -->
+        </div>
+        <!-- 正累计流量实时曲线折线图 -->
+        <div class="wChart-Div" style="height: 380px;  width: 100%;">
+            <div class="header">
+                <i class='header_icon fas fa-lg fa-chart-line '></i>
+                <span>正瞬时流量实时曲线</span>
+            </div>
+            <div id="realtime_flow_chart_positive" style="height: 345px; width: 100%;">
+            </div>
+        </div>
+        <!-- 负累计流量实时曲线折线图 -->
+        <div class="wChart-Div" style="height: 380px;  width: 100%;">
+            <div class="header">
+                <i class='header_icon fas fa-lg fa-chart-line '></i>
+                <span>负瞬时流量实时曲线</span>
+            </div>
+            <div id="realtime_flow_chart_negative" style="height: 345px; width: 100%;"></div>
+        </div>
+        <!-- 日累计流量柱状图 -->
+        <div class="wChart-Div" style="height: 380px;  width: 100%;">
+            <div class="header">
+                <i class='header_icon fas fa-lg fa-chart-line '></i>
+                <span>日累计流量柱状图</span>
+            </div>
+            <div id="daily_cumulative_flow_chart" style="height: 345px; width: 100%;"></div>
+        </div>        
+        <!-- 当前点位数据列表  -->
+        <div class="physic_point_container">
+            <div class="header">
+                <i class='header_icon fas fa-lg fa-list-ul'></i>
+                <span>监测点位数据</span>
+            </div>
+            <MuiList 
+                element-loading-text="正在调起地图应用..."
+                element-loading-spinner="el-icon-loading"
+                class="point_data_list"
+                :items="formattedPointDataForMuiList" 
+                @row-click="onRowIconClick"
+            ></MuiList>
+        </div>
     </div>
-    <!-- 正累计流量实时曲线折线图 -->
-    <div class="wChart-Div" style="height: 380px;  width: 100%;">
-      <div class="header">
-        <i class="header_icon fas fa-lg fa-chart-line"></i>
-        <span>正瞬时流量实时曲线</span>
-      </div>
-      <div id="realtime_flow_chart_positive" style="height: 345px; width: 100%;"></div>
-    </div>
-    <!-- 负累计流量实时曲线折线图 -->
-    <div class="wChart-Div" style="height: 380px;  width: 100%;">
-      <div class="header">
-        <i class="header_icon fas fa-lg fa-chart-line"></i>
-        <span>负瞬时流量实时曲线</span>
-      </div>
-      <div id="realtime_flow_chart_negative" style="height: 345px; width: 100%;"></div>
-    </div>
-    <!-- 日累计流量柱状图 -->
-    <div class="wChart-Div" style="height: 380px;  width: 100%;">
-      <div class="header">
-        <i class="header_icon fas fa-lg fa-chart-line"></i>
-        <span>日累计流量柱状图</span>
-      </div>
-      <div id="daily_cumulative_flow_chart" style="height: 345px; width: 100%;"></div>
-    </div>
-    <!-- 当前点位数据列表  -->
-    <div class="physic_point_container">
-      <div class="header">
-        <i class="header_icon fas fa-lg fa-list-ul"></i>
-        <span>监测点位数据</span>
-      </div>
-      <MuiList
-        element-loading-text="正在调起地图应用..."
-        element-loading-spinner="el-icon-loading"
-        class="point_data_list"
-        :items="formattedPointDataForMuiList"
-        @row-click="onRowIconClick"
-      ></MuiList>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -64,8 +65,7 @@ import ChartBuilder from "@JS/charts/chart-builder";
 import * as ChartOptions from "@JS/charts/chart-option";
 import { deepCopy } from "@common/util";
 import MuiList from "@comp/common/MuiList";
-// 引入nativeTransfer.js
-import nativeTransfer from '@JS/native/nativeTransfer'
+import nativeTransfer from "@JS/native/nativeTransfer";
 
 export default {
   props: {
@@ -272,56 +272,38 @@ export default {
         this.pointData.DataMapX &&
         this.pointData.DataMapY
       ) {
-        if (window.plus && window.plus.maps && window.plus.geolocation) {
+        nativeTransfer.startNavi(Number(this.pointData.DataMapX),Number(this.pointData.DataMapY), "", res=>{
+          console.log(res)
+        })
+
+        /*if (window.plus && window.plus.maps && window.plus.geolocation) {
           this.fullscreenLoading = true;
-          window.plus.geolocation.getCurrentPosition(
-            position => {
-              let srcPoint = new plus.maps.Point(
-                position.coords.longitude,
-                position.coords.latitude
-              );
-              let destDesc = "目标点位";
-              let destPoint = new plus.maps.Point(
-                this.pointData.DataMapX,
-                this.pointData.DataMapY
-              );
-              window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-              this.fullscreenLoading = false;
-            },
-            err => {
-              this.fullscreenLoading = false;
-              window.mui.toast("定位失败，无法调起导航");
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 10000,
-              provider: "system",
-              coordsType: "wgs84"
+           nativeTransfer.getLocation(position => {
+             if(position){
+                let srcPoint = new plus.maps.Point(
+                  position.lng,
+                  position.lat
+                );
+                let destDesc = "目标点位";
+                let destPoint = new plus.maps.Point(
+                  this.pointData.DataMapX,
+                  this.pointData.DataMapY
+                );
+                nativeTransfer.startNavi(Number(this.pointData.DataMapX),Number(this.pointData.DataMapY), "", res=>{
+                  console.log(res)
+                })
+                //window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
+                this.fullscreenLoading = false;
+              }else{
+                this.fullscreenLoading = false;
+                window.mui.toast("定位失败，无法调起导航");
+              }
             }
           );
-          // nativeTransfer.getLocation(position => {
-          //   this.fullscreenLoading = true;
-          //   if (position) {
-          //     let srcPoint = new plus.maps.Point(
-          //       position.coords.longitude,
-          //       position.coords.latitude
-          //     );
-          //     let destDesc = "目标点位";
-          //     let destPoint = new plus.maps.Point(
-          //       this.pointData.DataMapX,
-          //       this.pointData.DataMapY
-          //     );
-          //     window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-          //     this.fullscreenLoading = false;
-          //   } else {
-          //     this.fullscreenLoading = false;
-          //     window.mui.toast("定位失败，无法调起导航");
-          //   }
-          // });
         } else {
           this.fullscreenLoading = false;
           window.mui.toast("定位失败，无法调起导航");
-        }
+        }*/
       }
     }
   },

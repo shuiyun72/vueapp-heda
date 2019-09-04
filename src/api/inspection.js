@@ -4,27 +4,17 @@ import config from '@config/config.js'
 // axios.defaults.withCredentials = true
 const instance = axios.create({
     baseURL: config.apiPath.inspection,
-    //解决跨域
-    crossDomain:true,
-    timeout: 30000,
-    //转换res为json
-    responseType: 'json',
-});
-
-// request拦截器
-instance.interceptors.request.use(
-    config => {
-        // 每次发送请求之前检测都vuex存有token,那么都要放在请求头发送给服务器
-        if (1) {
-          config.headers.Token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVc2VySWQiOjEsIlVzZXJOYW1lIjoiYWRtaW4iLCJFeHBpcmVUaW1lIjoiMjAxOS0wNS0yOFQxMDowMTo0MC41NjYyMjI0KzA4OjAwIiwiSVAiOiIifQ.WCPR9mXenLrizGVGITHWWG4-PybJ9BK34pTnDclUxSQ'
-        }
-    
-        return config
-    },
-    err => {
-    return Promise.reject(err)
+    timeout: 80000,
+    // 该函数指定响应数据进行的预处理，return的值会填到response.data
+    transformResponse: function (resXmlData) {
+        // 将相应数据从xml格式转换为js Object，返回值即为then回调中的res.data
+        let parser = new window.DOMParser()
+        let xmlDoc = parser.parseFromString(resXmlData, 'text/xml')
+        let jsonStr = xmlDoc.getElementsByTagName('string')[0].innerHTML
+        let parsedResData = JSON.parse(jsonStr)
+        return parsedResData
     }
-)
+});
 
 /**
   巡检API 
@@ -32,23 +22,15 @@ instance.interceptors.request.use(
 export default {
     // 上传当前地理位置
     UploadLocation(longitude, latitude, currentTime, personId, isOnline = 0) {
-        return instance.post('/CurrentPosition/Post?positionX='+longitude+'&positionY='+latitude+'&upTime='+currentTime+'&personId='+personId+'&isOnline='+isOnline)
-    },
-    
-    /**
-     *  获取巡检任务列表
-     * userId, (巡检员ID)
-     * currentDayDateString,(当天的时间)
-     */
-    
-    GetMissionList(userId, currentDayDateString) {
-        return instance.get('/InspectionPlan/TaskManage/GetPlanManageInfo', {
+        return instance.get('/UPCoordinatePosition', {
             params: {
-                iAdminID: userId,
-                startTime: currentDayDateString,
-                endTime:currentDayDateString
-                // CurrentDayDate: '18-06-30'
-            }
+                PositionX: String(longitude),
+                PositionY: String(latitude),
+                UpTime: String(currentTime),
+                PersonId: Number(personId),
+                isOnline: Number(isOnline)
+            },
+            // baseURL: 'localhost:8585/'
         })
     },
 
@@ -70,62 +52,46 @@ export default {
             }
         })
     },
-    // /AttendanceRecord/QianDao?Lwr_PersonId=1266&Lwr_XY=123%2C33&DeptId=19
     // 签到
     SubmitAttendance(attendanceInfo) {
-        return instance.post('/AttendanceRecord/QianDao?Lwr_PersonId='+attendanceInfo.Lwr_PersonId
-            +'&Lwr_XY='+attendanceInfo.Lwr_XY
-            +'&DeptId='+attendanceInfo.DeptId
-        )
+        return instance.get('/QianDao', {
+            params: attendanceInfo
+        })
     },
     // 获取考勤记录
     GetAttendanceRecords(conditions) {
-        return instance.get('/AttendanceRecord/Get', {
+        return instance.get('/Get_WorkRecord', {
             params: conditions
         })
-    },
 
-    // 获取一个任务的关键点位（设备）信息
-    GetMissionPoints(taskId) {
-        return instance.get('/InspectionPlan/TaskManage/GetTaskplanInfo', {
+    },
+    // 获取巡检任务列表
+    GetMissionList(userId, currentDayDateString) {
+        return instance.get('/Down_Taskplan', {
             params: {
-                taskId: taskId
+                id: userId,
+                CurrentDayDate: currentDayDateString
+                // CurrentDayDate: '18-06-30'
             }
         })
     },
-
-    /**
-     * http://47.104.3.68:9819/api/InspectionPlan/TaskManage/GetTaskplanInfo?taskId=1307  的返回值中
-     * 
-     * res.data.Data.Result.ImportPointData 中的 PatroState   (1:关键点)
-     * res.data.Data.Result.EquPointData  中的 PatroState    (2:点位)
-     * 
-     * 改变一个任务的关键点位状态
-     * 关键点的类型 pointType  (1:关键点,2:点位)
-     * 关键点Id   pointSmid  
-     */  
-    TaskPointState(pointType,pointSmid) {
-        return instance.post('/InspectionPlan/TaskManage/PointState',
-	    {
-            pointType: Number(pointType),
-            pointSmid:Number(pointSmid)
+    // 获取一个任务的关键点位（设备）信息
+    GetMissionPoints(taskId) {
+        return instance.get('/GetTaskplanInfo', {
+            params: {
+                TaskId: taskId
+            }
         })
     },
-
-
     // 获取事件类型列表
     GetEventTypeList() {
-        return instance.get('/EventType/GetCommboboxList')
+        return instance.get('/Get_EventType')
     },
     // 获取事件内容列表
     GetEventContentList(eventTypeId) {
-        return instance.get('/EventContent/GetByEventTypeId', {
+        return instance.get('/Get_EventTypeDetail', {
             params: {
-                eventTypeId: eventTypeId,
-                sort:"EventTypeName",
-                ordering:"desc",
-                num:50,
-                page:1
+                ParentTypeId: eventTypeId
             }
         })
     },
@@ -142,19 +108,12 @@ export default {
         return instance.get('/GetEvent')
     },
     // 事件上报
-    SubmitEvent(eventInfo,imgList) {
-       // return instance.post('/EventManage/Post?'+qs.stringify(eventInfo))
-       imgList = imgList.length > 0 ? imgList.split("$") : [] ;
-        return instance({
-            method: 'post',
-            url: '/EventManage/Post',
-            params: eventInfo,
-            data:imgList
+    SubmitEvent(eventInfo) {
+        console.log('api： 事件上报参数集合：', eventInfo)
+        return instance.post('/SavEventStart', qs.stringify(eventInfo), {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
         })
-    },
-    //巡检到位点
-    PostTaskEqument(taskId,devicename,devicesmid,x,y,personId,equType){
-        equType = equType ? ( '&equType=' + equType ) : "";
-        return instance.post('/InspectionPlan/TaskManage/PostTaskEqument?taskId=' + taskId + '&devicename=' + devicename + '&devicesmid=' + devicesmid + '&x=' + x + '&y=' + y + '&personId=' + personId + equType)
     }
 }

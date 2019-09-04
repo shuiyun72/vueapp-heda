@@ -4,36 +4,21 @@ const _cache = {}
 const _cache2 = {}
 
 function _postMessage(methodName, callBack, params) {
-  if(window.plus){
-    //mui.toast("浏览器页面打开");
-    // if(methodName == "getLocation"){
-    //   plusLocation();
-    //   mui.toast("浏览器getLocation");
-    // }
-    if(methodName == 'getLocation'){
-      return _positionPlus(methodName,callBack)
-    }
-    if(methodName == 'startNavi'){
-      return _openSysMap(methodName, callBack, params)
-    }
-  }else{
-    mui.toast("webview页面打开");
-    let os = _md.os();
-    let postEntity = _creatPostEntity(methodName, callBack, params)
-    let result = []
-    if (os) {
-      if (os == 'AndroidOS') {
-        result = window.native.postMessage(JSON.stringify(postEntity))
-      } else
-        if (os == 'iOS') {
-          result = window.webkit.messageHandlers.postMessage.postMessage(JSON.stringify(postEntity))
-        } else {
-          result = "";
-        }
-      return result
-    }
+
+  let os = _md.os();
+  let postEntity = _creatPostEntity(methodName, callBack, params)
+  let result = []
+  if (os) {
+    if (os == 'AndroidOS') {
+      result = window.native.postMessage(JSON.stringify(postEntity))
+    } else
+      if (os == 'iOS') {
+        result = window.webkit.messageHandlers.postMessage.postMessage(JSON.stringify(postEntity))
+      } else {
+        result = "";
+      }
+    return result
   }
-  
 }
 
 
@@ -80,95 +65,13 @@ window.response2 = ({
   })
 }
 
-
-// function plusLocation() {
-//   window.plus.geolocation.getCurrentPosition(
-//     location => {
-//       // 坐标转换
-//       let newAddress =location.address.city
-//           + location.address.district
-//           + location.address.street;
-//       let nowLocation =  {
-//         "lat": location.coords.latitude,   //纬度，double类型
-//         "lng": location.coords.longitude,   //经度，double类型
-//         "addr": newAddress || '未定义地点' //地址信息
-//       }
-//       return nowLocation
-//     },
-//     err => {
-//       mui.toast("获取当前位置失败");
-//     },
-//     {
-//       enableHighAccuracy: true,
-//       maximumAge: 5000,
-//       timeout: 10000,
-//       provider: "baidu",
-//       coordsType: "gcj02"
-//     }
-//   );
-// }
-
-//获取当前位置信息
-function _positionPlus(type,callback){
-  window.plus.geolocation.getCurrentPosition(
-    location => {
-      let newAddress =location.address.city
-          + location.address.district
-          + location.address.street;
-      let nowLocation =  {
-        "lat": location.coords.latitude,   //纬度，double类型
-        "lng": location.coords.longitude,   //经度，double类型
-        "addr": newAddress || '未定义地点' //地址信息
-      }
-      callback instanceof Function && callback(nowLocation)  
-    },
-    err => {
-      mui.toast("获取当前位置失败");
-    },
-    {
-      enableHighAccuracy: true,
-      maximumAge: 5000,
-      timeout: 10000,
-      provider: "baidu",
-      coordsType: "gcj02"
-    }
-  );
-}
-
-//从当前坐标点到指定位置导航
-function _openSysMap(type,callback,params){
-window.plus.geolocation.getCurrentPosition(
-  position => {
-    let srcPoint = new plus.maps.Point(
-      position.coords.longitude,
-      position.coords.latitude
-    );
-    let destDesc = "目标设备";
-    let destPoint = new plus.maps.Point(
-      Number(params.lng),
-      Number(params.lat)
-    );
-    window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-  },
-  err => {
-    window.mui.toast("定位失败，无法调起导航");
-  },
-  {
-    enableHighAccuracy: true,
-    maximumAge: 10000,
-    provider: "system",
-    coordsType: "wgs84"
-  }
-);
-}
-
 export default {
   /**
    * 获取当前位置
    * @param {返回值} callback 
    */
   getLocation(callback) {
-      return _postMessage('getLocation', callback)
+    return _postMessage('getLocation', callback)
   },
   /**
    * 调用地图服务

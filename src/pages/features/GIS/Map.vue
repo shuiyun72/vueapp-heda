@@ -1,132 +1,98 @@
 <template>
-  <div class="map_container" style="text-align: center">
-    <div id="map">
-      <!-- poi弹出框 -->
-      <div class="ol-popup" id="poi-popup-container">
-        <a href="#" id="poi-popup-closer" class="ol-popup-closer" @click="onPoiPopupCloseClick"></a>
-        <div id="popup-content">
-          <!-- 当前内容为关键点内容 -->
-          <ul>
-            <li>
-              <span class="popup-content_label">名称</span>
-              <span class="popup-content_text">{{currentPoiPopupContent.name}}</span>
-            </li>
-            <li>
-              <span class="popup-content_label">地址</span>
-              <span class="popup-content_text">{{currentPoiPopupContent.address}}</span>
-            </li>
-            <li>
-              <span class="popup-content_label">电话</span>
-              <span class="popup-content_text">{{currentPoiPopupContent.mobile}}</span>
-            </li>
-            <li>
-              <span class="popup-content_label">类别</span>
-              <span class="popup-content_text">{{currentPoiPopupContent.type}}</span>
-            </li>
-          </ul>
+    <div class="map_container" style="text-align: center" >
+        <div id="map" style="">
+          <!-- poi弹出框 -->
+          <div class="ol-popup" id="poi-popup-container">
+            <a href="#" id="poi-popup-closer" class="ol-popup-closer" @click="onPoiPopupCloseClick"></a>
+            <div id="popup-content">
+              <!-- 当前内容为关键点内容 -->
+              <ul>
+                <li><span class="popup-content_label">名称</span><span class="popup-content_text">{{currentPoiPopupContent.name}}</span></li>
+                <li><span class="popup-content_label">地址</span><span class="popup-content_text">{{currentPoiPopupContent.address}}</span></li>
+                <li><span class="popup-content_label">电话</span><span class="popup-content_text">{{currentPoiPopupContent.mobile}}</span></li>
+                <li><span class="popup-content_label">类别</span><span class="popup-content_text">{{currentPoiPopupContent.type}}</span></li>
+              </ul>
+            </div>
+          </div>
+          <!-- 设备详情弹出框 -->
+          <div class="ol-popup" id="popup_container">
+            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+            <div id="popup-content">
+              <!-- 当前内容为关键点内容 -->
+              <ul v-if="currentPopupContent && currentPopupContent.role == 'key_point'">
+                <li><span class="popup-content_label">关键点名称</span><span class="popup-content_text">{{currentPopupPointName}}</span></li>
+                <li><span class="popup-content_label">关键点id</span><span class="popup-content_text">{{currentPopupContent.id}}</span></li>
+                <li><span class="popup-content_label">巡检完成</span><span class="popup-content_text">{{currentPopupContent.state == 0 ? '否': '是'}}</span></li>
+              </ul>
+              <!-- 当前内容为设备内容 -->
+              <ul v-else-if="currentPopupContent && currentPopupContent.role == 'device_point'">
+                <li><span class="popup-content_label">设备类型</span><span class="popup-content_text">{{currentPopupPointName}}</span></li>
+                <li><span class="popup-content_label">设备id</span><span class="popup-content_text">{{currentPopupContent.id}}</span></li>
+                <li><span class="popup-content_label">巡检完成</span><span class="popup-content_text">{{currentPopupContent.state == 0 ? '否': '是'}}</span></li>
+              </ul>
+              <button type="button" class="mui-btn mui-btn-primary" @click="onEventSubmitClick">事件上报</button>
+            </div>
+          </div>
+
         </div>
-      </div>
-      <!-- 设备详情弹出框 -->
-      <div class="ol-popup" id="popup_container">
-        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-        <div id="popup-content">
-          <!-- 当前内容为关键点内容 -->
-          <ul v-if="currentPopupContent && currentPopupContent.role == 'key_point'">
-            <li>
-              <span class="popup-content_label">关键点名称</span>
-              <span class="popup-content_text">{{currentPopupPointName}}</span>
-            </li>
-            <li>
-              <span class="popup-content_label">关键点id</span>
-              <span class="popup-content_text">{{currentPopupContent.id}}</span>
-            </li>
-            <li>
-              <span class="popup-content_label">巡检完成</span>
-              <span class="popup-content_text">{{currentPopupContent.state == 0 ? '否': '是'}}</span>
-            </li>
-          </ul>
-          <!-- 当前内容为设备内容 -->
-          <ul v-else-if="currentPopupContent && currentPopupContent.role == 'device_point'">
-            <li>
-              <span class="popup-content_label">设备类型</span>
-              <span class="popup-content_text">{{currentPopupPointName}}</span>
-            </li>
-            <li>
-              <span class="popup-content_label">设备id</span>
-              <span class="popup-content_text">{{currentPopupContent.id}}</span>
-            </li>
-            <li>
-              <span class="popup-content_label">巡检完成</span>
-              <span class="popup-content_text">{{currentPopupContent.state == 0 ? '否': '是'}}</span>
-            </li>
-          </ul>
-          <button type="button" class="mui-btn mui-btn-primary" @click="onEventSubmitClick">事件上报</button>
+        <div class="search_input_container">
+            <el-select v-model="searchTypeSelectValue" placeholder="请选择" style="width: 25%; vertical-align: top;">
+              <el-option
+                v-for="item in searchTypeSelectOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <el-autocomplete 
+                style="width: 75%"
+                clearable
+                placeholder="输入关键字查询地点、路线" 
+                v-model="searchValue" 
+                value-key="名称"
+                :trigger-on-focus="false"
+                :fetch-suggestions="fetchSearchSuggestions"
+                class="input-with-select"
+                @select="onSuggestionItemSelect"
+                v-if="searchTypeSelectValue === 'keyword'"
+            >
+            </el-autocomplete>
+            <el-input
+                style="width: 32%"
+                clearable
+                placeholder="经度" 
+                v-model.number="searchLongitude" 
+                v-if="searchTypeSelectValue === 'coordinate'"
+            ></el-input>
+            <el-input
+                style="width: 32%"
+                clearable
+                placeholder="纬度" 
+                v-model.number="searchLatitude" 
+                v-if="searchTypeSelectValue === 'coordinate'"
+            ></el-input>
+            <el-button 
+                icon="el-icon-search" 
+                type="primary" 
+                v-if="searchTypeSelectValue === 'coordinate'"
+                @click="onCoordSearchButtonClick"
+            ></el-button>
         </div>
-      </div>
+        <div class="gis_legend_table_container" style="position:fixed; top:46px;  height: 85vh; right:0;overflow:scroll;">
+            <LegendTable @close="onLegendTableClose" v-if="legendTableVisible"></LegendTable>
+        </div>
+        <div class="gis_point_detail_table_container">
+            <PointDetailTable 
+                v-show="pointDetailTableVisible" 
+                @close="onPointDetailTableClose" 
+                :detailData="currentPickedPointDetailData"
+            >
+            </PointDetailTable>
+        </div>
+        <div class="gis_action_bar_container">
+            <ActionBar :items="actionbarItems" @item-click="onActionBarItemClick"></ActionBar>
+        </div>
     </div>
-    <div class="search_input_container">
-      <el-select
-        v-model="searchTypeSelectValue"
-        placeholder="请选择"
-        style="width: 25%; vertical-align: top;"
-      >
-        <el-option
-          v-for="item in searchTypeSelectOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        ></el-option>
-      </el-select>
-      <el-autocomplete
-        style="width: 75%"
-        clearable
-        placeholder="输入关键字查询地点、路线"
-        v-model="searchValue"
-        value-key="名称"
-        :trigger-on-focus="false"
-        :fetch-suggestions="fetchSearchSuggestions"
-        class="input-with-select"
-        @select="onSuggestionItemSelect"
-        v-if="searchTypeSelectValue === 'keyword'"
-      ></el-autocomplete>
-      <el-input
-        style="width: 32%"
-        clearable
-        placeholder="经度"
-        v-model.number="searchLongitude"
-        v-if="searchTypeSelectValue === 'coordinate'"
-      ></el-input>
-      <el-input
-        style="width: 32%"
-        clearable
-        placeholder="纬度"
-        v-model.number="searchLatitude"
-        v-if="searchTypeSelectValue === 'coordinate'"
-      ></el-input>
-      <el-button
-        icon="el-icon-search"
-        type="primary"
-        v-if="searchTypeSelectValue === 'coordinate'"
-        @click="onCoordSearchButtonClick"
-      ></el-button>
-    </div>
-    <div
-      class="gis_legend_table_container"
-      style="position:fixed; top:46px;  height: 85vh; right:0;overflow:scroll;"
-    >
-      <LegendTable @close="onLegendTableClose" v-if="legendTableVisible"></LegendTable>
-    </div>
-    <div class="gis_point_detail_table_container">
-      <PointDetailTable
-        v-show="pointDetailTableVisible"
-        @close="onPointDetailTableClose"
-        :detailData="currentPickedPointDetailData"
-      ></PointDetailTable>
-    </div>
-    <div class="gis_action_bar_container">
-      <ActionBar :items="actionbarItems" @item-click="onActionBarItemClick"></ActionBar>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -138,16 +104,24 @@ import BaseMap from "@JS/Map/BaseMap";
 import apiGIS from "@api/gis";
 import apiInspection from "@api/inspection";
 import apiMonitor from "@api/monitor";
-import { deepCopy, calcDistance ,getSessionItem } from "@common/util";
+import { deepCopy, calcDistance } from "@common/util";
 import ActionBar from "./ActionBar";
 import LegendTable from "@comp/common/LegendTable";
 import PointDetailTable from "./PointDetailTable";
-//import ol from "openlayers";
+import ol from "openlayers";
 import "@supermap/iclient-openlayers";
 //ol 5.3.2
-import { Point as PointGeom } from "ol/geom";
-import { GeoJSON } from "ol/format";
-import { Style as StyleStyle, Stroke as StrokeStyle } from "ol/style";
+import {
+  Point as PointGeom,
+} from "ol/geom";
+import {
+  GeoJSON,
+} from "ol/format";
+import {
+  Style as StyleStyle,
+  Stroke as StrokeStyle,
+} from "ol/style";
+
 
 export default {
   props: {
@@ -161,9 +135,6 @@ export default {
     },
     taskName: {
       type: [String, Number]
-    },
-    feedBack: {
-     type: [String, Number]
     },
     // 路线巡检: path
     // 区域巡检: area
@@ -189,12 +160,12 @@ export default {
     // 为地图添加点击事件，用于点选功能
     let mapInstance = (this.mapInstance = window.m = mapController.getInstance());
     mapInstance.on("click", event => {
-      console.log("currentPopupContent",this.currentPopupContent)
       console.log(
         "点击地图！！当前点选模式为：" + (this.currentPickMode || "无"),
         "event对象",
         event
       );
+      this.coordinateCurrent = JSON.stringify(event.coordinate);
       if (this.currentPickMode === "pick-pipe") {
         this.$showLoading();
         // 清除掉原来的feature
@@ -204,7 +175,7 @@ export default {
         console.log("开始点选pipe, 中心点为: ", event.coordinate);
         let serviceUrl = config.superMapIServer.url;
         // 添加查询中心点
-        let basePoint = new PointGeom(event.coordinate);
+        let basePoint = new ol.geom.Point(event.coordinate);
         // 设置查询参数
         let param = new SuperMap.QueryByDistanceParameters({
           queryParams: {
@@ -223,7 +194,7 @@ export default {
             console.log("获取点选查询结果", serviceResult);
             // 将返回的结果feature做为标注点添加到地图上
             let features = serviceResult.result.recordsets[0].features;
-            let parsedFeatures = new GeoJSON().readFeatures(features);
+            let parsedFeatures = new GeoJSON().readFeatures(features); 
             // 为选中的feature添加样式
             parsedFeatures.forEach(feature => {
               feature.setStyle(
@@ -277,7 +248,7 @@ export default {
         console.log("开始点选device, 中心点为: ", event.coordinate);
         let serviceUrl = config.superMapIServer.url;
         // 添加查询中心点
-        let basePoint = new PointGeom(event.coordinate);
+        let basePoint = new ol.geom.Point(event.coordinate);
         // 设置查询参数
         let queryParams = _.map(
           _.values(_.omit(config.superMapIServer.tablesName, "普通给水管线")),
@@ -395,8 +366,8 @@ export default {
         this.mode === "gis"
           ? mapConsts.ActionbarConfig.GIS
           : this.taskType === "path"
-          ? mapConsts.ActionbarConfig.PathPatrolMission
-          : mapConsts.ActionbarConfig.AreaPatrolMission
+            ? mapConsts.ActionbarConfig.PathPatrolMission
+            : mapConsts.ActionbarConfig.AreaPatrolMission
       ),
       // 由于地图注册了feature-click事件，因此此数组存储那些忽略此事件的feature
       clickIgnoreFeatureList: ["plan_area", "poi-feature"],
@@ -423,14 +394,12 @@ export default {
       // 当前任务所有的设备点(包括未巡检和已巡检的)
       deviceArr: [],
       // 当前是否已加载巡检点位（是否开始巡检）
-      STARTED: false
+      STARTED: false,
+      //当前点击的coordinate
+      coordinateCurrent:null
     };
   },
   computed: {
-    // 当前的用户信息
-    currentUser() {
-      return JSON.parse(getSessionItem("currentUser"));
-    },
     // 当前被点击而弹出详情框的设备的格式化后的name
     currentPopupPointName() {
       if (!_.isEmpty(this.currentPopupContent)) {
@@ -535,22 +504,10 @@ export default {
               6
             ) * 1000;
           console.log("计算得到的距离：", distanceForMeter);
-          if (distanceForMeter <= 30) {
+          if (distanceForMeter <= 40) {
             _.find(this.importantArr, { id: point.id }).state = 1;
             // mui.toast(`您已到位名称为 ${point.name} 的关键点`);
             this.mapController.reachPointWhichId(point.id);
-
-            apiInspection.PostTaskEqument(
-              this.taskId,
-              point.name,
-              point.id,
-              point.longitude,
-              point.latitude,
-              this.currentUser.iAdminID,
-              0
-            ).then(res=>{
-              console.log(res)
-            })
             this.$alert(`您已到位名称为 ${point.name} 的关键点`, "到位通知");
           }
         });
@@ -566,23 +523,10 @@ export default {
               deivce.latitude,
               6
             ) * 1000;
-          if (distanceForMeter <= 30) {
+          if (distanceForMeter <= 40) {
             _.find(this.deviceArr, { smid: deivce.smid }).state = 1;
             // mui.toast(`您已到位SMID为 ${deivce.smid} 的设备点`);
             this.mapController.reachPointWhichId(deivce.smid);
-            //isTemp=1&deviceSmid=3696&pointType=0&taskId=1447&taskName=7月_测试检测726_区域巡检
-            apiInspection.PostTaskEqument(
-              this.taskId,
-              deivce.name || "点位",
-              deivce.smid,
-              deivce.longitude,
-              deivce.latitude,
-              this.currentUser.iAdminID,
-              deivce.deviceType
-            ).then(res=>{
-              console.log(res)
-            })
-
             this.$alert(`您已到位SMID为 ${deivce.smid} 的设备点`, "到位通知");
           }
         });
@@ -646,7 +590,8 @@ export default {
           deviceSmid: this.currentPopupContent.id,
           pointType: this.currentPopupContent.pointType,
           taskId: this.taskId,
-          taskName: this.taskName
+          taskName: this.taskName,
+          coordinateCurrent:this.coordinateCurrent
         }
       });
     },
@@ -785,7 +730,7 @@ export default {
     // 定位选择
     onLocationClick() {
       // 如果当前位置不在地图范围内，则提示开启定位失败
-      if (window.plus) {
+     
         window.mui.toast(
           `正在${this.geolocationEnabled ? "关闭" : "开启"}定位...`
         );
@@ -805,9 +750,6 @@ export default {
           window.mui.toast(`开启定位成功`);
           _.find(this.actionbarItems, ["id", "location"]).text = "关闭定位";
         }
-      } else {
-        window.mui.toast(`请在移动设备上使用定位功能`);
-      }
     },
     //刷新选择
     onResetClick() {
@@ -897,7 +839,7 @@ export default {
               };
             })
             .filter(point => point.state === 0);
-          //console.table(this.importantArr);
+          console.table(this.importantArr);
           this.deviceArr = data.equPoints
             .map(device => {
               return {
@@ -909,7 +851,7 @@ export default {
               };
             })
             .filter(device => device.state === 0);
-          //console.table(this.deviceArr);
+          console.table(this.deviceArr);
           // 开启事件总线
           this.$eventbus.$on("geolocation", this.geoCallback);
           this.$hideLoading();
@@ -1028,18 +970,18 @@ export default {
       apiInspection
         .GetMissionPoints(this.taskId)
         .then(res => {
-          if (res.data.Data) {
+          if (res.data.result === true) {
             console.warn("+++++", res);
             if (callback instanceof Function) {
               callback(null, {
-                planInfo: res.data.Data.Result.Data,
-                importantPoints: res.data.Data.Result.ImportPointData,
-                equPoints: res.data.Data.Result.EquPointData
+                planInfo: res.data.Data,
+                importantPoints: res.data.ImportPointData,
+                equPoints: res.data.EquPointData
               });
             }
           } else {
             if (callback instanceof Function) {
-              callback(null, { message: res.data.Data.Result.message });
+              callback(null, { message: res.data.message });
             }
           }
         })
@@ -1063,7 +1005,6 @@ export default {
     initKeyPositionMarkers(data, mapInstance) {
       // 初始化关键地点的marker
       let importantPoints = data.importantPoints;
-      //let importantPoints =[{ImportPointId: 173,ImportPointName: "4324",PatroState: 1,PointType: 1,X: "113.55410901222211",Y: "34.828918085616564"}]
       console.log("222====imp point", importantPoints);
       _.each(importantPoints, deviceInfo => {
         let X = Number(deviceInfo.X);
@@ -1082,7 +1023,6 @@ export default {
           // 后端传来的原始PointType，描述关键点类型，为1或2
           pointType: deviceInfo.PointType
         };
-        console.log("props---1030", props);
         let iconUrl = consts.mapDeviceTypeToIcon[deviceInfo.PointType];
         mapInstance.ADDFeatureForPoint(
           X,
@@ -1098,9 +1038,6 @@ export default {
     initDeviceMarkers(data, mapInstance) {
       // 初始化设备点的marker
       let devicePoints = data.equPoints;
-      //  let devicePoints = [{X: "113.55364381900006", Y: "34.828176057000064", EquType: 2, PatroState: 1, Smid: 2002},
-      //  {X: "113.55374333000009", Y: "34.82816349700005", EquType: 2, PatroState: 0, Smid: 3657},
-      //   {X: "113.55362400500007", Y: "34.82817921100008", EquType: 2, PatroState: 0, Smid: 1897}];
       console.log("444====devices point", devicePoints);
       _.each(devicePoints, deviceInfo => {
         let X = Number(deviceInfo.X);
@@ -1109,8 +1046,7 @@ export default {
           // 设备点位id
           id: deviceInfo.Smid,
           // 点位角色（该点位为设备点还是必达关键点）
-          // role: "device_point",
-          role: "poi-feature",
+          role: "device_point",
           // 设备点位名称
           name: deviceInfo.Smid,
           // 设备点位类型
@@ -1119,7 +1055,7 @@ export default {
           state: deviceInfo.PatroState,
           pointType: deviceInfo.PointType
         };
-        let iconUrl = consts.mapDeviceTypeToIcon[deviceInfo.PointType];
+        let iconUrl = consts.mapDeviceTypeToIcon[deviceInfo.EquType];
         console.log("D M!", { X, Y, iconUrl, props });
         mapInstance.ADDFeatureForPoint(
           X,

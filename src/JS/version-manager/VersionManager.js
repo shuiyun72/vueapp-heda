@@ -12,7 +12,7 @@ export default class VersionManager {
   constructor() {}
   static CheckUpdate() {
     // 先监测是否在plus环境下
-    if (window && window.plus) {
+   
       // 发送ajax请求
       return ApiMonitor.CheckAppUpdate().then(res => {
         console.log('版本更新res', res)
@@ -30,9 +30,7 @@ export default class VersionManager {
       }, err => {
         console.log('检测版本更新接口出错', err)
       })
-    } else {
-      console.error('当前不在plus环境下，无法执行版本更新检查')
-    }
+    
   }
   static Download() {
     let newVersionUrl = _newVersionInfo.url

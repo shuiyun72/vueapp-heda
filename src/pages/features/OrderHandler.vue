@@ -1,116 +1,82 @@
 <template>
-  <div class="order_handler_container">
-    <div class="order_detail_info">
-      <!-- 事件内容 -->
-      <el-card class="custom_el-card-header_color_358F8B">
-        <div slot="header" class="clearfix card_header">
-          <span class="header_text">事件编号： {{orderInfo.EventCode}}</span>
+    <div class="order_handler_container">
+        <div class="order_detail_info">
+            <!-- 事件内容 -->
+            <el-card class="custom_el-card-header_color_358F8B">
+              <div slot="header" class="clearfix card_header">
+                <span class="header_text">事件编号： {{orderInfo.EventCode}}</span>
+              </div>
+              <div class="card_body">
+                <div class="left">
+                  <li><span class="list_item_label">上报时间： </span><span class="list_item_content">{{orderInfo.EventUpdateTime}}</span></li>
+                  <li><span class="list_item_label">所属部门： </span><span class="list_item_content">{{orderInfo.DeptName}}</span></li>
+                  <li><span class="list_item_label">派单人： </span><span class="list_item_content">{{orderInfo.PersonName}}</span></li>
+                  <li>
+                      <span class="list_item_label"><el-button :type="orderInfo.UrgencyName | urgencyButtonType">{{orderInfo.UrgencyName}}</el-button></span>
+                      <span class="list_item_content"><el-button :type="orderInfo.HandlerLevelName | levelButtonType">{{orderInfo.HandlerLevelName}}</el-button></span>
+                  </li>
+                  <li @tap="onAddrRowClick">
+                    <span class="list_item_label addr_span" >
+                      <span class="list_item_icon fas fa-map-marker-alt position_icon">
+                      </span>
+                      <span class="address_info" :style="{color: orderInfo.EventAddress ? '#001d26' : '#aaa'}">{{orderInfo.EventAddress || '暂无位置信息'}}</span>
+                    </span>
+                    <span class="list_item_content"></span>
+                  </li>
+                  <li><span class="list_item_label">事件来源： </span><span class="list_item_content">{{orderInfo.EventFromName}}</span></li>
+                  <li><span class="list_item_label">事件类型： </span><span class="list_item_content">{{orderInfo.EventTypeName}}</span></li>
+                  <li><span class="list_item_label">事件内容： </span><span class="list_item_content">{{orderInfo.EventTypeName2}}</span></li>
+                </div>
+              </div>
+            </el-card>
+            <!-- 事件描述 -->
+            <el-card class="custom_el-card-header_color_358F8B">
+              <div slot="header" class="clearfix card_header">
+                <span class="header_text">事件描述</span>
+              </div>
+              <div class="card_body">
+                {{orderInfo.EventDesc || '暂无描述信息'}}
+              </div>
+            </el-card>
+            <!-- 现场图片 -->
+            <el-card class="custom_el-card-header_color_358F8B">
+              <div slot="header" class="clearfix card_header">
+                <span class="header_text">现场图片</span>
+              </div>
+              <div class="card_body picture_list">
+                <img 
+                    v-for="(pic, index) in pictureList" 
+                    :key="pic" 
+                    :src="pictureBasePath + pic"
+                    @tap="onImageClick(index)"
+                >
+              </div>
+            </el-card>
         </div>
-        <div class="card_body">
-          <div class="left">
-            <li>
-              <span class="list_item_label">上报时间：</span>
-              <span class="list_item_content">{{orderInfo.EventUpdateTime}}</span>
-            </li>
-            <li>
-              <span class="list_item_label">所属部门：</span>
-              <span class="list_item_content">{{orderInfo.DeptName}}</span>
-            </li>
-            <li>
-              <span class="list_item_label">派单人：</span>
-              <span class="list_item_content">{{orderInfo.PersonName}}</span>
-            </li>
-            <li>
-              <span class="list_item_label">
-                <el-button
-                  :type="orderInfo.UrgencyName | urgencyButtonType"
-                >{{orderInfo.UrgencyName}}</el-button>
-              </span>
-              <span class="list_item_content">
-                <el-button
-                  :type="orderInfo.HandlerLevelName | levelButtonType"
-                >{{orderInfo.HandlerLevelName}}</el-button>
-              </span>
-            </li>
-            <li @tap="onAddrRowClick">
-              <span class="list_item_label addr_span">
-                <span class="list_item_icon fas fa-map-marker-alt position_icon"></span>
-                <span
-                  class="address_info"
-                  :style="{color: orderInfo.EventAddress ? '#001d26' : '#aaa'}"
-                >{{orderInfo.EventAddress || '暂无位置信息'}}</span>
-              </span>
-              <span class="list_item_content"></span>
-            </li>
-            <li>
-              <span class="list_item_label">事件来源：</span>
-              <span class="list_item_content">{{orderInfo.EventFromName}}</span>
-            </li>
-            <li>
-              <span class="list_item_label">事件类型：</span>
-              <span class="list_item_content">{{orderInfo.EventTypeName}}</span>
-            </li>
-            <li>
-              <span class="list_item_label">事件内容：</span>
-              <span class="list_item_content">{{orderInfo.EventTypeName2}}</span>
-            </li>
-          </div>
+        <!-- 底部按钮组 -->
+        <div class="fixed_footer">
+            <div class="button-group">
+                <!-- tap事件在PC端测试的时候，会有一点bug -->
+                <button type="button" class="button left_button custom_bgcolor_dark" @tap="onAssignButtonClick">分 派</button>
+                <button type="button" class="button right_button custom_bgcolor_light" @tap="onInvalidateButtonClick">无 效</button>
+            </div>
         </div>
-      </el-card>
-      <!-- 事件描述 -->
-      <el-card class="custom_el-card-header_color_358F8B">
-        <div slot="header" class="clearfix card_header">
-          <span class="header_text">事件描述</span>
-        </div>
-        <div class="card_body">{{orderInfo.EventDesc || '暂无描述信息'}}</div>
-      </el-card>
-      <!-- 现场图片 -->
-      <el-card class="custom_el-card-header_color_358F8B">
-        <div slot="header" class="clearfix card_header">
-          <span class="header_text">现场图片</span>
-        </div>
-        <div class="card_body picture_list">
-          <img
-            v-for="(pic, index) in pictureList"
-            :key="pic"
-            :src="pictureBasePath + pic"
-            @tap="onImageClick(index)"
-          />
-        </div>
-      </el-card>
+        <el-dialog
+            title="事件分派"
+            width="90%"
+            center
+            :modal="false"
+            :close-on-click-modal="false"
+            :visible.sync="assignDialogVisiable"
+            @close="onAssignDialogClose"
+        >
+            <AssignForm ref="assignForm" :departmentList="departmentList"></AssignForm>
+            <div slot="footer" >
+                <el-button type="primary" @click="onConfirmClick">确 定</el-button>
+                <el-button @click="onCancelClick">取 消</el-button>
+            </div>
+        </el-dialog>
     </div>
-    <!-- 底部按钮组 -->
-    <div class="fixed_footer">
-      <div class="button-group">
-        <!-- tap事件在PC端测试的时候，会有一点bug -->
-        <button
-          type="button"
-          class="button left_button custom_bgcolor_dark"
-          @tap="onAssignButtonClick"
-        >分 派</button>
-        <button
-          type="button"
-          class="button right_button custom_bgcolor_light"
-          @tap="onInvalidateButtonClick"
-        >无 效</button>
-      </div>
-    </div>
-    <el-dialog
-      title="事件分派"
-      width="90%"
-      center
-      :modal="false"
-      :close-on-click-modal="false"
-      :visible.sync="assignDialogVisiable"
-      @close="onAssignDialogClose"
-    >
-      <AssignForm ref="assignForm" :departmentList="departmentList"></AssignForm>
-      <div slot="footer">
-        <el-button type="primary" @click="onConfirmClick">确 定</el-button>
-        <el-button @click="onCancelClick">取 消</el-button>
-      </div>
-    </el-dialog>
-  </div>
 </template>
 
 <script>
@@ -121,8 +87,8 @@ import MuiList from "@comp/common/MuiList.vue";
 import AssignForm from "@comp/order-assignment/AssignForm.vue";
 import apiInspection from "@api/inspection";
 import apiMaintain from "@api/maintain";
-// 引入nativeTransfer.js
-import nativeTransfer from '@JS/native/nativeTransfer'
+import nativeTransfer from "@JS/native/nativeTransfer";
+
 export default {
   props: {
     orderInfo: [Object, String]
@@ -140,7 +106,7 @@ export default {
       return JSON.parse(getSessionItem("currentUser"));
     },
     currentUserName() {
-      return this.currentUser.cAdminName;
+      return this.currentUser.PersonName;
     },
     orderId() {
       return Number(this.orderInfo.EventId);
@@ -166,10 +132,13 @@ export default {
     },
     onAddrRowClick() {
       if (this.orderInfo.EventX && this.orderInfo.EventY) {
-        if (window.plus && window.plus.maps && window.plus.geolocation) {
+        nativeTransfer.startNavi( Number(this.orderInfo.EventX),  Number(this.orderInfo.EventY), "", res=>{
+          console.log(res)
+        })
+       /* if (window.plus && window.plus.maps && window.plus.geolocation) {
           this.$showLoading();
-          window.plus.geolocation.getCurrentPosition(
-            position => {
+          nativeTransfer.getLocation(position => {
+            if(position){
               let srcPoint = new plus.maps.Point(
                 position.coords.longitude,
                 position.coords.latitude
@@ -179,39 +148,17 @@ export default {
                 Number(this.orderInfo.EventX),
                 Number(this.orderInfo.EventY)
               );
-              window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
+              nativeTransfer.startNavi( Number(this.orderInfo.EventX),  Number(this.orderInfo.EventY), "", res=>{
+                console.log(res)
+              })
+              //window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
               this.$hideLoading();
-            },
-            err => {
+            }else{
               this.$hideLoading();
               window.mui.toast("定位失败，无法调起导航");
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 10000,
-              provider: "system",
-              coordsType: "wgs84"
             }
-          );
-          // nativeTransfer.getLocation(result => {
-          //   if (result) {
-          //     let srcPoint = new plus.maps.Point(
-          //       position.coords.longitude,
-          //       position.coords.latitude
-          //     );
-          //     let destDesc = "目标设备";
-          //     let destPoint = new plus.maps.Point(
-          //       Number(this.orderInfo.EventX),
-          //       Number(this.orderInfo.EventY)
-          //     );
-          //     window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-          //     this.$hideLoading();
-          //   } else {
-          //     this.$hideLoading();
-          //     window.mui.toast("定位失败，无法调起导航");
-          //   }
-          // });
-        }
+          });
+        }*/
       }
     },
     onAssignButtonClick() {

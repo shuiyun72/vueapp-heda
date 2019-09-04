@@ -63,7 +63,7 @@
     >
       <div class="event_map_container" id="event_map" v-if="mapDialogVisible"></div>
       <div style="display: flex; flex-flow: row nowrap; justify-content: space-between;">
-        <el-button type="info" style="width: 48%;" @click="onUseCurrentCoordButtonClick">使用当前位置</el-button>
+        <el-button type="primary" style="width: 48%;" @click="onUseCurrentCoordButtonClick">使用当前位置</el-button>
         <el-button type="primary" style="width: 48%;" @click="onCheckCoordButtonClick">确 定</el-button>
       </div>
     </el-dialog>
@@ -79,8 +79,7 @@ import dateHelper from "@common/dateHelper";
 import encodeHelper from "@common/encodeHelper";
 import apiInspection from "@api/inspection";
 import apiMaintain from "@api/maintain";
-// 引入nativeTransfer.js
-import nativeTransfer from '@JS/native/nativeTransfer'
+import apiMaintainNew from "@api/maintain-new";
 // lodash是一个js函数库
 import _ from "lodash";
 import {
@@ -90,6 +89,7 @@ import {
   setLocalItem,
   deepCopy
 } from "@common/util";
+import nativeTransfer from "@JS/native/nativeTransfer";
 export default {
   props: {
     isTemp: {
@@ -124,6 +124,9 @@ export default {
     setTimeout(() => {
       this.$eventbus.$emit("set-title", newTitle);
     }, 1);
+    if (this.$route.query) {
+      this.coordinateCurrent = this.$route.query.coordinateCurrent;
+    }
   },
 
   beforeRouteEnter(to, from, next) {
@@ -164,7 +167,11 @@ export default {
             label: "事件坐标",
             labelStyle: { color: "#999", fontSize: "1.2rem", width: "25%" },
             placeholder: "点击此处进行坐标点选",
-            content: ""
+            content: instance.coordinateCurrent
+              ? JSON.parse(instance.coordinateCurrent)[0] +
+                "<br>" +
+                JSON.parse(instance.coordinateCurrent)[1]
+              : ""
           },
           {
             id: "reporterName",
@@ -378,8 +385,6 @@ export default {
         }
       */
       pickerValue: {
-        //事件类型
-        eventSource:"",
         // 是否有隐患
         hasHiddenDanger: {
           text: "有",
@@ -394,6 +399,8 @@ export default {
                 value: -1
               }
             : {},
+        //事件来源
+        eventSource: "",
         // 处理部门
         handlerDepartment: "",
         // 部门人员
@@ -418,7 +425,10 @@ export default {
       // 当前已选择的上传图片列表
       pictureList: [],
       pictureUploaderLoading: false,
-      mapDialogVisible: false
+      mapDialogVisible: false,
+      coordinateCurrent: null,
+      EventX: null,
+      EventY: null
     };
   },
   computed: {
@@ -529,32 +539,32 @@ export default {
     },
     eventSubmissionData() {
       return {
-        personId: this.currentUser.iAdminID.toString(),
-        adminName: this.currentUser.cAdminName.toString(),
-        deptId: this.currentUser.iDeptID.toString(),
-        eventFromId: this.pickerValue.eventSource.value.toString(),
-        urgencyId: this.pickerValue.emergency.value.toString(),
-        eventTypeId: this.pickerValue.eventType.value.toString(),
-        eventTypeId2: this.pickerValue.eventContent.value.toString(),
-        linkMan: this.reporterName.toString(),
-        linkCall: this.reporterMobile.toString(),
-        eventAddress: this.currentAddressText,
-        eventX: _.find(this.items, item => {
+        iAdminID: this.currentUser.PersonId.toString(),
+        cAdminName: this.currentUser.PersonName.toString(),
+        iDeptID: this.currentUser.DeptId.toString(),
+        EventFromId: this.pickerValue.eventSource.value.toString(),
+        UrgencyId: this.pickerValue.emergency.value.toString(),
+        EventTypeId: this.pickerValue.eventType.value.toString(),
+        EventTypeId2: this.pickerValue.eventContent.value.toString(),
+        LinkMan: this.reporterName.toString(),
+        LinkCall: this.reporterMobile.toString(),
+        EventAddress: this.currentAddressText,
+        EventX: _.find(this.items, item => {
           return item.id === "coordinate";
         })
           .content.split("<br>")[0]
           .toString(),
-        eventY: _.find(this.items, item => {
+        EventY: _.find(this.items, item => {
           return item.id === "coordinate";
         })
           .content.split("<br>")[1]
           .toString(),
-        execDetpId: this.pickerValue.handlerDepartment.value.toString(),
-        execPersonId: this.pickerValue.handlerPerson.value.toString(),
-        eventDesc: this.detailDescription,
+        ExecDetpID: this.pickerValue.handlerDepartment.value.toString(),
+        ExecPersonId: this.pickerValue.handlerPerson.value.toString(),
+        EventDesc: this.detailDescription,
         // 只能上传一张图片
         // 格式化原始的base64字符串为后端能接受的base64格式
-        //base64Image: this.pictureListStr || ""
+        Bae64Image: this.pictureListStr || ""
 
         // TaskId: this.pickerValue.mission.value || -1,
         // // 以下四个字段值来自非临时事件路由参数， 且有默认值
@@ -579,49 +589,51 @@ export default {
     },
     // 使用当前位置按钮
     onUseCurrentCoordButtonClick() {
-      if(window.plus){
-        window.plus.geolocation.getCurrentPosition(
-          location => {
-            console.log("坐标转换-----",location.coords.longitude,location.coords.latitude,location)
-            // 坐标转换
-            let coordsFor84 = CoordsHelper.gcj02towgs84(
-              location.coords.longitude,
-              location.coords.latitude
-            );
-            this.mapController.addPoiFeature(coordsFor84);
-            this.cacheCoord = coordsFor84;
-          },
-          err => {
-            mui.toast("获取当前位置失败");
-          },
-          {
-            enableHighAccuracy: true,
-            maximumAge: 5000,
-            timeout: 10000,
-            provider: "baidu",
-            coordsType: "gcj02"
-          }
-        );
-      }else{
-        nativeTransfer.getLocation(location => {
-          if (location) {
-            // 坐标转换
-            let coordsFor84 = CoordsHelper.gcj02towgs84(
-              result.lng,
-              result.lat
-            );
-            //转换为地方坐标
-            coordsFor84 = this.mapController.destinationCoordinateProj(
-              coordsFor84
-            );
-            console.log(coordsFor84);
-            this.mapController.addPoiFeature(coordsFor84);
-            this.cacheCoord = coordsFor84;
-          } else {
-            mui.toast("获取当前位置失败");
-          }
-        })
-      }
+      //   window.plus.geolocation.getCurrentPosition(
+      //     location => {
+      //       // 坐标转换
+      //       let coordsFor84 = CoordsHelper.gcj02towgs84(
+      //         location.coords.longitude,
+      //         location.coords.latitude
+      //       );
+      //       //转换为地方坐标
+      //       coordsFor84 = this.mapController.destinationCoordinateProj(
+      //         coordsFor84
+      //       );
+      //       this.mapController.addPoiFeature(coordsFor84);
+      //       this.cacheCoord = coordsFor84;
+      //     },
+      //     err => {
+      //       mui.toast("获取当前位置失败");
+      //     },
+      //     {
+      //       enableHighAccuracy: true,
+      //       maximumAge: 5000,
+      //       timeout: 10000,
+      //       provider: "baidu",
+      //       coordsType: "gcj02"
+      //     }
+      //   );
+
+      nativeTransfer.getLocation(result => {
+        
+        if (result) {
+          // 坐标转换
+          let coordsFor84 = CoordsHelper.gcj02towgs84(
+            result.lng,
+            result.lat
+          );
+          //转换为地方坐标
+          coordsFor84 = this.mapController.destinationCoordinateProj(
+            coordsFor84
+          );
+          console.log(coordsFor84);
+          this.mapController.addPoiFeature(coordsFor84);
+          this.cacheCoord = coordsFor84;
+        } else {
+          mui.toast("获取当前位置失败");
+        }
+      })
     },
     onMapDialogOpened() {
       console.log("打开");
@@ -680,7 +692,7 @@ export default {
           // 非临时上报时，任务名称从路由参数获得
           if (this.isTemp == 1) {
             // 请求任务列表
-            let currentUserId = this.currentUser.iAdminID;
+            let currentUserId = this.currentUser.PersonId;
             let currentDayDate = dateHelper.format(new Date(), "yy-MM-dd");
             apiInspection
               .GetMissionList(currentUserId, currentDayDate)
@@ -722,34 +734,26 @@ export default {
           break;
         case "eventSource":
           // 请求事件来源列表
-          // apiInspection
-          //   .GetEventSourceList()
-          //   .then(res => {
-          //     console.log("事件来源", res);
-          //     if (res.data.ErrCode === 0) {
-          //       // // 打开事件分派dialog
-          //       // this.assignDialogVisiable = true;
-          //       let listData = res.data.rows;
-          //       this.openPicker(listData, row, rowIndex, {
-          //         valueKey: "EventFromId",
-          //         textKey: "EventFromName"
-          //       });
-          //     } else {
-          //       mui.toast("获取事件来源失败！");
-          //     }
-          //   })
-          //   .catch(err => {
-          //     this.isLoading = false;
-          //     mui.toast("网络请求超时，请稍后重试");
-          //   });
-          (()=>{
-               this.isLoading = false;
-              let listData =[{"EventFromId":1,"EventFromName":"临时上报"},{"EventFromId":2,"EventFromName":"接电上报"}];
-               this.openPicker(listData, row, rowIndex, {
+          apiMaintainNew
+            .GetEventSourceList()
+            .then(res => {
+              console.log("事件来源", res);
+              if (res.data.ErrCode === 0) {
+                // // 打开事件分派dialog
+                // this.assignDialogVisiable = true;
+                let listData = res.data.rows;
+                this.openPicker(listData, row, rowIndex, {
                   valueKey: "EventFromId",
                   textKey: "EventFromName"
                 });
-            })()
+              } else {
+                mui.toast("获取事件来源失败！");
+              }
+            })
+            .catch(err => {
+              this.isLoading = false;
+              mui.toast("网络请求超时，请稍后重试");
+            });
           break;
         case "coordinate":
           this.mapDialogVisible = true;
@@ -759,15 +763,13 @@ export default {
           apiMaintain
             .GetDepartmentList()
             .then(res => {
-               console.log(res.data)
-              if (res.data.Flag === true) {
+              if (res.data.result === true) {
                 // // 打开事件分派dialog
                 // this.assignDialogVisiable = true;
-               
-                let listData = res.data.Data.Result;
+                let listData = res.data.data;
                 this.openPicker(listData, row, rowIndex, {
-                  valueKey: "iDeptID",
-                  textKey: "cDepName"
+                  valueKey: "DeptId",
+                  textKey: "DeptName"
                 });
               } else {
                 mui.toast("获取部门数据失败！");
@@ -786,11 +788,11 @@ export default {
           apiMaintain
             .GetStaffList(currentPickedDepartment)
             .then(res => {
-              if (res.data.Flag === true) {
-                let listData = res.data.Data.Result;
+              if (res.data.result === true) {
+                let listData = res.data.data;
                 this.openPicker(listData, row, rowIndex, {
-                  valueKey: "iAdminID",
-                  textKey: "cAdminName"
+                  valueKey: "personId",
+                  textKey: "personName"
                 });
               } else {
                 mui.toast("该部门下暂无人员");
@@ -807,8 +809,8 @@ export default {
           apiInspection
             .GetEventTypeList()
             .then(res => {
-              if (res.data.Flag === true) {
-                let listData = res.data.Data.Result;
+              if (res.data.result === true) {
+                let listData = res.data.Data;
                 this.openPicker(listData, row, rowIndex, {
                   valueKey: "EventTypeId",
                   textKey: "EventTypeName"
@@ -821,7 +823,7 @@ export default {
             .catch(err => {
               this.isLoading = false;
               mui.toast("网络请求超时，请稍后重试");
-            });      
+            });
           break;
         case "eventContent":
           // 当前已选择的事件类型的id
@@ -834,8 +836,8 @@ export default {
             apiInspection
               .GetEventContentList(currentPickedEventTypeId)
               .then(res => {
-                if (res.data.Flag === true) {
-                  let listData = res.data.Data.Result;
+                if (res.data.result === true) {
+                  let listData = res.data.Data;
                   this.openPicker(listData, row, rowIndex, {
                     valueKey: "EventTypeId",
                     textKey: "EventTypeName"
@@ -854,32 +856,24 @@ export default {
           break;
         case "emergency":
           // 请求紧急程度列表
-          // apiInspection
-          //   .GetEmergencyList()
-          //   .then(res => {
-          //     if (res.data.result === true) {
-          //       let listData = res.data.Data;
-          //       this.openPicker(listData, row, rowIndex, {
-          //         valueKey: "UrgencyId",
-          //         textKey: "UrgencyName"
-          //       });
-          //     } else {
-          //       this.isLoading = false;
-          //       mui.toast("网络请求超时，请稍后重试");
-          //     }
-          //   })
-          //   .catch(err => {
-          //     this.isLoading = false;
-          //     mui.toast("网络请求超时，请稍后重试");
-          //   });
-          (()=>{
-               this.isLoading = false;
-              let listData =[{"UrgencyId":1,"UrgencyName":"一般"},{"UrgencyId":2,"UrgencyName":"紧急"},{"UrgencyId":3,"UrgencyName":"加急"}];
-               this.openPicker(listData, row, rowIndex, {
+          apiInspection
+            .GetEmergencyList()
+            .then(res => {
+              if (res.data.result === true) {
+                let listData = res.data.Data;
+                this.openPicker(listData, row, rowIndex, {
                   valueKey: "UrgencyId",
                   textKey: "UrgencyName"
                 });
-            })()
+              } else {
+                this.isLoading = false;
+                mui.toast("网络请求超时，请稍后重试");
+              }
+            })
+            .catch(err => {
+              this.isLoading = false;
+              mui.toast("网络请求超时，请稍后重试");
+            });
           break;
         case "eventLevel":
           // 请求处理级别列表
@@ -956,7 +950,7 @@ export default {
       // 获取最新的list，并赋值给当前上下文的pictureList
       this.pictureList = pictureList;
       this.pictureUploaderLoading = false;
-      console.log("最新的当前图片列表------ ", this.pictureList);
+      console.log("最新的当前图片列表 ", this.pictureList);
     },
     // 点击拍照按钮
     onCameraButtonClick() {
@@ -967,13 +961,12 @@ export default {
       this.isLoading = true;
       this.fullscreenLoadingText = "正在上报事件，请耐心等待...";
       console.log("事件上报数据：", this.eventSubmissionData);
-      console.log(this.pictureListStr);
       apiInspection
-        .SubmitEvent(this.eventSubmissionData,this.pictureListStr)
+        .SubmitEvent(this.eventSubmissionData)
         .then(res => {
           this.isLoading = false;
           console.log("submit res", res);
-          if (res.data.Flag === true) {
+          if (res.data.result === true) {
             this.$router.go(-1);
             mui.toast("事件上报成功！");
           } else {

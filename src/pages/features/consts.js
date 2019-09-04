@@ -17,8 +17,8 @@ export default {
     },
     mainContentHeight: '99vh-44px',
     mapDeviceTypeToIcon: {
-        '0': './static/images/dianwei.png',
         '1': './static/images/guanjiandian.png',
+        '2': './static/images/guanjiandian.png',
         '阀门@供水设施': './static/images/famenkai.png',
         '消防栓@供水设施': './static/images/xiaofangshuan.png'
     },

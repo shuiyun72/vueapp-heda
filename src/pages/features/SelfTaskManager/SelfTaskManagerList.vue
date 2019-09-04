@@ -51,7 +51,7 @@
         <!-- 已完成工单页内容 -->
         <el-card
           v-for="(order, index) in doneOrders"
-          :key="order.OrderId || index"
+          :key="index"
           class="order_card mui-table-view-cell"
           @tap.native="onOrderClick(order)"
         >
@@ -99,6 +99,7 @@ import _ from "lodash";
 import config from "@config/config";
 import apiInspection from "@api/inspection";
 import apiMaintain from "@api/maintain";
+import apiMaintainNew from "@api/maintain-new";
 import dateHelper from "@common/dateHelper";
 import NoContent from "@comp/common/NoContent";
 import {
@@ -132,7 +133,7 @@ export default {
     },
     // 当前用户id
     currentUserId() {
-      return this.currentUser.iAdminID;
+      return this.currentUser.PersonId;
     }
   },
   methods: {
@@ -144,10 +145,10 @@ export default {
       } else if (activeTabName === "done") {
         status = 1;
       }
-      apiMaintain.GetOrderList(this.currentUserId,  status).then(res => {
+      apiMaintainNew.GetOrderList(this.currentUserId,  status).then(res => {
         console.log("refresh res", status, res);
-        if (res.data.Flag) {
-          let list = res.data.Data.Result
+        if (res.data.ErrCode == 0) {
+          let list = res.data.rows
           this[status === 0 ? 'todoOrders' : 'doneOrders'] = list
         } else {
           mui.toast('获取个人工单失败')

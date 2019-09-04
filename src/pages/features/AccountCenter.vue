@@ -1,48 +1,48 @@
 <template>
-  <div class="account_center_container">
-    <el-card>
-      <div class="avatar">
-        <img :src="currentAvatar" />
-      </div>
-      <div class="summary">
-        <div class="username">{{userInfo.cAdminName}}</div>
-        <div class="role">{{userInfo.P_Role.cRoleName}} | {{cDepName}}</div>
-      </div>
-    </el-card>
+    <div class="account_center_container">
+        <el-card>   
+            <div class="avatar">
+                <img :src="currentAvatar">
+            </div> 
+            <div class="summary" >
+                <div class="username">{{userInfo.cAdminName}}</div>
+                <div class="role">{{userInfo.cRoleName}} | {{userInfo.cDepName}}</div>
+            </div>
+        </el-card>
 
-    <!-- <el-card style="margin-top: 1%">
+        <!-- <el-card style="margin-top: 1%">
           <el-button type="info" round class="action_buttons">版本更新</el-button>
           <el-button type="primary" class="action_buttons">修改密码</el-button>
           <el-button type="danger" class="action_buttons">退出登录</el-button>
           <el-button type="primary" class="action_buttons">编辑个人信息</el-button>
-    </el-card>-->
-    <ul class="user_info_ul">
-      <li>
-        <span class="user_info_label">用户姓名</span>
-        <span class="user_info_content">{{userInfo.cAdminName}}</span>
-      </li>
-      <li>
-        <span class="user_info_label">性别</span>
-        <span class="user_info_content">{{userInfo.cAdminSex}}</span>
-      </li>
-      <li>
-        <span class="user_info_label">联系电话</span>
-        <span class="user_info_content">{{userInfo.cAdminTel}}</span>
-      </li>
-      <li>
-        <span class="user_info_label">电子邮件</span>
-        <span class="user_info_content">{{userInfo.cAdminEmail}}</span>
-      </li>
-      <li>
-        <span class="user_info_label">是否锁定</span>
-        <span class="user_info_content">{{userInfo.iIsLocked}}</span>
-      </li>
-      <li>
-        <span class="user_info_label">账户过期时间</span>
-        <span class="user_info_content">{{userInfo.dExpireDate | timeFormatter}}</span>
-      </li>
-    </ul>
-  </div>
+        </el-card> -->
+        <ul class="user_info_ul">
+          <li>
+            <span class="user_info_label">用户姓名</span>
+            <span class="user_info_content">{{userInfo.cAdminName}}</span>
+          </li>
+          <li>
+             <span class="user_info_label">性别</span>
+             <span class="user_info_content">{{userInfo.cAdminSex}}</span>
+          </li>
+          <li>
+            <span class="user_info_label">联系电话</span>
+            <span class="user_info_content">{{userInfo.cAdminTel}}</span>
+          </li>
+          <li>
+            <span class="user_info_label">电子邮件</span>
+            <span class="user_info_content">{{userInfo.cAdminEmail}}</span>
+          </li>
+          <li>
+            <span class="user_info_label">是否锁定</span>
+            <span class="user_info_content">{{userInfo.iIsLocked}}</span>
+          </li>
+          <li>
+            <span class="user_info_label">账户过期时间</span>
+            <span class="user_info_content">{{userInfo.dExpireDate | timeFormatter}}</span>
+          </li>   
+        </ul>
+    </div>
 </template>
 
 <script>
@@ -56,16 +56,18 @@ import apiUser from "@api/user";
 import dateHelper from "@common/dateHelper";
 
 export default {
-  created() {
+  mounted() {
     this.fetchUserInfo();
   },
   data() {
     return {
-      userInfo: {},
-      cDepName: "",
+      userInfo: {}
     };
   },
   computed: {
+    currentUser() {
+      return JSON.parse(getSessionItem("currentUser"));
+    },
     currentAvatar() {
       return this.userInfo.cAdminSex === "男"
         ? "./static/images/avatar_male.png"
@@ -73,40 +75,20 @@ export default {
     }
   },
   methods: {
-    // fetchUserInfo() {
-    //   apiUser
-    //     .GetUserInfo(this.currentUser.iAdminID)
-    //     .then(res => {
-    //       console.log("==", res);
-    //       if (res.data.ErrCode === 0) {
-    //         let userInfo = res.data.Data[0];
-    //         this.userInfo = userInfo;
-    //       } else {
-    //         mui.toast("获取用户信息失败！", { type: "div" });
-    //       }
-    //     })
-    //     .catch(err => {
-    //       mui.toast("获取用户信息失败！", { type: "div" });
-    //     });
-    // }
     fetchUserInfo() {
-      this.userInfo = JSON.parse(getSessionItem("currentUser"));
       apiUser
-        .GetDepartment()
+        .GetUserInfo(this.currentUser.PersonId)
         .then(res => {
           console.log("==", res);
-          if (res.status === 200) {
-            let departmentInfo = res.data.Data.Result;
-            let part = departmentInfo.filter(item => {
-              return item.iDeptID == this.userInfo.iDeptID;
-            });
-            this.cDepName = part[0].cDepName;
+          if (res.data.ErrCode === 0) {
+            let userInfo = res.data.Data[0];
+            this.userInfo = userInfo;
           } else {
-            mui.toast("获取部门信息失败！", { type: "div" });
+            mui.toast("获取用户信息失败！", { type: "div" });
           }
         })
         .catch(err => {
-          mui.toast("获取部门信息失败！", { type: "div" });
+          mui.toast("获取用户信息失败！", { type: "div" });
         });
     }
   },

@@ -78,7 +78,7 @@ export default {
     },
     // 当前用户id
     currentUserId() {
-      return this.currentUser.iAdminID;
+      return this.currentUser.PersonId;
     },
     todoOrderList() {
       return _.filter(this.orderList, ["Finish", 0]);

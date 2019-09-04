@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import _ from 'lodash'
+import BaseMap from "@JS/Map/BaseMap";
 import CoordsHelper from 'coordtransform'
+import nativeTransfer from "@JS/native/nativeTransfer";
 import {
     calcDistance,
     deepCopy,
@@ -42,13 +44,13 @@ let _lastPosition = null
 let _failedCount = 0
 
 export default class GeoLocator {
-    constructor() {}
+    constructor() { }
 
     static init(initConfig) {
         if (_state === 0) {
             _failedCount = 0
             return new Promise((resolve, reject) => {
-                if (window.plus && window.plus.geolocation) {
+                //if (window.plus && window.plus.geolocation) {
                     // 添加一系列设备相关的事件
                     document.addEventListener('pause', () => {
                         window.mui.toast('Pause')
@@ -68,9 +70,9 @@ export default class GeoLocator {
                     _state = 1
                     console.log(`GeoLocator: 初始化成功， 配置对象为： `, computedConfig)
                     resolve(JSON.parse(JSON.stringify(computedConfig)))
-                } else {
+                /*} else {
                     reject(new Error('GeoLocator: 不在html5+运行环境，初始化失败。'))
-                }
+                }*/
             })
         } else {
             console.warn(`GeoLocator: GeoLocator在其他地方已被初始化，配置对象为： `, computedConfig)
@@ -81,90 +83,91 @@ export default class GeoLocator {
         if (_state === 1 || _state === 3) {
             _failedCount = 0
             _taskId = window.setInterval(() => {
-                window.plus.geolocation.getCurrentPosition(({
-                    coords
-                }) => {
-                    // 坐标转换
-                    let coordsFor84 = CoordsHelper.gcj02towgs84(coords.longitude, coords.latitude)
-                    // 组装数据对象
-                    let timestamp = new Date();
-                    let position = {
-                        longitude: coordsFor84[0],
-                        latitude: coordsFor84[1],
-                        timestamp
-                    }
-                    console.log("%cGeoLocator: 获取到一次位置： ", 'color: green', position);
-                    // 判断位置是否超过约定范围
-                    let extent = {}
-                    if (computedConfig.extent.longitude &&
-                        computedConfig.extent.latitude &&
-                        computedConfig.extent.longitude.length === 2 &&
-                        computedConfig.extent.latitude.length === 2) {
-                        extent = computedConfig.extent
-                    }
-                    if (extent && !_.isEmpty(extent)) {
-                        // 有范围限定
-                        if (
-                            // position.longitude <= extent.longitude[1] &&
-                            // position.longitude >= extent.longitude[0] &&
-                            // position.latitude <= extent.latitude[1] &&
-                            // position.latitude >= extent.latitude[0]
-                            true
-                        ) {
-                            // 位置点在给定范围内
-                            console.log("%cGeoLocator: 位置点有效", 'color: green');
-                            // 判断该点是否合理
-                            if (!_lastPosition) {
-                                _lastPosition = position
-                                _failedCount = 0
-                                eventbus.$emit('geolocation', position)
-                            } else {
-                                let distanceForMeter = calcDistance(
-                                    position.longitude,
-                                    position.latitude,
-                                    _lastPosition.longitude,
-                                    _lastPosition.latitude,
-                                    6
-                                ) * 1000;
-                                // 最大阀值为15m/秒
-                                if (distanceForMeter <= 0.015 * computedConfig.interval) {
-                                    console.log("%cGeoLocator: 位置点合理 %s", 'color: green', distanceForMeter);
-                                    eventbus.$emit('geolocation', position)
+
+                nativeTransfer.getLocation(coords => {
+                    if (coords) {
+                        // 坐标转换+投影转换
+                        let coordsFor84 = CoordsHelper.gcj02towgs84(coords.lng, coords.lat)
+                        let mapController = new BaseMap();
+                        mapController.Init("event_map");
+                        coordsFor84 = mapController.destinationCoordinateProj(
+                            [coordsFor84[0], coordsFor84[1]]
+                        );
+
+                        // 组装数据对象
+                        let timestamp = new Date();
+                        let position = {
+                            longitude: coordsFor84[0],
+                            latitude: coordsFor84[1],
+                            timestamp
+                        }
+                        console.log("%cGeoLocator: 获取到一次位置： ", 'color: green', position);
+                        // 判断位置是否超过约定范围
+                        let extent = {}
+                        if (computedConfig.extent.longitude &&
+                            computedConfig.extent.latitude &&
+                            computedConfig.extent.longitude.length === 2 &&
+                            computedConfig.extent.latitude.length === 2) {
+                            extent = computedConfig.extent
+                        }
+                        if (extent && !_.isEmpty(extent)) {
+                            // 有范围限定
+                            if (
+                                // position.longitude <= extent.longitude[1] &&
+                                // position.longitude >= extent.longitude[0] &&
+                                // position.latitude <= extent.latitude[1] &&
+                                // position.latitude >= extent.latitude[0]
+                                true
+                            ) {
+                                // 位置点在给定范围内
+                                console.log("%cGeoLocator: 位置点有效", 'color: green');
+                                // 判断该点是否合理
+                                if (!_lastPosition) {
                                     _lastPosition = position
                                     _failedCount = 0
+                                    eventbus.$emit('geolocation', position)
                                 } else {
-                                    console.warn('GeoLocator: 位置点不合理: ', distanceForMeter)
-                                    _failedCount++
-                                    if (_failedCount === 3) {
-                                        GeoLocator.restart()
+                                    let distanceForMeter = calcDistance(
+                                        position.longitude,
+                                        position.latitude,
+                                        _lastPosition.longitude,
+                                        _lastPosition.latitude,
+                                        6
+                                    ) * 1000;
+                                    // 最大阀值为15m/秒
+                                    if (distanceForMeter <= 0.015 * computedConfig.interval) {
+                                        console.log("%cGeoLocator: 位置点合理 %s", 'color: green', distanceForMeter);
+                                        eventbus.$emit('geolocation', position)
+                                        _lastPosition = position
+                                        _failedCount = 0
+                                    } else {
+                                        console.warn('GeoLocator: 位置点不合理: ', distanceForMeter)
+                                        _failedCount++
+                                        if (_failedCount === 3) {
+                                            GeoLocator.restart()
+                                        }
                                     }
                                 }
+                            } else {
+                                console.warn('GeoLocator: 该位置点越界')
+                                _failedCount++
+                                if (_failedCount === 3) {
+                                    GeoLocator.restart()
+                                }
                             }
-                        } else {
-                            console.warn('GeoLocator: 该位置点越界')
-                            _failedCount++
-                            if (_failedCount === 3) {
-                                GeoLocator.restart()
-                            }
-                        }
 
+                        } else {
+                            // 无范围限定
+                            console.log("%cGeoLocator: 位置点有效且合理 %s", 'color: green');
+                            eventbus.$emit('geolocation', position)
+                        }
                     } else {
-                        // 无范围限定
-                        console.log("%cGeoLocator: 位置点有效且合理 %s", 'color: green');
-                        eventbus.$emit('geolocation', position)
+                        console.error('GeoLocator: 获取位置点出错: ', err)
+                        _failedCount++
+                        if (_failedCount === 3) {
+                            GeoLocator.restart()
+                        }
                     }
-                }, err => {
-                    console.error('GeoLocator: 获取位置点出错: ', err)
-                    _failedCount++
-                    if (_failedCount === 3) {
-                        GeoLocator.restart()
-                    }
-                }, {
-                    enableHighAccuracy: computedConfig.enableHighAccuracy,
-                    maximumAge: computedConfig.maximumAge,
-                    provider: computedConfig.provider,
-                    coordsType: computedConfig.coordsType,
-                    timeout: computedConfig.timeout
                 })
             }, computedConfig.interval)
             _state = 2

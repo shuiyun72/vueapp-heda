@@ -1,30 +1,30 @@
 <template>
-  <div class="water_quality_monitor_detail_container">
-    <div class="wq_charts_container">
-      <div class="header">
-        <i class="header_icon fas fa-lg fa-chart-line"></i>
-        <span>实时数据图表</span>
-      </div>
-      <div id="chart1" class="chart"></div>
-      <div id="chart2" class="chart"></div>
-      <div id="chart3" class="chart"></div>
+    <div class="water_quality_monitor_detail_container">
+        <div class="wq_charts_container">
+            <div class="header">
+                <i class='header_icon fas fa-lg fa-chart-line '></i>
+                <span>实时数据图表</span>
+            </div>
+            <div id="chart1" class="chart"></div>
+            <div id="chart2" class="chart"></div>
+            <div id="chart3" class="chart"></div>
+        </div>
+        <!-- 当前运行数据表格  -->
+        <div class="current_wq_container">
+            <div class="header">
+                <i class='header_icon fas fa-lg fa-list-ul'></i>
+                <span>监测点位数据</span>
+            </div>
+            <MuiList 
+                v-loading.fullscreen.lock="fullscreenLoading"
+                element-loading-text="正在调起地图应用..."
+                element-loading-spinner="el-icon-loading"
+                class="point_data_list"
+                :items="formattedPointDataForMuiList" 
+                @row-click="onRowIconClick"
+            ></MuiList>
+        </div>
     </div>
-    <!-- 当前运行数据表格  -->
-    <div class="current_wq_container">
-      <div class="header">
-        <i class="header_icon fas fa-lg fa-list-ul"></i>
-        <span>监测点位数据</span>
-      </div>
-      <MuiList
-        v-loading.fullscreen.lock="fullscreenLoading"
-        element-loading-text="正在调起地图应用..."
-        element-loading-spinner="el-icon-loading"
-        class="point_data_list"
-        :items="formattedPointDataForMuiList"
-        @row-click="onRowIconClick"
-      ></MuiList>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -44,8 +44,7 @@ import ChartBuilder from "@JS/charts/chart-builder";
 import * as ChartOption from "@JS/charts/chart-option";
 import { BuilderChart as CategoryBuilder } from "@JS/charts/category-option";
 import { deepCopy } from "@common/util";
-// 引入nativeTransfer.js
-import nativeTransfer from '@JS/native/nativeTransfer'
+import nativeTransfer from "@JS/native/nativeTransfer";
 
 const dataTableId = consts.dataTableId.water;
 
@@ -62,7 +61,7 @@ export default {
   },
   mounted() {
     console.log("水质详情参数", this.pointId, this.pointName);
-    this.$showLoading();
+    this.$showLoading()
     this.$eventbus.$emit("set-title", `水质详情 | ${this.pointName}`);
     this.fetchDataFieldList();
     this.fetchPointDataList();
@@ -217,9 +216,9 @@ export default {
             "chart3"
           );
           // 最好用Promise.all处理并行任务，这里暂时这样
-          setTimeout(() => {
-            this.$hideLoading();
-          }, 500);
+          setTimeout(()=>{
+            this.$hideLoading()
+          }, 500)
         });
     },
     onRowIconClick(row, index, event) {
@@ -227,64 +226,17 @@ export default {
         row.id === "DataPointName" &&
         this.pointData.DataMapX &&
         this.pointData.DataMapY
-      ) {
-        if (window.plus && window.plus.maps && window.plus.geolocation) {
-          this.fullscreenLoading = true;
-          window.plus.geolocation.getCurrentPosition(
-            position => {
-              let srcPoint = new plus.maps.Point(
-                position.coords.longitude,
-                position.coords.latitude
-              );
-              let destDesc = "目标点位";
-              let destPoint = new plus.maps.Point(
-                this.pointData.DataMapX,
-                this.pointData.DataMapY
-              );
-              window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-              this.fullscreenLoading = false;
-            },
-            err => {
-              this.fullscreenLoading = false;
-              window.mui.toast("定位失败，无法调起导航");
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 10000,
-              provider: "system",
-              coordsType: "wgs84"
-            }
-          );
-        //   nativeTransfer.getLocation(position => {
-        //     if (position) {
-        //       let srcPoint = new plus.maps.Point(
-        //         position.coords.longitude,
-        //         position.coords.latitude
-        //       );
-        //       let destDesc = "目标点位";
-        //       let destPoint = new plus.maps.Point(
-        //         this.pointData.DataMapX,
-        //         this.pointData.DataMapY
-        //       );
-        //       window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-        //       this.fullscreenLoading = false;
-        //     } else {
-        //       this.fullscreenLoading = false;
-        //       mui.toast("定位失败，无法调起导航");
-        //     }
-        //   });
-        // } else {
-        //   this.fullscreenLoading = false;
-        //   window.mui.toast("定位失败，无法调起导航");
-        // }
-        }
+      ) { 
+          nativeTransfer.startNavi(Number(this.pointData.DataMapX),Number(this.pointData.DataMapY), "", res=>{
+            
+          })     
       }
     }
   },
   components: {
     MuiList
   }
-}
+};
 </script>
 
 <style lang="less">

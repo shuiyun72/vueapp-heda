@@ -136,7 +136,7 @@ export default {
     },
     // 当前用户id
     currentUserId() {
-      return this.currentUser.iAdminID;
+      return this.currentUser.PersonId;
     },
     // 当前记录的流程缩写，返回QJ/BY/JY
     currentFlowNameAbbr() {
@@ -321,10 +321,10 @@ export default {
         // GroupID: uuid(),
         // Title: frontendFormData.title,
         // SenderID: this.currentUserId,
-        // SenderName: this.currentUser.cAdminName,
+        // SenderName: this.currentUser.PersonName,
         SenderTime: dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
         // ReceiveID: this.currentUserId,
-        // ReceiveName: this.currentUser.cAdminName,
+        // ReceiveName: this.currentUser.PersonName,
         ReceiveTime: dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
         OpenTime: dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
         Status: 1

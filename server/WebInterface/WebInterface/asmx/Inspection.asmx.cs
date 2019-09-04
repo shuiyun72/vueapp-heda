@@ -46,6 +46,19 @@ namespace WebInterface.asmx
     {
       return Data_Inspection_Dal.User_CheckLogin(name, pwd, smid);
     }
+    /// App和达用户登录验证
+    /// <summary>
+    /// App用户登录验证
+    /// </summary>
+    /// <param name="name">登录名</param>
+    /// <param name="pwd">登录密码</param>
+    /// <param name="smid">机器识别码</param>
+    /// <returns>System.String.</returns>
+    [WebMethod]
+    public string HdUser_Check(string name)
+    {
+      return Data_Inspection_Dal.User_CheckLogin(name, "", "");
+    }
     /// 下载巡检人员的任务
     /// </summary>
     /// <param name="id">巡检人员ID</param>

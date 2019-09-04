@@ -1,37 +1,41 @@
 <template>
-  <div class="pressure_monitor_detail_container">
-    <!-- 当前运行数据饼图  -->
-    <div class="current_pressure_container">
-      <div class="header">
-        <i class="header_icon fas fa-lg fa-chart-pie"></i>
-        <span>当前运行数据</span>
-      </div>
-      <div id="NPChart" style="width: 100%;height: 215px;" class="chart_container"></div>
+    <div class="pressure_monitor_detail_container">
+        <!-- 当前运行数据饼图  -->
+        <div class="current_pressure_container">
+            <div class="header">
+                <i class='header_icon fas fa-lg fa-chart-pie '></i>
+                <span>当前运行数据</span>
+            </div>
+            <div id="NPChart" style="width: 100%;height: 215px;" class="chart_container"></div>
+        </div>
+        <!-- 压力实时曲线折线图 -->
+        <div class="wChart-Div" style="width: 100%; height: 335px;">
+            <div class="header">
+                <i class='header_icon fas fa-lg fa-chart-line '></i>
+                <span>压力实时曲线</span>
+            </div>
+            <div id="realtime_pressure_chart" 
+                class="chart_container" 
+                style="height: 300px; width: 100%;"
+            >
+            </div>
+        </div>
+        <!-- 当前点位数据列表  -->
+        <div class="physic_point_container">
+            <div class="header">
+                <i class='header_icon fas fa-lg fa-list-ul'></i>
+                <span>监测点位数据</span>
+            </div>
+            <MuiList 
+                v-loading.fullscreen.lock="fullscreenLoading"
+                element-loading-text="正在调起地图应用..."
+                element-loading-spinner="el-icon-loading"
+                class="point_data_list"
+                :items="formattedPointDataForMuiList" 
+                @row-click="onRowIconClick"
+            ></MuiList>
+        </div>
     </div>
-    <!-- 压力实时曲线折线图 -->
-    <div class="wChart-Div" style="width: 100%; height: 335px;">
-      <div class="header">
-        <i class="header_icon fas fa-lg fa-chart-line"></i>
-        <span>压力实时曲线</span>
-      </div>
-      <div id="realtime_pressure_chart" class="chart_container" style="height: 300px; width: 100%;"></div>
-    </div>
-    <!-- 当前点位数据列表  -->
-    <div class="physic_point_container">
-      <div class="header">
-        <i class="header_icon fas fa-lg fa-list-ul"></i>
-        <span>监测点位数据</span>
-      </div>
-      <MuiList
-        v-loading.fullscreen.lock="fullscreenLoading"
-        element-loading-text="正在调起地图应用..."
-        element-loading-spinner="el-icon-loading"
-        class="point_data_list"
-        :items="formattedPointDataForMuiList"
-        @row-click="onRowIconClick"
-      ></MuiList>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -49,8 +53,7 @@ import ChartBuilder from "@JS/charts/chart-builder";
 import * as ChartOption from "@JS/charts/chart-option";
 import MuiList from "@comp/common/MuiList";
 import { deepCopy } from "@common/util";
-// 引入nativeTransfer.js
-import nativeTransfer from '@JS/native/nativeTransfer'
+import nativeTransfer from "@JS/native/nativeTransfer";
 
 const dataTableId = consts.dataTableId.pressure;
 
@@ -68,7 +71,7 @@ export default {
   mounted() {
     console.log("压力详情参数", this.pointId, this.pointName);
     this.$eventbus.$emit("set-title", `压力详情 | ${this.pointName}`);
-    this.$showLoading();
+    this.$showLoading()
     this.initPhysicPointData();
     // 当前状态饼图
     this.initCurrentPressureChart();
@@ -184,9 +187,9 @@ export default {
             "fa-line-chart"
           );
           chart.BuildLineChart(chartOption);
-          setTimeout(() => {
-            this.$hideLoading();
-          }, 500);
+          setTimeout(()=>{
+            this.$hideLoading()
+          },500)
         });
     },
     fetchPhysicPointData({
@@ -223,10 +226,14 @@ export default {
         this.pointData.DataMapX &&
         this.pointData.DataMapY
       ) {
-        if (window.plus && window.plus.maps && window.plus.geolocation) {
+        nativeTransfer.startNavi(Number(this.pointData.DataMapX),Number(this.pointData.DataMapY), "", res=>{
+          console.log(res)
+        })
+
+        /*if (window.plus && window.plus.maps && window.plus.geolocation) {
           this.fullscreenLoading = true;
-          window.plus.geolocation.getCurrentPosition(
-            position => {
+          nativeTransfer.getLocation(position => {
+            if(position){
               let srcPoint = new plus.maps.Point(
                 position.coords.longitude,
                 position.coords.latitude
@@ -236,43 +243,21 @@ export default {
                 this.pointData.DataMapX,
                 this.pointData.DataMapY
               );
-              window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
+              nativeTransfer.startNavi(Number(this.pointData.DataMapX),Number(this.pointData.DataMapY), "", res=>{
+                console.log(res)
+              })
+              //window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
               this.fullscreenLoading = false;
-            },
-            err => {
-              this.fullscreenLoading = false;
+            }else{
+               this.fullscreenLoading = false;
               window.mui.toast("定位失败，无法调起导航");
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 10000,
-              provider: "system",
-              coordsType: "wgs84"
+            }
             }
           );
-        //   nativeTransfer.getLocation(position => {
-        //     if (position) {
-        //       let srcPoint = new plus.maps.Point(
-        //         position.coords.longitude,
-        //         position.coords.latitude
-        //       );
-        //       let destDesc = "目标点位";
-        //       let destPoint = new plus.maps.Point(
-        //         this.pointData.DataMapX,
-        //         this.pointData.DataMapY
-        //       );
-        //       window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-        //       this.fullscreenLoading = false;
-        //     } else {
-        //       this.fullscreenLoading = false;
-        //       window.mui.toast("定位失败，无法调起导航");
-        //     }
-        //   });
-        // } else {
-        //   this.fullscreenLoading = false;
-        //   window.mui.toast("定位失败，无法调起导航");
-        // }
-        }
+        } else {
+          this.fullscreenLoading = false;
+          window.mui.toast("定位失败，无法调起导航");
+        }*/
       }
     }
   },

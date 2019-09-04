@@ -48,7 +48,7 @@
         >
           <template slot-scope="scope">
             <i class="el-icon-time"></i>
-            <span style="margin-left:2px">{{ scope.row.date }}</span>
+            <span style="margin-left: 10px">{{ scope.row.date }}</span>
           </template>
         </el-table-column>
         <el-table-column label="签到" align="center">
@@ -116,20 +116,19 @@ import {
   setLocalItem,
   deepCopy
 } from "@common/util";
+import BaseMap from "@JS/Map/BaseMap";
 import CoordsHelper from "coordtransform";
 import Timer from "@common/timer";
 import dateHelper from "@common/dateHelper";
 import { calcDistance } from "@common/util";
 import SignInDetail from "@comp/attendance/SignInDetail";
 import apiInspection from "@api/inspection";
-// 引入nativeTransfer.js
-import nativeTransfer from '@JS/native/nativeTransfer'
 
 import PositionUploader from "@JS/position-uploader/PositionUploader";
+import nativeTransfer from "@JS/native/nativeTransfer";
+
 export default {
   created() {},
-  mounted() {
-  },
   beforeRouteEnter(to, from, next) {
     // 进入该路由的钩子函数，可通过next回调函数拿到组件的实例对象引用
     next(instance => {
@@ -153,50 +152,7 @@ export default {
         instance.dateValueFormat
       );
       instance.lastSelectedDate = instance.selectedDate;
-      instance.fetchAttendanceRecords();
-      if(window.plus){
-        window.mui.plusReady(() => {
-          window.plus.geolocation.getCurrentPosition(
-            position => {
-              console.warn("=====考勤管理定位成功", position);
-              // 坐标转换
-              let coordsFor84 = CoordsHelper.gcj02towgs84(
-                position.coords.longitude,
-                position.coords.latitude
-              );
-              position.longitude = coordsFor84[0];
-              position.latitude = coordsFor84[1];
-              instance.locationInfo = deepCopy(position);
-            },
-            err => {
-              console.warn("=====考勤管理定位错误", err);
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 5000,
-              timeout: 10000,
-              provider: "baidu",
-              coordsType: "gcj02"
-            }
-          );
-          });
-        }else{
-          nativeTransfer.getLocation(position => {
-          if (position) {
-            console.warn("=====考勤管理定位成功", position);
-            // 坐标转换
-            let coordsFor84 = CoordsHelper.gcj02towgs84(
-              position.lng,
-              position.lat
-            );
-            position.longitude = coordsFor84[0];
-            position.latitude = coordsFor84[1];
-            instance.locationInfo = deepCopy(position);
-          } else {
-            console.warn("=====考勤管理定位错误", err);
-          }
-        });
-        }
+      instance.fetchAttendanceRecords();  
     });
   },
   data() {
@@ -216,7 +172,9 @@ export default {
       // 签到表格数据
       tableData: [],
       // 当前（今天）出勤状态 （0：为签到  1：已签到未签退   2：已签退）
-      state: 0
+      state: 0,
+      //当前位置获取状态 0 为为获取 1为已获取
+      TransferStatu:0
     };
   },
   computed: {
@@ -243,17 +201,18 @@ export default {
       };
     },
     currentAddressText() {
-      let addr = this.locationInfo.address;
+      let addr = this.locationInfo;
       return addr instanceof Object
-        ? addr.poiName || this.locationInfo.addresses || "获取位置信息失败"
-        : "定位中...";
+        ? addr.poiName || this.locationInfo.addr || "定位中..."
+        : "获取位置信息失败";
     },
     // 签到按钮可用状态
     isSignInButtonEnabled() {
+      console.log(this.locationInfo)
       return (
         this.locationInfo &&
-        this.locationInfo.longitude &&
-        this.locationInfo.latitude &&
+        this.locationInfo.lng&&
+        this.locationInfo.lat &&
         this.state < 2
       );
     },
@@ -263,20 +222,20 @@ export default {
       let xy = "";
       if (
         this.locationInfo &&
-        this.locationInfo.longitude &&
-        this.locationInfo.latitude
+        this.locationInfo.lng &&
+        this.locationInfo.lat
       ) {
-        xy = `${this.locationInfo.longitude},${this.locationInfo.latitude}`;
+        xy = `${this.locationInfo.lng},${this.locationInfo.lat}`;
       }
       // 请求数据
       let data = {
-        Lwr_PersonId: this.currentUser.iAdminID,
+        Lwr_PersonId: this.currentUser.PersonId,
         Lwr_BeiZhu: "",
         Lwr_GpsStatus: "",
         Lwr_MobileStatus: "",
         Lwr_Power: "",
         Lwr_XY: xy,
-        DeptId: this.currentUser.iDeptID
+        DeptId: this.currentUser.DeptId
       };
       console.log("resAtt", data);
       return data;
@@ -284,42 +243,79 @@ export default {
     // 获取考勤记录接口的请求数据
     reqGetAttendanceRecords() {
       return {
-        iAdminID: this.currentUser.iAdminID,
-        startTime: this.selectedDate + "-01",
-        endTime: this.selectedDate + "-31"
+        PersonId: this.currentUser.PersonId,
+        DateStartStr: this.selectedDate + "-01",
+        DateEndStr: this.selectedDate + "-31"
       };
     }
   },
+  mounted() {   
+    //获取位置信息
+    this.getLocation(); 
+    console.log("11111+getLocation")
+  },
   methods: {
+    //获取位置信息
+    getLocation(){
+      console.log("diaoyon//获取位置信息")
+      
+      let position = JSON.parse(getSessionItem("coordsMsg"));
+      if (position) {
+        console.warn("=====考勤管理定位成功", position);
+        // 坐标转换
+        let coordsFor84 = CoordsHelper.gcj02towgs84(
+          position.lng,
+          position.lat
+        );
+        //初始化地图
+        let mapController = new BaseMap();
+        mapController.Init("event_map");
+        //转换为地方坐标
+        coordsFor84 = mapController.destinationCoordinateProj(coordsFor84);
+        position.lng = coordsFor84[0];
+        position.lat = coordsFor84[1];
+        this.locationInfo = deepCopy(position); 
+        this.TransferStatu  = 1;       
+      } else {
+        console.warn("=====考勤管理定位错误");
+      }
+      let _this = this; 
+      let TransferTimer = setTimeout(function(){
+        if(this.TransferStatu == 0){
+          _this.getLocation();  
+        }else{
+          TransferTimer = null;
+          clearTimeout(TransferTimer)
+        }
+      },2000)
+    },
     // 获取考勤记录数据
     fetchAttendanceRecords() {
       // 发送请求
       apiInspection
         .GetAttendanceRecords(this.reqGetAttendanceRecords)
         .then(res => {
-          if (res.data.Flag) {
-            let records = res.data.Data.Result;
+          if (res.data.result === true) {
+            let records = res.data.Data;
             console.log("gaga", records);
             // 处理原数据，得到table接收的数据格式
             let mappedRecords = records.map(record => {
               return {
-                date: record.Date.split("T")[0],
-                startTime: record.work_start ? record.work_start.split("T")[1] : "",
-                endTime: record.work_over ? record.work_over.split("T")[1]:"",
-                personStatus: record.Pos,
-                comments: record.Lwr_BeiZhu || ""
+                date: record.Lwr_Date,
+                startTime: record.Lwr_StartTime.split(" ")[1],
+                endTime: record.Lwr_EndTime.split(" ")[1],
+                personStatus: record.Lwr_PersonStatus,
+                comments: record.Lwr_BeiZhu
               };
             });
             // 将数据写进table
             this.tableData = mappedRecords;
-            console.log("!(mappedRecords[0].endTime)--315",!(mappedRecords[0].endTime))
             // 计算当前的考勤状态
             if (
-              dateHelper.format(new Date(), "yyyy-MM-dd") ==
+              dateHelper.format(new Date(), "yyyy-MM-dd") ===
               mappedRecords[0].date
             ) {
-               console.log("!(mappedRecords[0].endTime)--321",!(mappedRecords[0].endTime))
-              if (mappedRecords[0].startTime && !(mappedRecords[0].endTime) ) {
+              if (mappedRecords[0].startTime === mappedRecords[0].endTime) {
                 this.state = 1;
                 window.SIGN_STATUS = 1;
               } else if (
@@ -367,8 +363,8 @@ export default {
           this.lastSelectedDate = currentMonth;
         }
         apiInspection.SubmitAttendance(this.reqSubmitAttendance).then(res => {
-          if (res.data.Flag) {
-            mui.toast(res.data.Msg);
+          if (res.data.result === true) {
+            mui.toast(res.data.message);
             // 启动/关闭上传位置任务
             if (this.state === 0) {
               // 开启

@@ -16,8 +16,8 @@
               <li><span class="list_item_label">开始时间：</span><span class="list_item_content">{{order.VisitStarTime}}</span></li>
               <li><span class="list_item_label">结束时间：</span><span class="list_item_content">{{order.VisitOverTime}}</span></li>
               <!-- <li><span class="list_item_label">任务类型：</span><span class="list_item_content">{{order.VisitOverTime}}</span></li> -->
-              <li><span class="list_item_label">任务类型：</span><span class="list_item_content">{{order.BoolNormalPlan || '常规'}}</span></li>
-              <li><span class="list_item_label">是否需要反馈：</span><span class="list_item_content">{{order.BoolFeedBack}}</span></li>
+              <li><span class="list_item_label">任务类型：</span><span class="list_item_content">常规</span></li>
+              <li><span class="list_item_label">是否需要反馈：</span><span class="list_item_content">{{order.BoolFeedBack | mapNeedFeedback}}</span></li>
             </div>
             <div class="right"><span class="el-icon el-icon-arrow-right"></span></div>
           </div>
@@ -39,8 +39,8 @@
               <li><span class="list_item_label">开始时间：</span><span class="list_item_content">{{order.VisitStarTime}}</span></li>
               <li><span class="list_item_label">结束时间：</span><span class="list_item_content">{{order.VisitOverTime}}</span></li>
               <!-- <li><span class="list_item_label">任务类型：</span><span class="list_item_content">{{order.VisitOverTime}}</span></li> -->
-              <li><span class="list_item_label">任务类型：</span><span class="list_item_content">{{order.BoolNormalPlan || '常规'}}</span></li>
-              <li><span class="list_item_label">是否需要反馈：</span><span class="list_item_content">{{order.BoolFeedBack}}</span></li> 
+              <li><span class="list_item_label">任务类型：</span><span class="list_item_content">常规</span></li>
+              <li><span class="list_item_label">是否需要反馈：</span><span class="list_item_content">{{order.BoolFeedBack | mapNeedFeedback}}</span></li>
             </div>
             <div class="right"><span class="el-icon el-icon-arrow-right"></span></div>
           </div>
@@ -84,10 +84,10 @@ export default {
     },
     // 当前用户id
     currentUserId() {
-      return this.currentUser.iAdminID;
+      return this.currentUser.PersonId;
     },
     todoOrderList() {
-      return _.filter(this.orderList, ["AssignState", 1]);
+      return _.filter(this.orderList, ["Finish", 0]);
     },
     doneOrderList() {
       return _.filter(this.orderList, ["Finish", 1]);
@@ -102,9 +102,9 @@ export default {
       apiInspection
         .GetMissionList(userId, currentDayDate)
         .then(res => {
-          if (res.data.Flag) {
-            let orderList = res.data.Data.Result;
-            console.log(orderList);
+          if (res.data.result === true) {
+            let orderList = res.data.Data;
+            console.table(orderList);
             if (callback instanceof Function) {
               callback(null, orderList);
             }
@@ -128,8 +128,7 @@ export default {
           mode: "patrol",
           taskId: order.TaskId,
           taskName: order.TaskName,
-          taskType: order.PlanTypeName === "路线巡检" ? "path" : "area",
-          feedBack: order.BoolFeedBack === "仅到位" ? "1" : "2"
+          taskType: order.PlanTypeName === "路线巡检" ? "path" : "area"
         }
       });
     }

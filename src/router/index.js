@@ -1,11 +1,63 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from '@pages/Index'
 import Login from '@pages/Login'
-import Test from '@pages/Test'
-import FeaturePage from '@pages/FeaturePage'
+import Index from '@pages/Index'
 
-import {
+/*import Test from '@pages/Test'
+import FeaturePage from '@pages/FeaturePage'*/
+
+const Test = ()=>import("@pages/Test")
+const FeaturePage = ()=>import("@pages/FeaturePage")
+
+const CompanyInfoIndex = ()=>import("@pages/features/CompanyInfo/Index.vue")
+const CompanyInfoHome = ()=>import("@pages/features/CompanyInfo/CompanyInfoHome")
+const CompanyInfoList = ()=>import("@pages/features/CompanyInfo/CompanyInfoList")
+const CompanyInfoDetail = ()=>import("@pages/features/CompanyInfo/CompanyInfoDetail")
+
+const OATodoIndex = ()=>import("@pages/features/OAManager/OATodoIndex")
+const OADoneIndex = ()=>import("@pages/features/OAManager/OADoneIndex")
+const OATodoList = ()=>import("@pages/features/OAManager/OATodoList")
+const OATodoDetail = ()=>import("@pages/features/OAManager/OATodoDetail")
+const OADoneList = ()=>import("@pages/features/OAManager/OADoneList")
+const OADoneDetail = ()=>import("@pages/features/OAManager/OADoneDetail")
+const OAPublisherIndex = ()=>import("@pages/features/OAPublisher")
+
+const SelfTaskManagerIndex = ()=>import("@pages/features/SelfTaskManager/Index.vue")
+const SelfTaskManagerList = ()=>import("@pages/features/SelfTaskManager/SelfTaskManagerList")
+const SelfTaskManagerDetail = ()=>import("@pages/features/SelfTaskManager/SelfTaskManagerDetail")
+const StateSummary = ()=>import("@pages/features/StateSummary")
+const ProcessMonitor = ()=>import("@pages/features/ProcessMonitor")
+const DutyLog = ()=>import("@pages/features/DutyLog/DutyLog")
+
+const StatisticIndex = ()=>import("@pages/features/Statistic/Index.vue")
+const StatisticQuery = ()=>import("@pages/features/Statistic/Query")
+const StatisticDetail = ()=>import("@pages/features/Statistic/Detail")
+const PressureMonitorIndex = ()=>import("@pages/features/PressureMonitor/Index.vue")
+const PressureMonitorList = ()=>import("@pages/features/PressureMonitor/PressureMonitorList")
+const PressureMonitorDetail = ()=>import("@pages/features/PressureMonitor/PressureMonitorDetail")
+const FlowMonitorIndex = ()=>import("@pages/features/FlowMonitor/Index.vue")
+const FlowMonitorList = ()=>import("@pages/features/FlowMonitor/FlowMonitorList")
+const FlowMonitorDetail = ()=>import("@pages/features/FlowMonitor/FlowMonitorDetail")
+const WaterQualityMonitorIndex = ()=>import("@pages/features/WaterQualityMonitor/Index.vue")
+const WaterQualityMonitorList = ()=>import("@pages/features/WaterQualityMonitor/WaterQualityMonitorList")
+const WaterQualityMonitorDetail = ()=>import("@pages/features/WaterQualityMonitor/WaterQualityMonitorDetail")
+const DMAMonitorIndex = ()=>import("@pages/features/DMAMonitor/Index.vue")
+const DMAMonitorList = ()=>import("@pages/features/DMAMonitor/DMAMonitorList")
+const DMAStatistic = ()=>import("@pages/features/DMAMonitor/DMAStatistic")
+
+const OrderDetail = ()=>import("@pages/features/OrderDetail")
+const OrderAssignment = ()=>import("@pages/features/OrderAssignment")
+const OrderHandler = ()=>import("@pages/features/OrderHandler")
+const PatrolMission = ()=>import("@pages/features/PatrolMission")
+const RepairOrders = ()=>import("@pages/features/RepairOrders")
+const EventSubmission = ()=>import("@pages/features/EventSubmission/EventForm")
+const Setting = ()=>import("@pages/features/Setting")
+//const Map = () =>import("@pages/features/GIS/Map")
+const Attendance = () =>import("@pages/features/Attendance")
+const ConservationMission = () =>import("@pages/features/ConservationMission")
+const AccountCenter = () =>import("@pages/features/AccountCenter")
+
+/*import {
   CompanyInfoIndex,
   CompanyInfoHome,
   CompanyInfoList,
@@ -49,7 +101,9 @@ import {
   EventSubmission,
   AccountCenter,
   Setting
-} from '@pages/features'
+} from '@pages/features'*/
+
+import { Map } from "@pages/features";
 
 import {
   setSessionItem,
@@ -64,6 +118,7 @@ import Timer from "@common/timer";
 import dateHelper from "@common/dateHelper";
 
 import PositionUploader from "@JS/position-uploader/PositionUploader";
+//const PositionUploader = () =>import("@JS/position-uploader/PositionUploader")
 
 Vue.use(Router)
 
@@ -72,24 +127,27 @@ let fetchRepairOrdersTaskId = 'fetch_repair_orders'
 // 初始化定时上传定位任务
 function initUploadPositionTask(cb) {
   let currentUser = JSON.parse(getSessionItem('currentUser'))
-  // 发送请求、
+  console.log("初始化定时上传定位任务接口",currentUser)
+  // 发送请求
+  if(currentUser.PersonId){
   apiInspection
     .GetAttendanceRecords({
-      iAdminID: currentUser.iAdminID,
-      startTime: dateHelper.format(new Date(), "yyyy-MM") + "-01",
-      endTime: dateHelper.format(new Date(), "yyyy-MM") + "-31"
+      PersonId: currentUser.PersonId,
+      DateStartStr: dateHelper.format(new Date(), "yyyy-MM") + "-01",
+      DateEndStr: dateHelper.format(new Date(), "yyyy-MM") + "-31"
     })
     .then(res => {
-      if (res.data.Flag) {
-        let records = res.data.Data.Result;
+      console.log("// 初始化定时上传定位任务 index 83行",res)
+      if (res.data.result === true) {
+        let records = res.data.Data;
         console.log("gaga", records);
         let mappedRecords = records.map(record => {
           return {
-            date: record.Date.split("T")[0],
-            startTime: record.work_start.split("T")[1],
-            endTime: record.work_over.split("T")[1],
-            personStatus: record.Pos,
-            comments: record.Lwr_BeiZhu || ""
+            date: record.Lwr_Date,
+            startTime: record.Lwr_StartTime.split(" ")[1],
+            endTime: record.Lwr_EndTime.split(" ")[1],
+            personStatus: record.Lwr_PersonStatus,
+            comments: record.Lwr_BeiZhu
           };
         });
 
@@ -119,6 +177,7 @@ function initUploadPositionTask(cb) {
       console.log('router api err!!', err)
       cb(false)
     });
+  }
 }
 
 
@@ -526,8 +585,7 @@ const router = new Router({
             mode: route.query.mode,
             taskId: route.query.taskId,
             taskName: route.query.taskName,
-            taskType: route.query.taskType,
-            feedBack: route.query.feedBack
+            taskType: route.query.taskType
           }),
           meta: {
             requireAuth: true,
@@ -635,29 +693,29 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   // 重置mui的导航条后退逻辑
-  Vue.prototype.$revertDefaultDeviceBack()
+   Vue.prototype.$revertDefaultDeviceBack()
 
 
-  // 读取sessionStorage中的token信息
-  let token = JSON.parse(getSessionItem('currentUser'))
-  // 将要去的url是否需要token？
-  if (to.meta.requireAuth === true) { // 需要token
-    // 如果token存在， 继续跳转
-    if (token) {
-      next()
-    } else {
-      // 否则重定向到Login页面
-      next({
-        path: '/login',
-        query: {
-          redirect: to.fullPath
-        }
-      })
-    }
-  } else { // 将要去的url不需要token，完成跳转
-    next()
-  }
-
+  // // 读取sessionStorage中的token信息
+  // let token = JSON.parse(getSessionItem('currentUser'))
+  // // 将要去的url是否需要token？
+  // if (to.meta.requireAuth === true) { // 需要token
+  //   // 如果token存在， 继续跳转
+  //   if (token) {
+  //     next()
+  //   } else {
+  //     // 否则重定向到Login页面
+  //     next({
+  //       path: '/login',
+  //       query: {
+  //         redirect: to.fullPath
+  //       }
+  //     })
+  //   }
+  // } else { // 将要去的url不需要token，完成跳转
+    
+  // }
+  next()
   // 如果目标路径是登录页，则清空sessionStorage
   if (to.path === '/login' || to.name === 'Login') {
     setSessionItem('currentUser', null)
@@ -668,25 +726,34 @@ router.beforeEach((to, from, next) => {
     let bodyDOM = window.document.body
     window.scrollbarState = [bodyDOM.scrollLeft, bodyDOM.scrollTop]
   }
+
+  console.log("initUploadPositionTask---初始化位置上传任务")
+  if( getSessionItem('currentUser') != null && getSessionItem('currentUser') != "null" ){
+    initUploadPositionTask((result) => {
+      console.log('初始化位置上传任务', result ? '成功' : '失败')
+    })
+  }
 })
 
 router.afterEach((to, from) => {
-  console.log('to', to)
-  console.log('from', from)
+  console.log('afterEach--to', to)
+  console.log('afterEach--toName', to.name)
+  console.log('afterEach--from', from)
 
   // 关闭全局loading
   if (Vue.prototype.$hideLoading instanceof Function) {
     Vue.prototype.$hideLoading()
   }
 
-  if (to.name === 'Index' && from.name === 'Login') {
+  if (to.name === 'Index' && getSessionItem("currentUser") != null && getSessionItem("currentUser") != "null") {
     let currentUser = JSON.parse(getSessionItem("currentUser"))
     let currentUserId = currentUser.PersonId
     let status = 1;
     // 第一次登录
     // 设置定时器轮询维修工单任务数据
-    /*let repairOrdersFetcher = new Timer(fetchRepairOrdersTaskId)
+    let repairOrdersFetcher = new Timer(fetchRepairOrdersTaskId)
     repairOrdersFetcher.set(() => {
+      if(currentUserId && status){
       apiMaintain
         .GetOrderList(currentUserId, status)
         .then(res => {
@@ -698,18 +765,18 @@ router.afterEach((to, from) => {
         .catch(err => {
           console.log(`定时请求维修工单出错：`, err)
         });
-
-    }, 5000)*/
+      } 
+    }, 5000)
     // 设置定时上传位置任务
-    window.plus && initUploadPositionTask((result) => {
-      console.log('初始化位置上传任务', result ? '成功' : '失败')
-    })
+    // window.plus && initUploadPositionTask((result) => {
+    //   console.log('初始化位置上传任务', result ? '成功' : '失败')
+    // })
   }
 
   if (to.name === 'Login' && from.name) {
     // 退出登录
     // 关闭定时器
-   // Timer.clear(fetchRepairOrdersTaskId)
+    Timer.clear(fetchRepairOrdersTaskId)
     PositionUploader.stop()
   }
 

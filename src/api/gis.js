@@ -33,7 +33,7 @@ export default {
             'poi_v': keyword
         }
         return instance.post('/SearchForPOI', qs.stringify(data), {
-            baseURL: 'http://47.104.3.68:9922/asmx/GIS.asmx/',
+            baseURL: 'http://218.0.0.33:9923/asmx/GIS.asmx/',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'

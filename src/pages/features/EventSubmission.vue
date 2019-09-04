@@ -1,50 +1,45 @@
 <template>
-  <div class="event_submission_container">
-    <MuiList
-      :items="items"
-      @row-click="onRowClick"
-      v-loading.fullscreen="isLoading"
-      :element-loading-text="fullscreenLoadingText"
-    >
-      <span :slot="descSlotName">
-        <el-input
-          name="detailDescription"
-          type="textarea"
-          :autosize="{minRows: 5, maxRows: 7}"
-          v-model="detailDescription"
-          placeholder="请输入详细描述"
-          @focus="onDescInputFocus"
-          style="width: 120%;"
-        ></el-input>
-      </span>
-    </MuiList>
-    <div
-      style="width: 100%;"
-      v-loading="pictureUploaderLoading"
-      element-loading-text="正在生成预览..."
-      element-loading-spinner="el-icon-loading"
-      element-loading-background="rgba(0, 0, 0, 0.8)"
-    >
-      <PictureUploaderPlus
-        :uploadLimit="uploadLimit"
-        @change="onUploaderChange"
-        @captured="pictureUploaderLoading = true"
-        ref="uploader"
-        class="picture_uploader"
-      ></PictureUploaderPlus>
-      <div class="button_group_container">
-        <el-button @click="onCameraButtonClick" class="camerat_button custom_bgcolor_dark">
-          <i class="fas fa-camera" style="margin-right: 5px;"></i>拍 &nbsp;&nbsp;&nbsp;&nbsp; 照
-        </el-button>
-        <el-button
-          @click="onSubmitButtonClick"
-          :disabled="!allFieldsValid || !currentAddressText"
-          class="submit_button custom_bgcolor_light"
-          icon="el-icon-upload"
-        >上 &nbsp;&nbsp;&nbsp;&nbsp; 传</el-button>
-      </div>
+    <div class="event_submission_container">
+        <MuiList 
+            :items="items" 
+            @row-click="onRowClick" 
+            v-loading.fullscreen="isLoading" 
+            :element-loading-text="fullscreenLoadingText"
+        >
+            <span :slot="descSlotName">
+                <el-input 
+                    name="detailDescription"
+                    type="textarea"
+                    :autosize="{minRows: 5, maxRows: 7}"
+                    v-model="detailDescription"
+                    placeholder="请输入详细描述"
+                    @focus="onDescInputFocus"
+                    style="width: 120%;"
+                ></el-input>
+            </span>
+        </MuiList>
+        <div 
+            style="width: 100%;"
+            v-loading="pictureUploaderLoading"
+            element-loading-text="正在生成预览..."
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="rgba(0, 0, 0, 0.8)"
+        >
+            <PictureUploaderPlus 
+                :uploadLimit="uploadLimit" 
+                @change="onUploaderChange" 
+                @captured="pictureUploaderLoading = true"
+                ref="uploader"
+                class="picture_uploader"
+            ></PictureUploaderPlus>
+            <div class="button_group_container">
+                <el-button @click="onCameraButtonClick"
+                    class="camerat_button custom_bgcolor_dark"><i class="fas fa-camera" style="margin-right: 5px;"></i>拍 &nbsp;&nbsp;&nbsp;&nbsp; 照</el-button>      
+                <el-button @click="onSubmitButtonClick" :disabled="!allFieldsValid || !currentAddressText"
+                    class="submit_button custom_bgcolor_light" icon="el-icon-upload">上 &nbsp;&nbsp;&nbsp;&nbsp; 传</el-button>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -54,8 +49,6 @@ import PictureUploaderPlus from "@comp/common/PictureUploaderPlus.vue";
 import dateHelper from "@common/dateHelper";
 import encodeHelper from "@common/encodeHelper";
 import apiInspection from "@api/inspection";
-// 引入nativeTransfer.js
-import nativeTransfer from '@JS/native/nativeTransfer'
 // lodash是一个js函数库
 import _ from "lodash";
 import {
@@ -252,15 +245,18 @@ export default {
       }
       // 定位
       window.mui.plusReady(() => {
-        window.plus.geolocation.getCurrentPosition(
-          location => {
+        nativeTransfer.getLocation(location => {
+          if(location){
             console.log("事件上报， location ", location);
             // 坐标转换
             let coordsFor84 = CoordsHelper.gcj02towgs84(
-              location.coords.longitude,
-              location.coords.latitude
+              location.lng,
+              location.lat
             );
-
+            //转换为地方坐标
+            coordsFor84 = this.mapController.destinationCoordinateProj(
+              coordsFor84
+            );
             location.longitude = coordsFor84[0];
             location.latitude = coordsFor84[1];
             instance.locationInfo = deepCopy(location);
@@ -270,7 +266,10 @@ export default {
             });
             // 填入当前定位信息
             locationItem.content = instance.currentAddressText;
-          },
+          }else{
+            mui.toast("获取当前位置失败");
+          }
+        }/*,
           err => {},
           {
             enableHighAccuracy: true,
@@ -278,30 +277,8 @@ export default {
             timeout: 10000,
             provider: "baidu",
             coordsType: "gcj02"
-          }
+          }*/
         );
-        // nativeTransfer.getLocation(location => {
-        //   if (location) {
-        //     console.log("事件上报， location ", location);
-        //     // 坐标转换
-        //     let coordsFor84 = CoordsHelper.gcj02towgs84(
-        //       location.coords.longitude,
-        //       location.coords.latitude
-        //     );
-
-        //     location.longitude = coordsFor84[0];
-        //     location.latitude = coordsFor84[1];
-        //     instance.locationInfo = deepCopy(location);
-        //     // 从items配置项中找到date项
-        //     let locationItem = _.find(instance.items, item => {
-        //       return item.id === "location";
-        //     });
-        //     // 填入当前定位信息
-        //     locationItem.content = instance.currentAddressText;
-        //   } else {
-        //     mui.toast("获取当前位置失败");
-        //   }
-        // });
       });
       // 如果是非临时，根据路由参数设置当前事件上报选择的任务
       if (instance.isTemp == 0) {
@@ -451,8 +428,8 @@ export default {
         Y: this.locationInfo.latitude.toString(),
         Longitude: this.locationInfo.longitude.toString(),
         Latitude: this.locationInfo.latitude.toString(),
-        PersonId: this.currentUser.iAdminID,
-        DeptId: this.currentUser.iDeptID,
+        PersonId: this.currentUser.PersonId,
+        DeptId: this.currentUser.DeptId,
         // 只能上传一张图片
         // 格式化原始的base64字符串为后端能接受的base64格式
         Base64Image: this.pictureListStr,
@@ -512,7 +489,7 @@ export default {
           // 非临时上报时，任务名称从路由参数获得
           if (this.isTemp == 1) {
             // 请求任务列表
-            let currentUserId = this.currentUser.iAdminID;
+            let currentUserId = this.currentUser.PersonId;
             let currentDayDate = dateHelper.format(new Date(), "yy-MM-dd");
             apiInspection
               .GetMissionList(currentUserId, currentDayDate)
@@ -664,7 +641,8 @@ export default {
           if (pickedItem.value !== this.pickerValue.eventType.value) {
             _.find(this.items, item => {
               return item.id === "eventContent";
-            }).content = "";
+            }).content =
+              "";
           }
         }
         this.pickerValue[row.id] = pickedItem;

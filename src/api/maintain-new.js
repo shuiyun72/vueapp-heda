@@ -1,30 +1,20 @@
 import axios from 'axios'
 import qs from 'querystring'
-import config from '@config/config.js'
+import config from '../../config/config.js'
 // axios.defaults.withCredentials = true
 const instance = axios.create({
-    baseURL: config.apiPath.inspection,
-    //解决跨域
-    crossDomain:true,
-    timeout: 30000,
-    //转换res为json
-    responseType: 'json',
+  baseURL: config.apiPath.maintainNew,
+  timeout: 30000,
+  // 该函数指定响应数据进行的预处理，return的值会填到response.data
+  //   transformResponse: function (resXmlData) {
+  //     // 将相应数据从xml格式转换为js Object，返回值即为then回调中的res.data
+  //     let parser = new window.DOMParser()
+  //     let xmlDoc = parser.parseFromString(resXmlData, 'text/xml')
+  //     let jsonStr = xmlDoc.getElementsByTagName('string')[0].innerHTML
+  //     let parsedResData = JSON.parse(jsonStr)
+  //     return parsedResData
+  //   }
 });
-
-// request拦截器
-instance.interceptors.request.use(
-    config => {
-        // 每次发送请求之前检测都vuex存有token,那么都要放在请求头发送给服务器
-        if (1) {
-          config.headers.Token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVc2VySWQiOjEsIlVzZXJOYW1lIjoiYWRtaW4iLCJFeHBpcmVUaW1lIjoiMjAxOS0wNS0yOFQxMDowMTo0MC41NjYyMjI0KzA4OjAwIiwiSVAiOiIifQ.WCPR9mXenLrizGVGITHWWG4-PybJ9BK34pTnDclUxSQ'
-        }
-    
-        return config
-    },
-    err => {
-    return Promise.reject(err)
-    }
-)
 
 export default {
   GetInstance() {
@@ -83,11 +73,11 @@ export default {
     })
   },
   // 分派工单
-  AssignOrder(personId, eventId, deptId) {
+  AssignOrder(iAdminId, eventId, deptId,personId) {
     return instance.get('/WorkList.ashx', {
       params: {
         Oper: 'WordListAssignForAPP',
-        iAdminID: personId,
+        iAdminID: iAdminId,
         EventID: eventId,
         PersonId: personId,
         DeptId: deptId,

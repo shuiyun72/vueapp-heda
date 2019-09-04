@@ -36,7 +36,7 @@ let positionCallback = position => {
                 last.latitude,
                 6
             ) * 1000;
-            if (distanceForMeter <= 200) {
+            if (distanceForMeter <= 2000000) {
                 // pass
             } else {
                 _checkValidationArr.splice(0, arrLen)
@@ -73,7 +73,7 @@ let positionCallback = position => {
             console.log('Uploader: 定位稳定性测试已通过')
         } else {
             // 验证已完成，定位趋于稳定，直接上传
-            console.log("Uploader: 准备上传位置");
+            console.log("Uploader: 准备上传位置----");
             let args = [
                 position.longitude,
                 position.latitude,
@@ -82,16 +82,15 @@ let positionCallback = position => {
                 // isOnline默认为1
                 1
             ]
-            //上传位置
             apiInspection.UploadLocation(...args).then(res => {
                     if (res.data.result === true) {
-                        console.log("Uploader: 上传位置成功", res);
+                        console.log("UploadLocation: 上传位置成功", res);
                     } else {
-                        console.log("Uploader: 上传位置失败", err);
+                        console.log("UploadLocation: 上传位置失败", err);
                     }
                 })
                 .catch(err => {
-                    console.log("Uploader: 上传位置失败", err);
+                    console.log("UploadLocation: 上传位置失败", err);
                 });
         }
 

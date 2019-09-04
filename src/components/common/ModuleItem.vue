@@ -1,7 +1,8 @@
 <template>
-  <div class="module_item" :class="currentClass" @tap="enabled && $emit('click')" :style="{display: enabled ? 'block' : 'none'}">
+  <div class="module_item" :class="currentClass" @tap="enabled && $emit('click')">
     <li 
-        class="mui-table-view-cell"      
+        class="mui-table-view-cell" 
+        :style="{display:enabled ? 'block' : 'none'}"
     >
       <div class="module_item-part">
         <!-- 图片与图标不共存，图片优先级高 -->

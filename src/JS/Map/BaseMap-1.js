@@ -399,8 +399,7 @@ BaseMap.prototype.enableGeolocation = function (actionType) {
 
                 this.map.addLayer(this.geolocationLayer);
 
-                this.watchId = window.plus.geolocation.watchPosition(
-                    position => {
+                this.watchId = nativeTransfer.getLocation(position => {
                         let coordinates = position.coords;
                         // console.log('Coords, ', coordinates)
                         if (
@@ -428,17 +427,17 @@ BaseMap.prototype.enableGeolocation = function (actionType) {
                                     coordinates.latitude
                                 ]); //平移地图
                         }
-                    },
-                    err => {
-                        console.log("geo err!!!!!", err);
-                    }, {
-                        enableHighAccuracy: true,
-                        maximumAge: 1100,
-                        timeout: 5000,
-                        // provider: 'system',
-                        // coordsType: 'wgs84',
-                        provider: 'baidu'
                     }
+                    // err => {
+                    //     console.log("geo err!!!!!", err);
+                    // }, {
+                    //     enableHighAccuracy: true,
+                    //     maximumAge: 1100,
+                    //     timeout: 5000,
+                    //     // provider: 'system',
+                    //     // coordsType: 'wgs84',
+                    //     provider: 'baidu'
+                    // }
                 );
                 console.log(`开启监听成功，watchId `, this.watchId)
             }

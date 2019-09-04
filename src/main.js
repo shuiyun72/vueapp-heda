@@ -55,6 +55,8 @@ import 'ol/ol.css'
   let defaultBack = mui.back;
   // 定制设备返回键事件处理逻辑
   Vue.prototype.$defineDeviceBack = function (callback) {
+   // console.error(11111)
+
     mui.back = () => {
       callback(defaultBack)
     }
@@ -120,9 +122,18 @@ import GeoLocator from "@JS/geolocator/GeoLocator";
 // 版本管理
 import VersionManager from '@JS/version-manager'
 if (window.mui) {
-  window.mui.plusReady(() => {
+
+    // 初始化GeoLocator
+    GeoLocator.init({
+      extent: AppConfig.locationExtent || {}
+    })
+    .then(GeoLocator.start)
+    .catch(err => {
+      console.log(`开启定位服务失败 `, err);
+    });
+
     // 监测版本
-    VersionManager.CheckUpdate().then((haveNewVersion) => {
+    /*VersionManager.CheckUpdate().then((haveNewVersion) => {
       if (haveNewVersion) {
         // 弹出框，选择是否更新
         plus.nativeUI.confirm("检测到新版本,是否更新?", (e) => {
@@ -146,16 +157,9 @@ if (window.mui) {
           }
         })
       }
-    })
-    // 初始化GeoLocator
-    GeoLocator.init({
-        extent: AppConfig.locationExtent || {}
-      })
-      .then(GeoLocator.start)
-      .catch(err => {
-        console.log(`开启定位服务失败 `, err);
-      });
-  });
+    })*/
+    
+ 
 }
 
 

@@ -87,7 +87,7 @@ export default {
     },
     // 当前用户id
     currentUserId() {
-      return this.currentUser.iAdminID;
+      return this.currentUser.PersonId;
     },
     // 当前记录的流程缩写，返回QJ/BY/JY
     currentFlowNameAbbr() {

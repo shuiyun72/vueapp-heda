@@ -65,7 +65,7 @@
               <span class="list_item_label addr_span">
                 <span
                   class="list_item_icon fas fa-map-marker-alt position_icon"
-                  style="color: lightgreen;"
+                  :style="{color: isChangeColor?'lightgreen':'#333'}"
                 ></span>
                 <span
                   class="address_info"
@@ -212,13 +212,15 @@
   </div>
 </template>
 <script>
-import _ from "lodash";
 import config from "@config/config";
 import { getSessionItem } from "@common/util";
 import apiMaintain from "@api/maintain";
+import apiMaintainNew from "@api/maintain-new";
 import OrderActionsDialog from "@comp/order-detail/OrderActionsDialog.vue";
-// 引入nativeTransfer.js
-import nativeTransfer from '@JS/native/nativeTransfer'
+import BaseMap from "@JS/Map/BaseMap";
+import CoordsHelper from "coordtransform";
+import nativeTransfer from "@JS/native/nativeTransfer";
+
 export default {
   props: {
     oriOrderInfo: [Object, String]
@@ -253,11 +255,8 @@ export default {
           }
         });
       }
-      
+      instance.refreshOrderDetail();
     });
-  },
-  created(){
-     this.refreshOrderDetail();
   },
   mounted() {
     // 实例化picker组件
@@ -298,7 +297,7 @@ export default {
     },
     // 当前用户id
     currentUserId() {
-      return this.currentUser.iAdminID;
+      return this.currentUser.PersonId;
     },
     // 当前订单id
     currentOrderId() {
@@ -313,20 +312,21 @@ export default {
       return this.currentUserId === this.orderInfo.ExecPersonId
     },
     pictureList() {
-      return _.pull(this.splitPicturesStr(this.orderInfo.EventPictures),"");
+      return this.splitPicturesStr(this.orderInfo.EventPictures);
     },
     orderOperState() {
       return Number(this.orderInfo.OperId);
+    },
+    isChangeColor(){
+      return this.orderInfo.EventX
     }
   },
   methods: {
     refreshOrderDetail() {
-      apiMaintain.GetEventDetailInfo(this.oriOrderInfo.EventID).then(res => {
+      apiMaintainNew.GetEventDetailInfo(this.oriOrderInfo.EventID).then(res => {
         console.log("刷新工单详情信息res", res);
-        if (res.data.Flag) {
+        if (res.data.ErrCode == 0) {
           let detailInfo = res.data.Data[0];
-          detailInfo = _.assignIn({},this.oriOrderInfo,detailInfo);
-          console.log(detailInfo)
           this.orderInfo = detailInfo;
         }
       });
@@ -357,19 +357,18 @@ export default {
       apiMaintain
         .GetDepartmentList()
         .then(res => {
-          if (res.data.Flag) {
+          if (res.data.result === true) {
             // // 打开事件分派dialog
             // this.assignDialogVisiable = true;
-            let listData = res.data.Data.Result;
+            let listData = res.data.data;
             this.openPicker(
               listData,
               {
-                valueKey: "iDeptID",
-                textKey: "cDepName"
+                valueKey: "DeptId",
+                textKey: "DeptName"
               },
               pickedItem => {
                 this.assignPickerValue.department = pickedItem;
-                console.log(this.assignPickerValue.department)
               }
             );
           } else {
@@ -392,13 +391,13 @@ export default {
         apiMaintain
           .GetStaffList(currentPickedDepartment)
           .then(res => {
-            if (res.data.Flag) {
-              let listData = res.data.Data.Result;
+            if (res.data.result === true) {
+              let listData = res.data.data;
               this.openPicker(
                 listData,
                 {
-                  valueKey: "iAdminID",
-                  textKey: "cAdminName"
+                  valueKey: "personId",
+                  textKey: "personName"
                 },
                 pickedItem => {
                   this.assignPickerValue.person = pickedItem;
@@ -421,7 +420,7 @@ export default {
         mui.toast("请输入回复消息");
       } else {
         // 调用回复接口
-        apiMaintain
+        apiMaintainNew
           .PostReplyMessage(
             this.replyMessage,
             this.currentUserId,
@@ -449,20 +448,16 @@ export default {
         mui.toast("请输入退回消息");
       } else {
         // 调用退回接口
-        //EventID, iAdminID, BackDesc,PersonId,DeptId
-        apiMaintain
+        apiMaintainNew
           .RejectOrder(
-            this.orderInfo.EventID,
-            this.currentUserId,
             this.rejectMessage,
-            this.orderInfo.ExecPersonId,
-            this.orderInfo.DeptId 
+            this.currentUserId,
+            this.orderInfo.EventID
           )
           .then(res => {
             console.log("退回接口res", res);
-            if (res.data.Flag) {
+            if (res.data.ErrCode == 0) {
               mui.toast("退回成功！");
-              this.$router.go(-1);
               this.actionDialogVisible.reject = false;
               // 刷新详情
               this.refreshOrderDetail();
@@ -482,7 +477,7 @@ export default {
         this.assignPickerValue.person.value
       ) {
         // 调用分派接口
-        apiMaintain
+        apiMaintainNew
           .AssignOrder(
             this.currentUserId,
             this.orderInfo.EventID,
@@ -491,10 +486,9 @@ export default {
           )
           .then(res => {
             console.log("分派！！", res);
-            if (res.data.Flag) {
+            if (res.data.ErrCode == 0) {
               mui.toast("分派成功！");
               this.actionDialogVisible.assign = false;
-              this.$router.go(-1);
               // 刷新详情
               this.refreshOrderDetail();
             } else {
@@ -511,7 +505,7 @@ export default {
     // 审核
     onCheckOrderButtonClick() {
       this.$showLoading();
-      apiMaintain
+      apiMaintainNew
         .CheckOrder(
           this.currentUserId,
           this.orderInfo.EventID,
@@ -535,7 +529,7 @@ export default {
     },
     // 延期确认
     onCheckDelayButtonClick() {
-      apiMaintain
+      apiMaintainNew
         .GetDelayInfo(this.orderInfo.EventID, this.orderInfo.OrderId)
         .then(res => {
           this.$showLoading();
@@ -546,7 +540,7 @@ export default {
           let eventId = data.EventID;
           let orderId = data.OrderId;
           let desc = data.Cause;
-          apiMaintain
+          apiMaintainNew
             .CheckOrderDelay(personId, eventId, orderId, time)
             .then(res => {
               console.log("延期确认res", res);
@@ -566,39 +560,76 @@ export default {
             });
         });
     },
-    onAddrRowClick() {
+    GCJ02ToBD09(lng,lat){
+        let x_pi = 3.14159265358979324 * 3000.0 / 180.0;
+        let x = lng;
+        let y = lat;
+        let z =Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
+        let theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
+        let putlng = z * Math.cos(theta) + 0.0065;
+        let putlat = z * Math.sin(theta) + 0.006;
+        return [putlng,putlat];
+    },
+
+    onAddrRowClick() {  
       // 调用百度地图app导航
       if (this.orderInfo.EventX && this.orderInfo.EventY) {
-        if (window.plus && window.plus.maps && window.plus.geolocation) {
+        //初始化地图
+        let mapController = new BaseMap();
+        mapController.Init("event_map");
+        //地方投影转换
+        let coordinateFenghua = mapController.unDestinationCoordinateProj(
+          [Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)]
+        );
+        coordinateFenghua = CoordsHelper.wgs84togcj02(
+          coordinateFenghua[0],
+          coordinateFenghua[1]
+        );
+        nativeTransfer.startNavi(Number(coordinateFenghua[0]),Number(coordinateFenghua[1]), "", res=>{
+          console.log(res)
+        })
+        /*if (window.plus && window.plus.maps && window.plus.geolocation) {
           this.$showLoading();
-          window.plus.geolocation.getCurrentPosition(
-            position => {
+          console.log("onAddrRowClick--1")
+          nativeTransfer.getLocation(position => {
+             console.log("onAddrRowClick--2")
+              console.log(position)
+            if(position){
+               console.log("onAddrRowClick--3")
               let srcPoint = new plus.maps.Point(
-                position.coords.longitude,
-                position.coords.latitude
+                position.lng,
+                position.lat
               );
+
+              //初始化地图
+              let mapController = new BaseMap();
+              mapController.Init("event_map");
+              //地方投影转换
+              let coordinateFenghua = mapController.unDestinationCoordinateProj(
+                [Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)]
+              );
+              // coordinateFenghua = CoordsHelper.wgs84togcj02(
+              //   coordinateFenghua[0],
+              //   coordinateFenghua[1]
+              // );               
+              //coordinateFenghua = this.GCJ02ToBD09(coordinateFenghua[0],coordinateFenghua[1])
               let destDesc = "目标设备";
               let destPoint = new plus.maps.Point(
-                Number(this.orderInfo.EventX),
-                Number(this.orderInfo.EventY)
+                coordinateFenghua[0],
+                coordinateFenghua[1]
               );
-              window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
+              console.log("onAddrRowClick--nativeTransfer")
+              nativeTransfer.startNavi(Number(coordinateFenghua[0]),Number(coordinateFenghua[1]), "", res=>{
+                console.log(res)
+              })
+              //window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
               this.$hideLoading();
-            },
-            err => {
+            }else{
               this.$hideLoading();
               window.mui.toast("定位失败，无法调起导航");
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 10000,
-              provider: "system",
-              coordsType: "wgs84"
             }
-          );
-        }else{
-          nativeTransfer.startNavi(this.orderInfo.EventX, this.orderInfo.EventY, "");
-        }
+          });
+        }*/
       }
     },
 
@@ -696,7 +727,8 @@ export default {
         .addr_span {
           display: flex;
           .position_icon {
-            margin-right: 2%;
+            margin-right: 4px;
+            margin-top:3px;
           }
         }
         .list_item_label {
