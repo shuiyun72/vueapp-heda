@@ -2,16 +2,14 @@
 export default {
   apiPath: {
     // 用户相关
-    //user: 'http://47.104.3.68:9819/api',
-    user: 'http://192.168.88.181:8087/api',
+    //user: 'http://192.168.88.181:8087/api',
+    user: 'http://114.98.235.14:9819/api',
     // 巡检养护
-    //inspection: 'http://218.0.0.33:9923/asmx/Inspection.asmx',
-    inspection: 'http://192.168.88.181:8087/api',
-    //inspection: 'http://47.104.3.68:9819/api',
+    //inspection: 'http://192.168.88.181:8087/api',
+    inspection: 'http://114.98.235.14:9819/api',
     //inspection: 'http://39.100.62.29:9819/api',
-    //maintain: 'http://218.0.0.33:9923/asmx/Mantain.asmx',
     maintain: 'http://39.100.62.29:9819/api',
-    maintainNew: 'http://218.0.0.33:9921/Smart_Mantain/WebPages/EventManage/WebAPI',
+    maintain:'http://114.98.235.14:9819/api',
     gis: 'http://218.0.0.33:9921/GisWeb/PipeManage/GetGisData.aspx',
     //monitor&company为监控类api 巡检可以不用
     monitor: 'http://218.0.0.33:9922/MonitorAPI/api',
