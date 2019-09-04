@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd">
+<!-- Created by SVGDeveloper 1.0 -->
+<svg width="1750" height="808" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <image id="background" x="0" y="0" width="100%" height="100%" xlink:href="./Images/ganzhumiaodiaodu.gif" />
+
+  <text id="GZM_F_LJ_1_77_3" titlename="奉化累计流量" DataTableID="77" DataPointID="3"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="12%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    奉化累计流量
+  </text>
+  <text id="GZM_F1_DAY1_77_3" titlename="奉化日累计流量" DataTableID="77" DataPointID="3" EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="20%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    奉化日累计流量
+  </text>
+
+  <text id="GZM_F_LJ_2_77_4" titlename="康巴什累计流量" DataTableID="77" DataPointID="4"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="12%" y="15%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    康巴什累计流量
+  </text>
+  <text id="GZM_F2_DAY1_77_4" titlename="康巴什日累计流量" DataTableID="77" DataPointID="4"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="20%" y="15%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    康巴什日累计流量
+  </text>
+
+  <text id="GZM_F_LJ_4_77_2" titlename="配水厂进水北累计流量" DataTableID="77" DataPointID="2"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="12%" y="18.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    配水厂进水北累计流量
+  </text>
+  <text id="GZM_F4_DAY1_77_2" titlename="配水厂进水北日累计流量" DataTableID="77" DataPointID="2"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="20%" y="18.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    配水厂进水北日累计流量
+  </text>
+
+  <text id="GZM_F_LJ_3_77_1" titlename="配水厂进水南累计流量" DataTableID="77" DataPointID="1"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="12%" y="22.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    配水厂进水南累计流量
+  </text>
+  <text id="GZM_F3_DAY1_77_1" titlename="配水厂进水南日累计流量" DataTableID="77" DataPointID="1" EQType="1"  style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="20%" y="22.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    配水厂进水南日累计流量
+  </text>
+
+  <text id="ddzx_F_LJ_77_5" titlename="康巴什供水累计流量" DataTableID="77" DataPointID="5"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="37.5%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    康巴什供水累计流量
+  </text>
+  <text id="ddzx_F_DAY1_77_5" titlename="康巴什供水日累计流量" DataTableID="77" DataPointID="5"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="37.5%" y="15%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    康巴什供水日累计流量
+  </text>
+
+  <text id="GZM_F_4_77_2" titlename="配水厂进水北瞬时流量" DataTableID="77" DataPointID="2"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="16%" y="39.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    北瞬时流量
+  </text>
+  <text id="GZM_F_3_77_1" titlename="配水厂进水南瞬时流量" DataTableID="77" DataPointID="1"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="16.3%" y="72.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    南瞬时流量
+  </text>
+
+  <text id="GZM_L_1_77_8" titlename="液位1" DataTableID="77" DataPointID="8"  EQType="3" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="23.5%" y="35.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    液位1
+  </text>
+  <text id="GZM_L_1_77_8_1" titlename="液位1" DataTableID="77" DataPointID="8"  EQType="3" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="23.5%" y="75.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    液位1复制品
+  </text>
+
+  <text id="GZM_fa_ao_2_77_2" titlename="配水厂进水北阀门设定开度" DataTableID="77" DataPointID="2"  EQType="5"  OpcPointName="ZHSW3:opc.GZM_fa_ao_2"  style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.SetValve(this)" x="35%" y="31%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    配水厂进水北阀门设定开度
+  </text>
+
+  <text id="GZM_fa_ai_2_77_2" titlename="配水厂进水北阀门开度" DataTableID="77" DataPointID="2"  EQType="5" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="35.5%" y="52.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    配水厂进水北阀门开度
+  </text>
+
+  <text id="GZM_fa_ao_1_77_1" titlename="配水厂进水南阀门设定开度" DataTableID="77" DataPointID="1"  EQType="5" OpcPointName="ZHSW3:opc.GZM_fa_ao_1"  style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.SetValve(this)" x="35.5%" y="62%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    配水厂进水南阀门设定开度
+  </text>
+
+  <text id="GZM_fa_ai_1_77_1" titlename="配水厂进水南阀门开度" DataTableID="77" DataPointID="1"  EQType="5" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="35.5%" y="83.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    配水厂进水南阀门开度
+  </text>
+
+  <text id="GZM_F_2_77_4" titlename="康巴什" DataTableID="77" DataPointID="4"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="45%" y="41.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    康巴什
+  </text>
+  <text id="GZM_F_1_77_3" titlename="奉化" DataTableID="77" DataPointID="3"  EQType="1"  style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="45%" y="72.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    奉化
+  </text>
+
+  <text id="ddzx_F_77_5" titlename="康巴什瞬时流量" DataTableID="77" DataPointID="5"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="69%" y="40.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    康巴什瞬时流量
+  </text>
+  <text id="ddzx_P_77_5" titlename="康巴什压力" DataTableID="77" DataPointID="5"  EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="75.5%" y="40.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    康巴什压力
+  </text>
+
+  <text id="ddxz_control_77_5" titlename="调度室至康巴什阀门设定开度" DataTableID="77" DataPointID="5"  EQType="5" OpcPointName="ZHSW5:opc.ddxz_control"  style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.SetValve(this)" x="84%" y="30.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    调度室至康巴什阀门设定开度
+  </text>
+
+  <text id="ddzx_fankui_77_5" titlename="调度室至康巴什阀门开度" DataTableID="77" DataPointID="5"  EQType="5" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="84%" y="52%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    调度室至康巴什阀门开度
+  </text>
+
+  <text id="jyf_in_77_10" titlename="康巴什空港压力1" DataTableID="77" DataPointID="10"  EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="59.3%" y="83.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    康巴什空港压力1
+  </text>
+  <text id="jyf_out_77_10" titlename="康巴什空港压力1" DataTableID="77" DataPointID="10"  EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="53.3%" y="83.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    康巴什空港压力2
+  </text>
+</svg>

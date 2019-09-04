@@ -1,0 +1,17 @@
+{
+  "dist/index.html": {
+    "resources": [
+      "dist/static/css/fontawesome-all.min.css",
+      "dist/static/css/button.css",
+      "dist/static/js/vendor.a20dbb46e737b7c5d0a6.js",
+      "dist/static/js/manifest.3ad1d5771e9b13dbdad2.js",
+      "dist/static/js/mui.js",
+      "dist/static/css/mui.min.css",
+      "dist/static/css/app.1576096f913abf54dc5c02ccc45daa96.css",
+      "dist/static/sicon/sfont.css",
+      "dist/static/js/vendor.f7a734fadb5711185203.js",
+      "dist/static/css/app.c36bfd85ba706343ea81ae2a33d475f9.css",
+      "dist/static/js/vendor.25e9ff45df14750fc48f.js"
+    ]
+  }
+}

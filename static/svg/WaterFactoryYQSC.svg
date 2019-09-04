@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd">
+<!-- Created by SVGDeveloper 1.0 -->
+<svg width="1750" height="808" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <image id="background" x="0" y="0" width="100%" height="100%" xlink:href="./Images/yiqishuichang.gif" />
+  <text id="variable_69_75_1" titlename="圣圆供水瞬时" DataTableID="75" DataPointID="1"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="15%" y="39%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    圣圆供水
+  </text>
+  <text id="variable_114_75_2" titlename="万益供水瞬时" DataTableID="75" DataPointID="2"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="15%" y="58%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    万益供水
+  </text>
+  <text id="variable_12_75_3" titlename="甘珠庙一期瞬时" DataTableID="75" DataPointID="3"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="15%" y="76%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    甘珠庙一期
+  </text>
+  <text id="variable_157_75_6" titlename="调节池1" DataTableID="75" DataPointID="6"  EQType="3" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="30%" y="40%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    调节池1
+  </text>
+  <text id="variable_33_75_7" titlename="调节池2" DataTableID="75" DataPointID="7"  EQType="3" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="30%" y="68%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    调节池2
+  </text>
+  <text id="variable_22_75_8" titlename="电机1HZ" DataTableID="75" DataPointID="8"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="62%" y="8%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    电机1HZ
+  </text>
+  <text id="variable_105_75_8" titlename="电机1 电流" DataTableID="75" DataPointID="8"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="62%" y="12.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    电机1 电流
+  </text>
+  <image id="variable_105_75_8_1" x="51.9%" y="10%" width="51px" height="55px" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <text id="variable_21_75_9" titlename="电机2HZ" DataTableID="75" DataPointID="9"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="62%" y="28.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    电机2HZ
+  </text>
+  <text id="variable_104_75_9" titlename="电机2 电流" DataTableID="75" DataPointID="9"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="62%" y="33.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    电机2 电流
+  </text>
+  <image id="variable_104_75_9_1" x="51.9%" y="32.5%" width="51px" height="55px"  xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <text id="variable_20_75_10" titlename="电机3HZ" DataTableID="75" DataPointID="10" EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="62%" y="48.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    电机3HZ
+  </text>
+  <text id="variable_103_75_10" titlename="电机3 电流" DataTableID="75" DataPointID="10"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="62%" y="53.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    电机3 电流
+  </text>
+  <image id="variable_103_75_10_1" x="51.7%" y="52.5%" width="51px" height="55px" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <text id="variable_19_75_11" titlename="备用 HZ" DataTableID="75" DataPointID="11"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="62%" y="68.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    备用 HZ
+  </text>
+  <text id="variable_102_75_11" titlename="备用 电流" DataTableID="75" DataPointID="11"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="62%" y="73.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    备用 电流
+  </text>
+  <image id="variable_102_75_11_1" x="51.9%" y="71.7%" width="51px" height="55px" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <text id="variable_88_75_5" titlename="600压力" DataTableID="75" DataPointID="5" EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="72%" y="33%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    600压力
+  </text>
+  <text id="variable_66_75_5" titlename="600瞬时流量" DataTableID="75" DataPointID="5"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="81.5%" y="36%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    600流量
+  </text>
+
+  <text id="variable_3_75_5" titlename="600阀门开度设定" DataTableID="75" DataPointID="5" EQType="5" OpcPointName="ZHSW1:opc.variable_3"  style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.SetValve(this)" x="85.5%" y="26%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    600阀门开度设定
+  </text>
+
+  <text id="variable_8_75_4" titlename="600阀门开度" DataTableID="75" DataPointID="4"  EQType="5" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="85.5%" y="48%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    600阀门开度
+  </text>
+  <text id="variable_158_75_4" titlename="700流量瞬时" DataTableID="75" DataPointID="4"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="77%" y="82%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    700流量
+  </text>
+
+  <text id="variable_2_75_4" titlename="700阀门开度设定" DataTableID="75" DataPointID="4" EQType="5" OpcPointName="ZHSW1:opc.variable_2"  style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.SetValve(this)" x="85.5%" y="72.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    700阀门开度设定
+  </text>
+
+  <text id="variable_11_75_5" titlename="700阀门开度" DataTableID="75" DataPointID="5" EQType="5" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="85.5%" y="94%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    700阀门开度
+  </text>
+
+  <text id="variable_32_75_1" titlename="圣圆供水累计" DataTableID="75" DataPointID="1" EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="17%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    圣圆供水累计
+  </text>
+
+  <text id="variable_28_75_1" titlename="圣圆日供水累计" DataTableID="75" DataPointID="1" EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="29%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    圣圆日供水累计
+  </text>
+
+  <text id="variable_31_75_2" titlename="万益供水累计" DataTableID="75" DataPointID="2" EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="17%" y="15%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    万益供水累计
+  </text>
+
+  <text id="variable_27_75_2" titlename="万益日供水累计" DataTableID="75" DataPointID="2" EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="29%" y="15%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    万益日供水累计
+  </text>
+
+  <text id="variable_23_75_3" titlename="甘珠庙一期累计" DataTableID="75" DataPointID="3" EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="17%" y="18.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    甘珠庙一期累计
+  </text>
+  <text id="variable_24_75_3" titlename="甘珠庙一期日累计" DataTableID="75" DataPointID="3" EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="29%" y="18.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    甘珠庙一期日累计
+  </text>
+
+  <text id="variable_30_75_4" titlename="600流量累计" DataTableID="75" DataPointID="4"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="17%" y="22.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    600流量累计
+  </text>
+  <text id="variable_26_75_4" titlename="600流量日累计" DataTableID="75" DataPointID="4"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="29%" y="22.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    600流量日累计
+  </text>
+
+  <text id="variable_29_75_5" titlename="700流量累计" DataTableID="75" DataPointID="5"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="17%" y="26.4%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    700流量累计
+  </text>
+  <text id="variable_25_75_5" titlename="700流量日累计" DataTableID="75" DataPointID="5"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="29%" y="26.4%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    700流量累计
+  </text>
+
+</svg>

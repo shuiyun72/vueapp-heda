@@ -1,0 +1,16 @@
+[{
+    "label": "主管道无水",
+    "value": 1
+  }, {
+    "label": "表故障",
+    "value": 2
+  }, {
+    "label": "跑水",
+    "value": 3
+  }, {
+    "label": "墙头漏水",
+    "value": 4
+  }, {
+    "label": "需要物业处理",
+    "value": 5
+  }]

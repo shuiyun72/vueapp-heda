@@ -1,0 +1,5 @@
+2018-07-19 10:00:43.3501 INFO 测试数据信息！
+2018-07-19 10:41:55.8788 INFO 事件上报接口第一条SQL：set xact_abort off begin tran insert into M_Event(EventCode,EventAddress,UpTime,PersonId,EventTypeId,EventTypeId2,EventFromId,UrgencyId
+                                                                  ,HandlerLevelId,EventPictures,EventDesc,EventX,EventY,EventUpdateTime,IsValid,Devicesmid,DeptId,DevicesType,TaskId)values(
+                                                                   (select 'XJ'+convert(varchar(50),(18*10000000+isnull(MAX(eventid),0)+1)) from M_Event),'1','2018-07-19','1','1','1','3','1','1','','1','1','1','2018-07-19','1','1','1','testName','1')  commit tran 
+2018-07-19 10:41:55.9426 INFO 事件上报接口第一条SQL输出结果：1

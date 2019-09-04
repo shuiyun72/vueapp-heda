@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd">
+<!-- Created by SVGDeveloper 1.0 -->
+<svg width="1750" height="808" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <image id="background" x="0" y="0" width="100%" height="100%" xlink:href="./Images/ganzhumiaoyuanshui.png" />
+  <text id="variable_139_78_1" titlename="1#电压" DataTableID="78" DataPointID="1"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="11%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    1#电压
+  </text>
+  <text id="variable_87_78_1" titlename="1#电流" DataTableID="78" DataPointID="1"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="11%" y="16%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    1#电流
+  </text>
+  <image id="variable_172_78_1" x="12.5%" y="18.3%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="129"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_87_78_1_2" x="4%" y="8.3%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_11_78_2" titlename="2#电压" DataTableID="78" DataPointID="2"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="25%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    2#电压
+  </text>
+  <text id="variable_130_78_2" titlename="2#电流" DataTableID="78" DataPointID="2"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="25%" y="16%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    2#电流
+  </text>
+  <image id="variable_199_78_2" x="26.2%" y="18.3%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="130"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_130_78_2_2" x="18%" y="8.3%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_1_78_3" titlename="4#电压" DataTableID="78" DataPointID="3"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="39%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    4#电压
+  </text>
+  <text id="variable_120_78_3" titlename="4#电流" DataTableID="78" DataPointID="3"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="39%" y="16%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    4#电流
+  </text>
+  <image id="variable_221_78_3" x="40%" y="18.3%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="132"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_120_78_3_2" x="31.5%" y="8.3%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  
+  <text id="variable_66_78_4" titlename="5#电压" DataTableID="78" DataPointID="4"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="52%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    5#电压
+  </text>
+  <text id="variable_162_78_4" titlename="5#电流" DataTableID="78" DataPointID="4"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="52%" y="16%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    5#电流
+  </text>
+  <image id="variable_216_78_4" x="53.5%" y="18.3%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="133"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_162_78_4_2" x="45%" y="8.3%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_55_78_5" titlename="6#电压" DataTableID="78" DataPointID="5"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="66%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    6#电压
+  </text>
+  <text id="variable_155_78_5" titlename="6#电流" DataTableID="78" DataPointID="5"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="66%" y="16%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    6#电流
+  </text>
+  <image id="variable_211_78_5" x="67%" y="18.3%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="134"  onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_155_78_5_2" x="58.8%" y="8.3%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_45_78_6" titlename="7#电压" DataTableID="78" DataPointID="6"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="80%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    7#电压
+  </text>
+  <text id="variable_147_78_6" titlename="7#电流" DataTableID="78" DataPointID="6"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="80%" y="16%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    7#电流
+  </text>
+  <image id="variable_205_78_6" x="81%" y="18.3%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="135"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_147_78_6_2" x="72.5%" y="8.3%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_95_78_7" titlename="8#电压" DataTableID="78" DataPointID="7"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="93%" y="11%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    8#电压
+  </text>
+  <text id="variable_36_78_7" titlename="8#电流" DataTableID="78" DataPointID="7"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="93%" y="16%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    8#电流
+  </text>
+  <image id="variable_231_78_7" x="94.8%" y="18.3%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="136"  onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_36_78_7_2" x="86.5%" y="8.3%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_88_78_8" titlename="9#电压" DataTableID="78" DataPointID="8"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="11%" y="34%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    9#电压
+  </text>
+  <text id="variable_12_78_8" titlename="9#电流" DataTableID="78" DataPointID="8"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="11%" y="39%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    9#电流
+  </text>
+  <image id="variable_227_78_8" x="12.5%" y="41.5%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="137"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_12_78_8_2" x="4%" y="31.6%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_75_78_9" titlename="10#电压" DataTableID="78" DataPointID="9"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="25%" y="34%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    10#电压
+  </text>
+  <text id="variable_2_78_9" titlename="10#电流" DataTableID="78" DataPointID="9"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="25%" y="39%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    10电流
+  </text>
+  <image id="variable_222_78_9" x="26.2%" y="41.5%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="138"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_2_78_9_2" x="18%" y="31.6%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_67_78_10" titlename="11#电压" DataTableID="78" DataPointID="9"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="39%" y="34%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    11#电压
+  </text>
+  <text id="variable_68_78_10" titlename="11#电流" DataTableID="78" DataPointID="9"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="39%" y="39%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    11#电流
+  </text>
+  <image id="variable_248_78_10" x="40%" y="41.5%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="139"  onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_68_78_10_2" x="31.5%" y="31.6%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_112_78_11" titlename="12#电压" DataTableID="78" DataPointID="11"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="52%" y="34%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    12#电压
+  </text>
+  <text id="variable_56_78_11" titlename="12#电流" DataTableID="78" DataPointID="11"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="52%" y="39%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    12#电流
+  </text>
+  <image id="variable_242_78_11" x="53.5%" y="41.5%" width="51px" height="55px" IValue="0"  OpcPointName="" PumpNo="1" RtuNo="140"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_56_78_11_2" x="45%" y="31.6%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_102_78_12" titlename="13#电压" DataTableID="78" DataPointID="12"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="66%" y="34%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    13#电压
+  </text>
+  <text id="variable_46_78_12" titlename="13#电流" DataTableID="78" DataPointID="12"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="66%" y="39%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    13#电流
+  </text>
+  <image id="variable_235_78_12" x="67%" y="41.5%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="141"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_46_78_12_2" x="58.8%" y="31.6%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_96_78_13" titlename="14#电压" DataTableID="78" DataPointID="13"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="80%" y="34%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    14#电压
+  </text>
+  <text id="variable_37_78_13" titlename="14#电流" DataTableID="78" DataPointID="13"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="80%" y="39%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    14#电流
+  </text>
+  <image id="variable_177_78_13" x="81%" y="41.5%" width="51px" height="55px" IValue="0"  OpcPointName="" PumpNo="1" RtuNo="142"  onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_37_78_13_2" x="72.5%" y="31.6%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_115_78_14" titlename="15#电压" DataTableID="78" DataPointID="14"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="93%" y="34%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    15#电压
+  </text>
+  <text id="variable_89_78_14" titlename="15#电流" DataTableID="78" DataPointID="14"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="93%" y="39%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    15#电流
+  </text>
+  <image id="variable_174_78_14" x="94.8%" y="41.5%" width="51px" height="55px"  IValue="0" OpcPointName="" PumpNo="1" RtuNo="143"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_89_78_14_2" x="86.5%" y="31.6%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_106_78_15" titlename="16#电压" DataTableID="78" DataPointID="15"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="11%" y="57%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    16#电压
+  </text>
+  <text id="variable_131_78_15" titlename="16#电流" DataTableID="78" DataPointID="15"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="11%" y="62%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    16#电流
+  </text>
+  <image id="variable_200_78_15" x="12.5%" y="64.2%" width="51px" height="55px"  IValue="0"  OpcPointName="" PumpNo="1" RtuNo="144"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_131_78_15_2" x="4%" y="54.4%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_80_78_16" titlename="17#电压" DataTableID="78" DataPointID="16"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="25%" y="57%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    17#电压
+  </text>
+  <text id="variable_121_78_16" titlename="17#电流" DataTableID="78" DataPointID="16"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="25%" y="62%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    17电流
+  </text>
+  <image id="variable_170_78_16" x="26.2%" y="64.2%" width="51px" height="55px"   IValue="0" OpcPointName="" PumpNo="1" RtuNo="145"  onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_121_78_16_2" x="18%" y="54.4%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_132_78_17" titlename="18#电压" DataTableID="78" DataPointID="17"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="39%" y="57%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    18#电压
+  </text>
+  <text id="variable_3_78_17" titlename="18#电流" DataTableID="78" DataPointID="17"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="39%" y="62%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    18#电流
+  </text>
+  <image id="variable_201_78_17" x="40%" y="64.2%" width="51px" height="55px"  IValue="0" OpcPointName="" PumpNo="1" RtuNo="146"  onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_3_78_17_2" x="31.5%" y="54.4%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_16_78_18" titlename="19#电压" DataTableID="78" DataPointID="18"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="52%" y="57%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    19#电压
+  </text>
+  <text id="variable_122_78_18" titlename="19#电流" DataTableID="78" DataPointID="18"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="52%" y="62%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    19#电流
+  </text>
+  <image id="variable_171_78_18" x="53.5%" y="64.2%" width="51px" height="55px" IValue="0"  OpcPointName="" PumpNo="1" RtuNo="147"  onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_122_78_18_2" x="45%" y="54.4%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  
+  <text id="variable_168_78_19" titlename="21#电压" DataTableID="78" DataPointID="19"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="66%" y="57%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    21#电压
+  </text>
+  <text id="variable_57_78_19" titlename="21#电流" DataTableID="78" DataPointID="19"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="66%" y="62%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    21#电流
+  </text>
+  <image id="variable_217_78_19" x="67%" y="64.2%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="149" onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_57_78_19_2" x="58.8%" y="54.4%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_159_78_20" titlename="22#电压" DataTableID="78" DataPointID="20"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="80%" y="57%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    22#电压
+  </text>
+  <text id="variable_103_78_20" titlename="22#电流" DataTableID="78" DataPointID="20"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="80%" y="62%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    22#电流
+  </text>
+  <image id="variable_243_78_20" x="81%" y="64.2%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="150"  onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_103_78_20_2" x="72.5%" y="54.4%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_30_78_21" titlename="23#电压" DataTableID="78" DataPointID="21"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="93%" y="57%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    23#电压
+  </text>
+  <text id="variable_148_78_21" titlename="23#电流" DataTableID="78" DataPointID="21"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="93%" y="62%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    23#电流
+  </text>
+  <image id="variable_187_78_21" x="94.8%" y="64.2%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="151" onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_148_78_21_2" x="86.5%" y="54.4%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  
+  <text id="variable_127_78_22" titlename="24#电压" DataTableID="78" DataPointID="22"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="11%" y="80%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    24#电压
+  </text>
+  <text id="variable_97_78_22" titlename="24#电流" DataTableID="78" DataPointID="22"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="11%" y="85%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    24#电流
+  </text>
+  <image id="variable_236_78_22" x="12.5%" y="87.5%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="152"  onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_97_78_22_2" x="4%" y="77.7%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_62_78_23" titlename="25#电压" DataTableID="78" DataPointID="23"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="25%" y="80%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    25#电压
+  </text>
+  <text id="variable_141_78_23" titlename="25#电流" DataTableID="78" DataPointID="23"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="25%" y="85%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    25电流
+  </text>
+  <image id="variable_178_78_23" x="26.2%" y="87.5%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="153"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_141_78_23_2" x="18%" y="77.7%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_52_78_24" titlename="26#电压" DataTableID="78" DataPointID="24"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="39%" y="80%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    26#电压
+  </text>
+  <text id="variable_13_78_24" titlename="26#电流" DataTableID="78" DataPointID="24"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="39%" y="85%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    26#电流
+  </text>
+  <image id="variable_203_78_24" x="40%" y="87.5%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="154"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_13_78_24_2" x="31.5%" y="77.7%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_145_78_25" titlename="27#电压" DataTableID="78" DataPointID="25"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="52%" y="80%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    27#电压
+  </text>
+  <text id="variable_76_78_25" titlename="27#电流" DataTableID="78" DataPointID="25"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="52%" y="85%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    27#电流
+  </text>
+  <image id="variable_228_78_25" x="53.5%" y="87.5%" width="51px" height="55px" IValue="0" OpcPointName="" PumpNo="1" RtuNo="155"   onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_76_78_25_2" x="45%" y="77.7%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+
+  <text id="variable_135_78_26" titlename="28#电压" DataTableID="78" DataPointID="26"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="66%" y="80%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    28#电压
+  </text>
+  <text id="variable_123_78_26" titlename="28#电流" DataTableID="78" DataPointID="26"  EQType="4" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="66%" y="85%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    28#电流
+  </text>
+  <image id="variable_223_78_26" x="67%" y="87.5%" width="51px" height="55px"  IValue="0" OpcPointName="" PumpNo="1" RtuNo="156"  onclick="window.parent.PumpOnOFF(this)" xlink:href="./Images/on.png" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+  <image id="variable_123_78_26_2" x="58.8%" y="77.7%" width="42px" height="42px" xlink:href="./Images/fengyezhuandong.gif" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" />
+</svg>

@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2132E036-838C-417A-8751-85075A0C07F5}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebInterface</RootNamespace>
+    <AssemblyName>WebInterface</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.6\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.4.0.0\lib\net45\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.0\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="amrToMp3\ffmpeg.exe" />
+    <Content Include="ashx\GetDmaGeomPipe.ashx" />
+    <Content Include="ashx\GetDmaGeomPipeCount.ashx" />
+    <Content Include="ashx\search.ashx" />
+    <Content Include="ashx\OperationDatabase.ashx" />
+    <Content Include="ashx\getPointsStatus.ashx" />
+    <Content Include="ashx\GetHiddenDanger.ashx" />
+    <Content Include="ashx\GetNoticeData.ashx" />
+    <Content Include="ashx\GetEventInfoByPersonId.ashx" />
+    <Content Include="asmx\admin.asmx" />
+    <Content Include="asmx\GIS.asmx" />
+    <Content Include="Nlog.config" />
+    <Content Include="ashx\GetGISDataInfo.ashx" />
+    <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\SDJN-Interface-Release.pubxml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="asmx\GetCarMonitorData.asmx" />
+    <Content Include="asmx\Inspection.asmx" />
+    <Content Include="asmx\Mantain.asmx" />
+    <Content Include="asmx\mobile.asmx" />
+    <Content Include="image\ffmpeg.exe" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Code\BaseAshxPage.cs" />
+    <Compile Include="ashx\GetDmaGeomPipe.ashx.cs">
+      <DependentUpon>GetDmaGeomPipe.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ashx\GetDmaGeomPipeCount.ashx.cs">
+      <DependentUpon>GetDmaGeomPipeCount.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ashx\GetEventInfoByPersonId.ashx.cs">
+      <DependentUpon>GetEventInfoByPersonId.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ashx\GetGISDataInfo.ashx.cs">
+      <DependentUpon>GetGISDataInfo.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ashx\GetHiddenDanger.ashx.cs">
+      <DependentUpon>GetHiddenDanger.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ashx\GetNoticeData.ashx.cs">
+      <DependentUpon>GetNoticeData.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ashx\getPointsStatus.ashx.cs">
+      <DependentUpon>getPointsStatus.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ashx\OperationDatabase.ashx.cs">
+      <DependentUpon>OperationDatabase.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ashx\search.ashx.cs">
+      <DependentUpon>search.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="asmx\admin.asmx.cs">
+      <DependentUpon>admin.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="asmx\GetCarMonitorData.asmx.cs">
+      <DependentUpon>GetCarMonitorData.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="asmx\GIS.asmx.cs">
+      <DependentUpon>GIS.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="asmx\Inspection.asmx.cs">
+      <DependentUpon>Inspection.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="asmx\Mantain.asmx.cs">
+      <DependentUpon>Mantain.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="asmx\mobile.asmx.cs">
+      <DependentUpon>mobile.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="dal\Data_dal.cs" />
+    <Compile Include="dal\Data_Inspection_Dal.cs" />
+    <Compile Include="dal\Data_Mantain_Dal.cs" />
+    <Compile Include="Model\BackEvent.cs" />
+    <Compile Include="Model\BackEventListDetail.cs" />
+    <Compile Include="Model\NewsResult.cs" />
+    <Compile Include="Model\NextSignStep.cs" />
+    <Compile Include="Model\UpdateNewsStateResult.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DbHelper\DbHelper.csproj">
+      <Project>{fd6e7f6d-6333-40e4-ab8e-697cc906e80b}</Project>
+      <Name>DbHelper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\utility\utility.csproj">
+      <Project>{10859f05-2557-4bc5-8296-77e1c426e988}</Project>
+      <Name>utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>1840</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:1840/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

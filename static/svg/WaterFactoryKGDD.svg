@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd">
+<!-- Created by SVGDeveloper 1.0 -->
+<svg width="1750" height="808" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <image id="background" x="0" y="0" width="100%" height="100%" xlink:href="./Images/konggangdiaodu.gif" />
+
+  <text id="F_LJ_1_77_6" titlename="空港南供水累计流量" DataTableID="77" DataPointID="6"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="11%" y="42.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    空港南供水累计流量
+  </text>
+  <text id="F1_DAY1_77_6" titlename="空港南供水日累计流量" DataTableID="77" DataPointID="6"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="22.5%" y="42.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    空港南供水日累计流量
+  </text>
+
+  <text id="F_LJ_2_77_7" titlename="空港北累计流量" DataTableID="77" DataPointID="7"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="11%" y="47.2%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    空港北累计流量
+  </text>
+  <text id="F1_DAY2_77_7" titlename="空港北日累计流量" DataTableID="77" DataPointID="7"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="22.5%" y="47.2%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    空港北日累计流量
+  </text>
+
+  <text id="SJDD_P1_in_77_11" titlename="红海子压力1" DataTableID="77" DataPointID="11"  EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="42.3%" y="43.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    红海子压力1
+  </text>
+  <text id="SJDD_P1_out_77_11" titlename="红海子压力2" DataTableID="77" DataPointID="11"  EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="33.3%" y="43.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    红海子压力2
+  </text>
+  <text id="SJDD_P4_in_77_14" titlename="红海子压力3" DataTableID="77" DataPointID="14"  EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="17.3%" y="79.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    红海子压力3
+  </text>
+  <text id="SJDD_P4_out_77_14" titlename="红海子压力4" DataTableID="77" DataPointID="14"  EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="25.3%" y="79.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    红海子压力4
+  </text>
+
+  <text id="F_2_77_7" titlename="红海子瞬时流量" DataTableID="77" DataPointID="7"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="48.3%" y="43.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    红海子瞬时流量
+  </text>
+
+  <text id="L_1_77_9" titlename="液位3" DataTableID="77" DataPointID="9"  EQType="3" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="92.3%" y="45%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    液位3
+  </text>
+
+  <text id="SJDD_P2_in_77_12" titlename="装备压力1" DataTableID="77" DataPointID="12"  EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="42.3%" y="19.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    装备压力1
+  </text>
+  <text id="SJDD_P2_out_77_12" titlename="装备压力2" DataTableID="77" DataPointID="12"  EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="33.3%" y="19.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    装备压力2
+  </text>
+  <text id="SJDD_P3_in_77_13" titlename="装备压力3" DataTableID="77" DataPointID="13"  EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)"  x="26.3%" y="19.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    装备压力3
+  </text>
+  <text id="SJDD_P3_out_77_13" titlename="装备压力4" DataTableID="77" DataPointID="13"  EQType="2" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="18.3%" y="19.5%"  font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    装备压力4
+  </text>
+  <text id="F_1_77_6" titlename="装备瞬时流量" DataTableID="77" DataPointID="6"  EQType="1" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="52.3%" y="19.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    装备瞬时流量
+  </text>
+
+
+  <text id="fa_ai_2_77_6" titlename="空港至装备基地阀门开度" DataTableID="77" DataPointID="6"  EQType="5" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="66.3%" y="34.5%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    空港至装备基地阀门开度
+  </text>
+
+  <text id="fa_ao_2_77_6" titlename="空港至装备基地阀门设定开度" DataTableID="77" DataPointID="6"  EQType="5"   OpcPointName="ZHSW3:opc.fa_ao_2"  style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.SetValve(this)" x="66.3%" y="13%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    空港至装备基地阀门设定开度
+  </text>
+
+  <text id="fa_ai_1_77_7" titlename="空港至红海子阀门开度" DataTableID="77" DataPointID="7"  EQType="5" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.MapClick(this)" x="59.3%" y="58%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    空港至红海子阀门开度
+  </text>
+  <text id="fa_ao_1_77_7" titlename="空港至红海子阀门设定开度" DataTableID="77" DataPointID="7"  OpcPointName="ZHSW3:opc.fa_ao_1"  EQType="5" style="cursor:pointer;" LinkURL="TabDefault.aspx" onclick="window.parent.SetValve(this)" x="59.3%" y="36%" font-family="宋体" font-size="13" stroke="#ff0000" xmlns="http://www.w3.org/2000/svg">
+    空港至红海子阀门设定开度
+  </text>
+  
+  
+  
+</svg>
