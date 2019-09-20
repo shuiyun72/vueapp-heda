@@ -150,6 +150,8 @@ import {
   // 根据经纬度计算公里距离的工具函数
   calcDistance
 } from "@common/util";
+import nativeTransfer from '@JS/native/nativeTransfer'
+
 export default {
   created() {
     this.fetchOrdersByStatus((err, rawOrderList) => {
@@ -187,7 +189,7 @@ export default {
           ? "2"
           : this.activeTabName === "doing"
           ? "3,4,5"
-          : "7";
+          : "6,7,8";
       return statusNumber;
     }
   },
@@ -241,7 +243,7 @@ export default {
       if (!(callback instanceof Function)) {
         console.error("callback must be a function!");
       }
-      if (window.plus) {
+     /* if (window.plus) {
         window.plus.geolocation.getCurrentPosition(
           position => {
             // 当前纬度
@@ -272,7 +274,7 @@ export default {
             });
             callback(newList);
           })
-      } else {
+      } else {*/
         nativeTransfer.getLocation(position => {
           if (position) {
             // 当前纬度
@@ -303,7 +305,7 @@ export default {
             callback(newList);
           }
         });
-      }
+    //  }
     },
     // 点击一个具体的订单卡片，进入详情页面
     onOrderClick(orderInfo) {

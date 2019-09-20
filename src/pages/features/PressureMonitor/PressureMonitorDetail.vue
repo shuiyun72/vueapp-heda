@@ -49,7 +49,6 @@ import ChartBuilder from "@JS/charts/chart-builder";
 import * as ChartOption from "@JS/charts/chart-option";
 import MuiList from "@comp/common/MuiList";
 import { deepCopy } from "@common/util";
-// 引入nativeTransfer.js
 import nativeTransfer from '@JS/native/nativeTransfer'
 
 const dataTableId = consts.dataTableId.pressure;
@@ -223,7 +222,8 @@ export default {
         this.pointData.DataMapX &&
         this.pointData.DataMapY
       ) {
-        if (window.plus && window.plus.maps && window.plus.geolocation) {
+        nativeTransfer.startNavi(this.pointData.DataMapX, this.pointData.DataMapY, "");
+        /*if (window.plus && window.plus.maps && window.plus.geolocation) {
           this.fullscreenLoading = true;
           window.plus.geolocation.getCurrentPosition(
             position => {
@@ -250,29 +250,7 @@ export default {
               coordsType: "wgs84"
             }
           );
-        //   nativeTransfer.getLocation(position => {
-        //     if (position) {
-        //       let srcPoint = new plus.maps.Point(
-        //         position.coords.longitude,
-        //         position.coords.latitude
-        //       );
-        //       let destDesc = "目标点位";
-        //       let destPoint = new plus.maps.Point(
-        //         this.pointData.DataMapX,
-        //         this.pointData.DataMapY
-        //       );
-        //       window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-        //       this.fullscreenLoading = false;
-        //     } else {
-        //       this.fullscreenLoading = false;
-        //       window.mui.toast("定位失败，无法调起导航");
-        //     }
-        //   });
-        // } else {
-        //   this.fullscreenLoading = false;
-        //   window.mui.toast("定位失败，无法调起导航");
-        // }
-        }
+        }*/
       }
     }
   },

@@ -197,7 +197,7 @@ BaseMap.prototype.Init = function (containerId, options = {}) {
     opacity: 1,
     extent: [113.35975811932538, 34.7501362981023, 113.71391131426837, 34.876861366065775],
     source: new TileArcGISRestSource({
-      url: 'http://218.0.0.33:6080/arcgis/rest/services/Lm_FH_DXT/MapServer'
+      url: 'http://39.100.62.29:6080/arcgis/rest/services/zz/ZZ_yxt/MapServer'
     }),
     visible: false
   });

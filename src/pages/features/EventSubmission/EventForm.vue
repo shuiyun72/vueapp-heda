@@ -579,49 +579,27 @@ export default {
     },
     // 使用当前位置按钮
     onUseCurrentCoordButtonClick() {
-      if(window.plus){
-        window.plus.geolocation.getCurrentPosition(
-          location => {
-            console.log("坐标转换-----",location.coords.longitude,location.coords.latitude,location)
-            // 坐标转换
-            let coordsFor84 = CoordsHelper.gcj02towgs84(
-              location.coords.longitude,
-              location.coords.latitude
-            );
-            this.mapController.addPoiFeature(coordsFor84);
-            this.cacheCoord = coordsFor84;
-          },
-          err => {
-            mui.toast("获取当前位置失败");
-          },
-          {
-            enableHighAccuracy: true,
-            maximumAge: 5000,
-            timeout: 10000,
-            provider: "baidu",
-            coordsType: "gcj02"
-          }
-        );
-      }else{
         nativeTransfer.getLocation(location => {
           if (location) {
+            console.log(location)
             // 坐标转换
             let coordsFor84 = CoordsHelper.gcj02towgs84(
-              result.lng,
-              result.lat
+              location.lng,
+              location.lat
             );
             //转换为地方坐标
-            coordsFor84 = this.mapController.destinationCoordinateProj(
-              coordsFor84
-            );
-            console.log(coordsFor84);
+            // coordsFor84 = this.mapController.destinationCoordinateProj(
+            //   coordsFor84
+            // );
+            //console.log(coordsFor84);
+            //let coordsFor84 = [location.lng,location.lat];
             this.mapController.addPoiFeature(coordsFor84);
             this.cacheCoord = coordsFor84;
           } else {
             mui.toast("获取当前位置失败");
           }
         })
-      }
+      //}
     },
     onMapDialogOpened() {
       console.log("打开");
@@ -635,6 +613,7 @@ export default {
         let mapController = (this.mapController = new BaseMap());
         console.log("构建完成", mapController);
         mapController.Init("event_map");
+        this.mapController.SetMapLayerShow(2, 1);
         mapController.getInstance().on("map-click", data => {
           console.log("data", data);
           let coordinate = data.coords;

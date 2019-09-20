@@ -154,49 +154,23 @@ export default {
       );
       instance.lastSelectedDate = instance.selectedDate;
       instance.fetchAttendanceRecords();
-      if(window.plus){
-        window.mui.plusReady(() => {
-          window.plus.geolocation.getCurrentPosition(
-            position => {
-              console.warn("=====考勤管理定位成功", position);
-              // 坐标转换
-              let coordsFor84 = CoordsHelper.gcj02towgs84(
-                position.coords.longitude,
-                position.coords.latitude
-              );
-              position.longitude = coordsFor84[0];
-              position.latitude = coordsFor84[1];
-              instance.locationInfo = deepCopy(position);
-            },
-            err => {
-              console.warn("=====考勤管理定位错误", err);
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 5000,
-              timeout: 10000,
-              provider: "baidu",
-              coordsType: "gcj02"
-            }
-          );
-          });
-        }else{
-          nativeTransfer.getLocation(position => {
-          if (position) {
-            console.warn("=====考勤管理定位成功", position);
+        nativeTransfer.getLocation(positionRes => {
+          if (positionRes) {
+            console.warn("=====考勤管理定位成功", positionRes);
             // 坐标转换
             let coordsFor84 = CoordsHelper.gcj02towgs84(
-              position.lng,
-              position.lat
+              positionRes.lng,
+              positionRes.lat
             );
             position.longitude = coordsFor84[0];
             position.latitude = coordsFor84[1];
+            position.addresses = positionRes.addr;
             instance.locationInfo = deepCopy(position);
           } else {
             console.warn("=====考勤管理定位错误", err);
           }
         });
-        }
+        
     });
   },
   data() {
@@ -244,7 +218,7 @@ export default {
     },
     currentAddressText() {
       let addr = this.locationInfo.address;
-      return addr instanceof Object
+      return ( JSON.stringify(addr) != '{}' )
         ? addr.poiName || this.locationInfo.addresses || "获取位置信息失败"
         : "定位中...";
     },

@@ -166,7 +166,8 @@ export default {
     },
     onAddrRowClick() {
       if (this.orderInfo.EventX && this.orderInfo.EventY) {
-        if (window.plus && window.plus.maps && window.plus.geolocation) {
+        nativeTransfer.startNavi(this.orderInfo.EventX, this.orderInfo.EventY, "");
+        /*if (window.plus && window.plus.maps && window.plus.geolocation) {
           this.$showLoading();
           window.plus.geolocation.getCurrentPosition(
             position => {
@@ -193,25 +194,8 @@ export default {
               coordsType: "wgs84"
             }
           );
-          // nativeTransfer.getLocation(result => {
-          //   if (result) {
-          //     let srcPoint = new plus.maps.Point(
-          //       position.coords.longitude,
-          //       position.coords.latitude
-          //     );
-          //     let destDesc = "目标设备";
-          //     let destPoint = new plus.maps.Point(
-          //       Number(this.orderInfo.EventX),
-          //       Number(this.orderInfo.EventY)
-          //     );
-          //     window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-          //     this.$hideLoading();
-          //   } else {
-          //     this.$hideLoading();
-          //     window.mui.toast("定位失败，无法调起导航");
-          //   }
-          // });
-        }
+        }*/
+       
       }
     },
     onAssignButtonClick() {

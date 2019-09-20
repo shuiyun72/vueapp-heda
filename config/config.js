@@ -6,9 +6,9 @@ export default {
     user: 'http://192.168.88.181:8087/api',
     // 巡检养护
     //inspection: 'http://218.0.0.33:9923/asmx/Inspection.asmx',
-    inspection: 'http://192.168.88.181:8087/api',
+    //inspection: 'http://192.168.88.181:8087/api',
     //inspection: 'http://47.104.3.68:9819/api',
-    //inspection: 'http://39.100.62.29:9819/api',
+    inspection: 'http://39.100.62.29:9819/api',
     //maintain: 'http://218.0.0.33:9923/asmx/Mantain.asmx',
     maintain: 'http://39.100.62.29:9819/api',
     maintainNew: 'http://218.0.0.33:9921/Smart_Mantain/WebPages/EventManage/WebAPI',

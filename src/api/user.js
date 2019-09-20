@@ -8,11 +8,23 @@ const instance = axios.create({
   crossDomain:true,
   timeout: 10000,
   //转换res为json
-  responseType: 'json',
-  transformRequest:[function(data){
-    return data
-  }]
+  responseType: 'json'
 });
+
+// request拦截器
+instance.interceptors.request.use(
+  config => {
+      // 每次发送请求之前检测都vuex存有token,那么都要放在请求头发送给服务器
+      if (1) {
+        config.headers.Token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJVc2VySWQiOjEsIlVzZXJOYW1lIjoiYWRtaW4iLCJFeHBpcmVUaW1lIjoiMjAxOS0wNS0yOFQxMDowMTo0MC41NjYyMjI0KzA4OjAwIiwiSVAiOiIifQ.WCPR9mXenLrizGVGITHWWG4-PybJ9BK34pTnDclUxSQ'
+      }
+  
+      return config
+  },
+  err => {
+  return Promise.reject(err)
+  }
+)
 
 export default {
   // 用户登录 

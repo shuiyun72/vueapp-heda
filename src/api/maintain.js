@@ -307,39 +307,36 @@ export default {
     })
   },
 
-  // 审核工单
-  CheckOrder(personId, eventId, orderId, operId) {
-    return instance.get('/WorkList.ashx', {
-      params: {
-        Oper: 'CommitOrderStepSet',
-        EventID: eventId,
-        OrderId: orderId,
-        StepNum: operId + 1,
-        iAdminID: personId
-      }
-    })
+  // 审核工单 iAdminID,eventId,deptId, personId
+  CheckOrder(eventId, orderId, iDeptID, iAdminID,OperRemarks,satisfaction) {
+    OperRemarks = OperRemarks || "满意"
+    satisfaction = satisfaction || "满意"
+    return instance.post('/EventManageForMaintain/WorkListAudit?EventID='+eventId
+    +'&OrderId='+orderId
+    +'&iDetpID='+iDeptID
+    +'&OperRemarks='+OperRemarks
+    +'&satisfaction='+satisfaction
+    +'&StepNum=7'
+    +'&iAdminID='+iAdminID)
   },
   // 获取延期申请信息
-  GetDelayInfo(eventId, orderId) {
-    return instance.get('/WorkList.ashx', {
+  GetDelayInfo(eventId) {
+    return instance.get('/EventManageForMaintain/GetEventWorkorderStepForMaintain', {
       params: {
-        Oper: 'GetWordListDelayInfo',
-        EventID: eventId,
-        OrderId: orderId
+        EventID: eventId
       }
     })
   },
   // 延期审核确认
-  CheckOrderDelay(personId, eventId, orderId, complishTime) {
-    return instance.get('/WorkList.ashx', {
-      params: {
-        Oper: 'WordListDelayExec',
-        EventID: eventId,
-        OrderId: orderId,
-        complishTime: complishTime,
-        iAdminID: personId,
-      }
-    })
+  CheckOrderDelay(eventId, orderId, iDeptID, iAdminID,OperRemarks,complishTime) {
+    OperRemarks = OperRemarks || "满意"
+    console.log(eventId, orderId, iDeptID, iAdminID,OperRemarks,complishTime)
+   return instance.post('/EventManageForMaintain/WorkListDelayExec?EventID='+eventId
+   +'&OrderId='+orderId
+   +'&iDeptID='+iDeptID
+   +'&OperRemarks='+OperRemarks
+   +'&complishTime='+complishTime
+   +'&iAdminID='+iAdminID)
   }
 
 }

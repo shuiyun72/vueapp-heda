@@ -95,7 +95,7 @@ export default {
         .GetDepartment()
         .then(res => {
           console.log("==", res);
-          if (res.status === 200) {
+          if (res.data.Flag) {
             let departmentInfo = res.data.Data.Result;
             let part = departmentInfo.filter(item => {
               return item.iDeptID == this.userInfo.iDeptID;

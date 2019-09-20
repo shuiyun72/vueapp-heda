@@ -1,4 +1,5 @@
-import MobileDetect from 'mobile-detect'
+import MobileDetect from 'mobile-detect';
+import CoordsHelper from "coordtransform";
 const _md = new MobileDetect(window.navigator.userAgent);
 const _cache = {}
 const _cache2 = {}
@@ -80,34 +81,6 @@ window.response2 = ({
   })
 }
 
-
-// function plusLocation() {
-//   window.plus.geolocation.getCurrentPosition(
-//     location => {
-//       // 坐标转换
-//       let newAddress =location.address.city
-//           + location.address.district
-//           + location.address.street;
-//       let nowLocation =  {
-//         "lat": location.coords.latitude,   //纬度，double类型
-//         "lng": location.coords.longitude,   //经度，double类型
-//         "addr": newAddress || '未定义地点' //地址信息
-//       }
-//       return nowLocation
-//     },
-//     err => {
-//       mui.toast("获取当前位置失败");
-//     },
-//     {
-//       enableHighAccuracy: true,
-//       maximumAge: 5000,
-//       timeout: 10000,
-//       provider: "baidu",
-//       coordsType: "gcj02"
-//     }
-//   );
-// }
-
 //获取当前位置信息
 function _positionPlus(type,callback){
   window.plus.geolocation.getCurrentPosition(
@@ -144,9 +117,13 @@ window.plus.geolocation.getCurrentPosition(
       position.coords.latitude
     );
     let destDesc = "目标设备";
-    let destPoint = new plus.maps.Point(
+    let coordsFor84 = CoordsHelper.gcj02towgs84(
       Number(params.lng),
       Number(params.lat)
+    );
+    let destPoint = new plus.maps.Point(
+      coordsFor84[0],
+      coordsFor84[1]
     );
     window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
   },
@@ -178,9 +155,13 @@ export default {
    * @param {返回值} callback 
    */
   startNavi(lng, lat, addr, callback) {
+    let coordsFor84 = CoordsHelper.wgs84togcj02(
+      lng,
+      lat
+    );
     return _postMessage('startNavi', callback, {
-      "lat": lat, //纬度，double类型
-      "lng": lng, //经度，double类型
+      "lat": coordsFor84[1], //纬度，double类型
+      "lng": coordsFor84[0], //经度，double类型
       "addr": addr //站点名称，地址信息等
     })
   }

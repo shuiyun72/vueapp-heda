@@ -6,7 +6,7 @@
         <NoContent :visible="todoOrders.length === 0" content="暂无待办事件"></NoContent>
         <el-card
           v-for="(order, index) in todoOrders"
-          :key="order.OrderId || index"
+          :key="index"
           class="order_card mui-table-view-cell"
           @tap.native="onOrderClick(order)"
         >
@@ -51,7 +51,7 @@
         <!-- 已完成工单页内容 -->
         <el-card
           v-for="(order, index) in doneOrders"
-          :key="order.OrderId || index"
+          :key="index"
           class="order_card mui-table-view-cell"
           @tap.native="onOrderClick(order)"
         >

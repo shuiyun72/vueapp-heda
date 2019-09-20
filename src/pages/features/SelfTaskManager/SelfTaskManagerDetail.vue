@@ -130,13 +130,13 @@
           type="button"
           class="button custom_bgcolor_light"
           v-if="isCurrentExecPerson && (orderInfo.IsValid == 5 || orderOperState == 13)"
-          @click="onCheckDelayButtonClick"
+          @click="onDialogButtonClick('postpone')"     
         >延期确认</button>
         <button
           type="button"
           class="button custom_bgcolor_light"
-          v-if="isCurrentExecPerson && orderOperState == 6"
-          @click="onCheckOrderButtonClick"
+          v-if=" currentUserId == orderInfo.DispatchPerson && orderOperState == 6"
+          @click="onDialogButtonClick('audit')"   
         >审核</button>
       </div>
     </div>
@@ -209,6 +209,63 @@
         <el-button type="primary" @click="onAssignConfirmButtonClick">提 交</el-button>
       </div>
     </el-dialog>
+    <!-- 审核弹出框 -->
+    <el-dialog
+      title="审核"
+      :visible.sync="actionDialogVisible.audit"
+      width="80%"
+      @close="onActionDialogClose"
+      center
+    >
+      <div v-if="actionDialogVisible.audit" class="dialog_content dialog_content-assign">
+        <div class="list_row">
+          <span>操作意见：</span>
+          <el-input
+            type="textarea"
+            :autosize="{minRows: 2, maxRows:6}"
+            v-model="rejectMessage"
+            placeholder="请输入操作意见"
+          ></el-input>
+        </div>
+        <div class="list_row">
+          <span>满意度：</span>
+          <el-input
+            type="textarea"
+            :autosize="{minRows: 1, maxRows:2}"
+            v-model="satisfyMessage"
+            placeholder="请输入满意度"
+          ></el-input>
+        </div>
+      </div>
+      <div slot="footer">
+        <el-button @click="onActionDialogCancel">取 消</el-button>
+        <el-button type="primary" @click=" onCheckOrderButtonClick">提 交</el-button>
+      </div>    
+    </el-dialog>
+    <!-- 延期确认弹出框 -->
+    <el-dialog
+      title="延期确认"
+      :visible.sync="actionDialogVisible.postpone"
+      width="80%"
+      @close="onActionDialogClose"
+      center
+    >
+      <div v-if="actionDialogVisible.postpone" class="dialog_content dialog_content-assign">
+        <div class="list_row">
+          <span>操作意见：</span>
+          <el-input
+            type="textarea"
+            :autosize="{minRows: 2, maxRows:6}"
+            v-model="rejectMessage"
+            placeholder="请输入操作意见"
+          ></el-input>
+        </div>
+      </div>
+      <div slot="footer">
+        <el-button @click="onActionDialogCancel">取 消</el-button>
+        <el-button type="primary" @click="onCheckDelayButtonClick ">提 交</el-button> 
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -219,6 +276,7 @@ import apiMaintain from "@api/maintain";
 import OrderActionsDialog from "@comp/order-detail/OrderActionsDialog.vue";
 // 引入nativeTransfer.js
 import nativeTransfer from '@JS/native/nativeTransfer'
+
 export default {
   props: {
     oriOrderInfo: [Object, String]
@@ -268,12 +326,14 @@ export default {
       orderInfo: {},
       defaultPicture: "./static/images/none.jpg",
       pictureBasePath: config.uploadFilePath.inspection,
-
+     
       // 订单操作弹出框是否弹出
       actionDialogVisible: {
         assign: false,
         reply: false,
-        reject: false
+        reject: false,
+        audit:false,
+        postpone:false
       },
 
       // 弹出框相关数据
@@ -288,7 +348,8 @@ export default {
         }
       },
       replyMessage: "",
-      rejectMessage: ""
+      rejectMessage: "",
+      satisfyMessage:"",  //满意度
     };
   },
   computed: {
@@ -508,21 +569,37 @@ export default {
         mui.toast("请选择部门与人员");
       }
     },
+    //审核及延期弹出框
+    onDialogButtonClick(el){
+      //audit  postpone
+      //审核
+      if(el == "audit"){
+        this.actionDialogVisible.audit = true;
+      }
+      //延期
+      else if(el == "postpone"){
+        this.actionDialogVisible.postpone = true;
+      }
+    },
     // 审核
     onCheckOrderButtonClick() {
       this.$showLoading();
+      console.log("审核")
       apiMaintain
         .CheckOrder(
-          this.currentUserId,
           this.orderInfo.EventID,
           this.orderInfo.OrderId,
-          this.orderInfo.OperId
+          this.currentUser.iDeptID,
+          this.currentUserId,
+          this.rejectMessage,
+          this.satisfyMessage
         )
         .then(res => {
           console.log("审核res", res);
-          if (res.data.ErrCode == 0) {
+          if (res.data.Flag) {
             mui.toast("审核完成！");
             this.$hideLoading();
+            this.$router.go(-1);
             // 刷新详情
             this.refreshOrderDetail();
           } else {
@@ -535,18 +612,52 @@ export default {
     },
     // 延期确认
     onCheckDelayButtonClick() {
+       console.log("延期确认")
       apiMaintain
-        .GetDelayInfo(this.orderInfo.EventID, this.orderInfo.OrderId)
-        .then(res => {
+        .GetDelayInfo(this.orderInfo.EventID)
+        .then(yanMsg => {
           this.$showLoading();
-          console.log("获取到延期申请信息", res);
-          let data = res.data.rows[0];
+          console.log("获取到延期申请信息", yanMsg);
+          if(yanMsg.data.Flag){
+            let DelayTime = _.filter(yanMsg.data.Data.Result,msg=>{
+              return msg.IsValid == 5
+            })[0].PostponeTime;
+            apiMaintain
+            .CheckOrderDelay(
+              this.orderInfo.EventID,
+              this.orderInfo.OrderId,
+              this.currentUser.iDeptID,
+              this.currentUserId,
+              this.rejectMessage,
+              DelayTime)
+            .then(res => {
+              console.log("延期确认res", res);
+              this.$hideLoading();
+              if (res.data.Flag) {
+                mui.toast("确认成功！");
+                this.$router.go(-1);
+                // 刷新详情
+                this.refreshOrderDetail();
+              } else {
+                mui.toast(res.data.ErrInfo);
+              }
+            })
+            .catch(err => {
+              this.$hideLoading();
+
+              mui.toast("延期确认失败！");
+            });
+
+          }else{
+            mui.toast("获取延期信息失败！");
+          }
+          /*let data = res.data.rows[0];
           let time = data.ApplicationTime;
           let personId = this.currentUserId;
           let eventId = data.EventID;
           let orderId = data.OrderId;
-          let desc = data.Cause;
-          apiMaintain
+          let desc = data.Cause;*/
+          /*apiMaintain
             .CheckOrderDelay(personId, eventId, orderId, time)
             .then(res => {
               console.log("延期确认res", res);
@@ -563,13 +674,14 @@ export default {
               this.$hideLoading();
 
               mui.toast("延期确认失败！");
-            });
+            });*/
         });
     },
     onAddrRowClick() {
       // 调用百度地图app导航
       if (this.orderInfo.EventX && this.orderInfo.EventY) {
-        if (window.plus && window.plus.maps && window.plus.geolocation) {
+        nativeTransfer.startNavi(this.orderInfo.EventX,this.orderInfo.EventY, "");
+        /*if (window.plus && window.plus.maps && window.plus.geolocation) {
           this.$showLoading();
           window.plus.geolocation.getCurrentPosition(
             position => {
@@ -598,7 +710,7 @@ export default {
           );
         }else{
           nativeTransfer.startNavi(this.orderInfo.EventX, this.orderInfo.EventY, "");
-        }
+        }*/
       }
     },
 

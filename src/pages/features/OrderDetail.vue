@@ -227,7 +227,6 @@ export default {
           this.orderInfoDeptId = _.filter(this.DeptIDList,res=>{
               return res.iDeptID == this.orderInfo.DeptId
             })[0].cDepName;
-          console.log(this.orderInfo.DeptId)
           console.log(_.filter(this.DeptIDList,res=>{
               return res.iDeptID == this.orderInfo.DeptId
             })[0])
@@ -246,36 +245,7 @@ export default {
     onAddrRowClick() {
       // 调用百度地图app导航
       if (this.orderInfo.EventX && this.orderInfo.EventY) {
-        if (window.plus && window.plus.maps && window.plus.geolocation) {
-          this.$showLoading();
-          window.plus.geolocation.getCurrentPosition(
-            position => {
-              let srcPoint = new plus.maps.Point(
-                position.coords.longitude,
-                position.coords.latitude
-              );
-              let destDesc = "目标设备";
-              let destPoint = new plus.maps.Point(
-                Number(this.orderInfo.EventX),
-                Number(this.orderInfo.EventY)
-              );
-              window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-              this.$hideLoading();
-            },
-            err => {
-              this.$hideLoading();
-              window.mui.toast("定位失败，无法调起导航");
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 10000,
-              provider: "system",
-              coordsType: "wgs84"
-            }
-          );
-        }else{
-           nativeTransfer.startNavi(this.orderInfo.EventX, this.orderInfo.EventY, "");
-        }
+        nativeTransfer.startNavi(this.orderInfo.EventX, this.orderInfo.EventY, "");
       }
     },
     onTakeOrderClick() {
@@ -359,6 +329,10 @@ export default {
       } else if (this.activeAction.operationId === 4) {
         if (!hasDescOption) {
           mui.toast("请选择一个到场描述");
+          return;
+        }
+        if (!hasPicture) {
+          mui.toast("请上传至少一张图片");
           return;
         }
       } else if (

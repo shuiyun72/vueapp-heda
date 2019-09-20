@@ -180,6 +180,7 @@ export default {
   mounted() {
     // 实例化MapController并挂到组件实例上
     let mapController = this.initMapController();
+    this.mapController.SetMapLayerShow(2, 1);
     // 初始化化两个Popup
     this.addCommonPopMarkerToMap(mapController);
     this.addPoiPopMarkerToMap(mapController);
