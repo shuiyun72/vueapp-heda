@@ -2,8 +2,8 @@
 export default {
   apiPath: {
     // 用户相关
-    //user: 'http://47.104.3.68:9819/api',
-    user: 'http://192.168.88.181:8087/api',
+    user: 'http://39.100.62.29:9819/api',
+    //user: 'http://192.168.88.181:8087/api',
     // 巡检养护
     //inspection: 'http://218.0.0.33:9923/asmx/Inspection.asmx',
     //inspection: 'http://192.168.88.181:8087/api',
@@ -20,7 +20,8 @@ export default {
   // 上传文件的可访问的静态资源根目录
   uploadFilePath: {
     // 巡检模块中的图片
-    inspection: 'http://192.168.88.181:8087' 
+    //inspection: 'http://192.168.88.181:8087' 
+    inspection: 'http://39.100.62.29:9819/api' 
   },
   // 地图服务sdk Key
   mapKey: 'VunddhrWNA4rloeRPi7KYifYSFBqVwPv',
