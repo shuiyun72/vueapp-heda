@@ -453,8 +453,8 @@ export default {
         );
         console.log("index--$route",this.$route.query)
       }else{      
-        let sss = getSessionItem("currentUser");
-        if(sss === null || sss === "null" ){
+        let currentUserMsg = getSessionItem("currentUser");
+        if(currentUserMsg === null || currentUserMsg === "null" ){
           this.$router.replace({
             path: "/login"
           });
