@@ -36,7 +36,6 @@
 
 <script>
 import _ from "lodash";
-import config from "@config/config";
 import apiInspection from "@api/inspection";
 import apiMaintain from "@api/maintain";
 import dateHelper from "@common/dateHelper";
@@ -58,7 +57,7 @@ export default {
       fullscreenLoading: false,
       activeTabName: "todo",
       orderList: [],
-      pictureBasePath: config.uploadFilePath.inspection,
+      pictureBasePath:  process.env.API_ROOT+'/api',
       defaultPicture: "./static/images/none.jpg"
     };
   },

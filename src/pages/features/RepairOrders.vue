@@ -138,7 +138,6 @@
 
 <script>
 import _ from "lodash";
-import config from "@config/config";
 import apiMaintain from "@api/maintain";
 import dateHelper from "@common/dateHelper";
 import NoContent from "@comp/common/NoContent";
@@ -167,7 +166,7 @@ export default {
     return {
       fullscreenLoading: false,
       defaultPicture: "./static/images/none.jpg",
-      pictureBasePath: config.uploadFilePath.inspection,
+      pictureBasePath: process.env.API_ROOT+'/api',
       activeTabName: "todo",
       todoOrders: [],
       doingOrders: [],
@@ -217,9 +216,6 @@ export default {
               getLocalItem(`RepairOrders${this.currentUserId}`)
             );
             callback instanceof Function && callback(null, cacheData);
-          } else {
-            callback instanceof Function && callback(err);
-            mui.toast("暂无网络");
           }
         });
     },

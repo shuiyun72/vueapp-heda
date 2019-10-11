@@ -14,7 +14,7 @@
             </li>
             <li>
               <span class="list_item_label">所属部门：</span>
-              <span class="list_item_content">{{orderInfoDeptId}}</span>
+              <span class="list_item_content">{{orderInfo.cDepName}}</span>
             </li>
             <li>
               <span class="list_item_label">派单人：</span>
@@ -55,6 +55,15 @@
             <li>
               <span class="list_item_label">事件内容：</span>
               <span class="list_item_content">{{orderInfo.EventTypeName2}}</span>
+            </li>
+            <li>
+              <span class="list_item_label">联系电话：</span>
+              <span class="list_item_content" v-if="isPhone">
+                <a :href="'tel:'+orderInfo.LinkCall">{{orderInfo.LinkCall}}</a>
+              </span>
+              <span class="list_item_content" v-else>
+                {{orderInfo.LinkCall}}:联系电话不可用 
+              </span>
             </li>
           </div>
         </div>
@@ -127,7 +136,6 @@
 </template>
 <script>
 import _ from "lodash";
-import config from "@config/config";
 import { getSessionItem } from "@common/util";
 import apiMaintain from "@api/maintain";
 import apiMonitor from "@api/monitor";
@@ -168,7 +176,7 @@ export default {
   data() {
     return {
       defaultPicture: "./static/images/none.jpg",
-      pictureBasePath: config.uploadFilePath.inspection,
+      pictureBasePath:  process.env.API_ROOT+'/api',
       // 本页面的四种操作及其对应调用的restful api
       actionList: [
         { name: "退 回", index: 0, interface: apiMaintain.RejectOrder },
@@ -212,29 +220,18 @@ export default {
     },
     pictureList() {
       return _.pull(this.splitPicturesStr(this.orderInfo.EventPictures),"");   
+    },
+    //验证电话是否符合
+    isPhone(){
+      let phone = /^([1]\d{10}|([\(（]?0[0-9]{2,3}[）\)]?[-]?)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?)$/.test(this.orderInfo.LinkCall);
+      if(phone){                                                                                                                        
+        return true
+      }else{
+        return false
+      }   
     }
   },
-  created(){
-    this.GetDepartmentList();
-  },
-  methods: {
-    //获取部门信息
-    GetDepartmentList(){
-      apiMaintain.GetDepartmentList().then(res=>{
-        console.log(res)
-        if(res.data.Flag){
-          this.DeptIDList = res.data.Data.Result;
-          this.orderInfoDeptId = _.filter(this.DeptIDList,res=>{
-              return res.iDeptID == this.orderInfo.DeptId
-            })[0].cDepName;
-          console.log(_.filter(this.DeptIDList,res=>{
-              return res.iDeptID == this.orderInfo.DeptId
-            })[0])
-        }else{
-          mui.toast("获取部门信息失败，服务器异常");
-        }   
-      })
-    },  
+  methods: { 
     splitPicturesStr(str) {
       if (str && str.length > 0) {
         return str.includes("|") ? str.split("|") : [str];

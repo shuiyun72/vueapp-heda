@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "test": "node build/test.js"
   },
   "dependencies": {
     "@supermap/iclient-openlayers": "^9.1.0",
@@ -22,8 +23,9 @@
     "jquery": "^3.3.1",
     "lodash": "^4.17.10",
     "mint-ui": "^2.2.13",
-    "mobile-detect": "^1.4.3",
+    "mobile-detect": "^1.4.4",
     "ol": "^5.3.2",
+    "tooltip": "^1.6.1",
     "uuid": "^3.3.2",
     "vconsole": "^3.3.0",
     "vue": "^2.5.2",

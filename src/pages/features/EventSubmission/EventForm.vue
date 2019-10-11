@@ -423,28 +423,6 @@ export default {
   },
   computed: {
     // 当前的用户信息
-    /*
-    @format
-      {
-        PersonId: Int,
-        DeptId: Int,
-        PersonName: String,
-        PassWord: String,
-        DeptName: String,
-        RoleName: String,
-        Smid: String,
-        IsEdit: Int,
-        UpMeter: Int,
-        iRoleID: Int,
-        deviceInfo: {
-          uuid: String, 设备唯一标识
-          imei: String, 国际移动设备身份码
-          imsi: String, 国际移动用户识别码
-          model: String, 设备型号
-          vendor: String, 设备厂商
-        }
-      }
-    */
     currentUser() {
       return JSON.parse(getSessionItem("currentUser"));
     },
@@ -552,24 +530,19 @@ export default {
         execDetpId: this.pickerValue.handlerDepartment.value.toString(),
         execPersonId: this.pickerValue.handlerPerson.value.toString(),
         eventDesc: this.detailDescription,
-        // 只能上传一张图片
-        // 格式化原始的base64字符串为后端能接受的base64格式
-        //base64Image: this.pictureListStr || ""
-
-        // TaskId: this.pickerValue.mission.value || -1,
-        // // 以下四个字段值来自非临时事件路由参数， 且有默认值
-        // Devicename: this.deviceName,
-        // Devicesmid: this.deviceSmid,
-        // PointType: this.pointType,
-        // // 是否是临时事件
-        // IsTemp: this.isTemp,
-        // // 来自非临时事件的表单中的单选按钮， 默认值为1
-        // IsHidden: this.pickerValue.hasHiddenDanger.value
-        // // IsHidden: 1
       };
     }
   },
   methods: {
+    //验证手机号码
+    isPhone(num){
+      let phone = /^([1]\d{10}|([\(（]?0[0-9]{2,3}[）\)]?[-]?)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?)$/.test(num);
+      if(phone){                                                                                                                        
+        return true
+      }else{
+        return false
+      }   
+    },
     // 选坐标地图中点击确定按钮
     onCheckCoordButtonClick() {
       _.find(this.items, item => {
@@ -613,7 +586,7 @@ export default {
         let mapController = (this.mapController = new BaseMap());
         console.log("构建完成", mapController);
         mapController.Init("event_map");
-        this.mapController.SetMapLayerShow(2, 1);
+         this.mapController.SetMapLayerShow(2, 1);
         mapController.getInstance().on("map-click", data => {
           console.log("data", data);
           let coordinate = data.coords;
@@ -935,7 +908,7 @@ export default {
       // 获取最新的list，并赋值给当前上下文的pictureList
       this.pictureList = pictureList;
       this.pictureUploaderLoading = false;
-      console.log("最新的当前图片列表------ ", this.pictureList);
+      //console.log("最新的当前图片列表------ ", this.pictureList);
     },
     // 点击拍照按钮
     onCameraButtonClick() {
@@ -943,10 +916,15 @@ export default {
     },
     // 点击上传按钮，上传全部事件数据
     onSubmitButtonClick() {
+      let isPhoneR = this.isPhone(this.reporterMobile)
+      if(!isPhoneR){
+         mui.toast(`联系电话格式不正确！`);
+         return
+      }
       this.isLoading = true;
       this.fullscreenLoadingText = "正在上报事件，请耐心等待...";
-      console.log("事件上报数据：", this.eventSubmissionData);
-      console.log(this.pictureListStr);
+      // console.log("事件上报数据：", this.eventSubmissionData);
+      // console.log(this.pictureListStr);
       apiInspection
         .SubmitEvent(this.eventSubmissionData,this.pictureListStr)
         .then(res => {

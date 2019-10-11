@@ -38,7 +38,12 @@
             </li>
             <li>
               <span class="list_item_label">联系电话：</span>
-              <span class="list_item_content">{{orderInfo.LinkCall}}</span>
+              <span class="list_item_content" v-if="isPhone">
+                <a :href="'tel:'+orderInfo.LinkCall">{{orderInfo.LinkCall}}</a>
+              </span>
+              <span class="list_item_content" v-else>
+                {{orderInfo.LinkCall}}:联系电话不可用 
+              </span>
             </li>
             <li>
               <span class="list_item_label">当前进度：</span>
@@ -110,9 +115,10 @@
         <button
           type="button"
           class="button custom_bgcolor_light"
-          v-if="isCurrentExecPerson && orderOperState == 11"
+          v-if="false"
           @click="actionDialogVisible.reply = true"
         >回复</button>
+        <!-- v-if="isCurrentExecPerson && orderOperState == 11" -->
         <button
           type="button"
           class="button custom_bgcolor_light"
@@ -122,9 +128,10 @@
         <button
           type="button"
           class="button custom_bgcolor_light"
-          v-if="isCurrentExecPerson && orderOperState == 11"
+          v-if="false"
           @click="actionDialogVisible.reject=true"
         >退回</button>
+         <!-- v-if="isCurrentExecPerson && orderOperState == 11" -->
         <!-- operId 13 -->
         <button
           type="button"
@@ -270,7 +277,6 @@
 </template>
 <script>
 import _ from "lodash";
-import config from "@config/config";
 import { getSessionItem } from "@common/util";
 import apiMaintain from "@api/maintain";
 import OrderActionsDialog from "@comp/order-detail/OrderActionsDialog.vue";
@@ -325,7 +331,7 @@ export default {
     return {
       orderInfo: {},
       defaultPicture: "./static/images/none.jpg",
-      pictureBasePath: config.uploadFilePath.inspection,
+      pictureBasePath: process.env.API_ROOT+'/api',
      
       // 订单操作弹出框是否弹出
       actionDialogVisible: {
@@ -378,6 +384,14 @@ export default {
     },
     orderOperState() {
       return Number(this.orderInfo.OperId);
+    },
+    isPhone(){
+      let phone = !(/^([1]\d{10}|([\(（]?0[0-9]{2,3}[）\)]?[-]?)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?)$/.test(this.orderInfo.LinkCall));
+      if(phone){                                                                                                                        
+        return false
+      }else{
+        return true
+      }   
     }
   },
   methods: {
@@ -484,15 +498,14 @@ export default {
         // 调用回复接口
         apiMaintain
           .PostReplyMessage(
-            this.orderInfo.EventID,
-            this.orderInfo.OrderId,
-            this.currentUser.iAdminID,
-            this.replyMessage
+            this.replyMessage,
+            this.currentUserId,
+            this.orderInfo.EventID
           )
           .then(res => {
             console.log("回复接口res", res);
-            if (res.data.Flag) {
-              mui.toast("回复成功！");
+            if (res.data.ErrCode == 0) {
+              mui.toast("分派成功！");
               this.actionDialogVisible.assign = false;
               // 刷新详情
               this.refreshOrderDetail();
@@ -615,7 +628,7 @@ export default {
     onCheckDelayButtonClick() {
        console.log("延期确认")
       apiMaintain
-        .GetDelayInfo(this.orderInfo.EventID)
+        .GetEventDetailInfo(this.orderInfo.EventID)
         .then(yanMsg => {
           this.$showLoading();
           console.log("获取到延期申请信息", yanMsg);

@@ -3,6 +3,7 @@ import $ from "jquery";
 import _ from "lodash";
 import CoordsHelper from 'coordtransform'
 import Vue from 'vue'
+import nativeTransfer from '@JS/native/nativeTransfer'
 
 function BaseMap() {
     this.defaultOptions = {
@@ -399,47 +400,36 @@ BaseMap.prototype.enableGeolocation = function (actionType) {
 
                 this.map.addLayer(this.geolocationLayer);
 
-                this.watchId = window.plus.geolocation.watchPosition(
-                    position => {
-                        let coordinates = position.coords;
-                        // console.log('Coords, ', coordinates)
+                this.watchId = window.setInterval(() => {
+                    console.log("baseMap------interval----position")
+                    nativeTransfer.getLocation(
+                      position => {
+                        let coordinates = {
+                          longitude:position.lng,
+                          latitude:position.lat
+                        };
+                        console.log('Coords, ', coordinates)
                         if (
-                            coordinates &&
-                            coordinates.longitude &&
-                            coordinates.latitude
+                          coordinates &&
+                          coordinates.longitude &&
+                          coordinates.latitude
                         ) {
-                            let coordsFor84 = CoordsHelper.gcj02towgs84(coordinates.longitude, coordinates.latitude)
-                            coordinates = {
-                                longitude: coordsFor84[0],
-                                latitude: coordsFor84[1]
-                            }
-
-                            // window.mui.toast(`经度：${coordinates.longitude}, 纬度：${coordinates.latitude}`)
-                            positionFeature.setGeometry(
-                                new ol.geom.Point([
-                                    coordinates.longitude,
-                                    coordinates.latitude
-                                ])
-                            );
-                            this.map
-                                .getView()
-                                .setCenter([
-                                    coordinates.longitude,
-                                    coordinates.latitude
-                                ]); //平移地图
+                          // window.mui.toast(`经度：${coordinates.longitude}, 纬度：${coordinates.latitude}`)
+                          positionFeature.setGeometry(
+                            new PointGeom([
+                              coordinates.longitude,
+                              coordinates.latitude
+                            ])
+                          );
+                          this.map
+                            .getView()
+                            .setCenter([
+                              coordinates.longitude,
+                              coordinates.latitude
+                            ]); //平移地图
                         }
-                    },
-                    err => {
-                        console.log("geo err!!!!!", err);
-                    }, {
-                        enableHighAccuracy: true,
-                        maximumAge: 1100,
-                        timeout: 5000,
-                        // provider: 'system',
-                        // coordsType: 'wgs84',
-                        provider: 'baidu'
-                    }
-                );
+                      });
+                },50000)
                 console.log(`开启监听成功，watchId `, this.watchId)
             }
         } else {
@@ -448,7 +438,7 @@ BaseMap.prototype.enableGeolocation = function (actionType) {
                 this.map.removeLayer(this.geolocationLayer);
             }
             console.log(`准备关闭监听，watchId为 `, this.watchId)
-            window.plus && window.plus.geolocation.clearWatch(this.watchId);
+            window.clearInterval(this.watchId);
             this.watchId = ''
             console.log(`监听定位已关闭`, this.watchId)
         }

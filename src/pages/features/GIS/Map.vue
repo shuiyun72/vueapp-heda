@@ -786,7 +786,6 @@ export default {
     // 定位选择
     onLocationClick() {
       // 如果当前位置不在地图范围内，则提示开启定位失败
-      if (window.plus) {
         window.mui.toast(
           `正在${this.geolocationEnabled ? "关闭" : "开启"}定位...`
         );
@@ -806,9 +805,6 @@ export default {
           window.mui.toast(`开启定位成功`);
           _.find(this.actionbarItems, ["id", "location"]).text = "关闭定位";
         }
-      } else {
-        window.mui.toast(`请在移动设备上使用定位功能`);
-      }
     },
     //刷新选择
     onResetClick() {

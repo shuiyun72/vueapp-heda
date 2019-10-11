@@ -5,6 +5,7 @@ import {
     calcDistance,
     deepCopy,
 } from "@common/util";
+import nativeTransfer from '@JS/native/nativeTransfer'
 // 全局事件总线
 let eventbus = null
 // 默认config，参考 http://www.html5plus.org/doc/zh_cn/geolocation.html#plus.geolocation.PositionOptions
@@ -41,6 +42,8 @@ let _lastPosition = null
 
 let _failedCount = 0
 
+let position = undefined;
+console.log("GeoLocator.prev")
 export default class GeoLocator {
     constructor() {}
 
@@ -48,7 +51,7 @@ export default class GeoLocator {
         if (_state === 0) {
             _failedCount = 0
             return new Promise((resolve, reject) => {
-                if (window.plus && window.plus.geolocation) {
+               // if (window.plus && window.plus.geolocation) {
                     // 添加一系列设备相关的事件
                     document.addEventListener('pause', () => {
                         window.mui.toast('Pause')
@@ -68,9 +71,9 @@ export default class GeoLocator {
                     _state = 1
                     console.log(`GeoLocator: 初始化成功， 配置对象为： `, computedConfig)
                     resolve(JSON.parse(JSON.stringify(computedConfig)))
-                } else {
-                    reject(new Error('GeoLocator: 不在html5+运行环境，初始化失败。'))
-                }
+                // } else {
+                //     reject(new Error('GeoLocator: 不在html5+运行环境，初始化失败。'))
+                // }
             })
         } else {
             console.warn(`GeoLocator: GeoLocator在其他地方已被初始化，配置对象为： `, computedConfig)
@@ -78,14 +81,14 @@ export default class GeoLocator {
     }
 
     static start() {
+        console.log("GeoLocator.prev")
         if (_state === 1 || _state === 3) {
             _failedCount = 0
             _taskId = window.setInterval(() => {
-                window.plus.geolocation.getCurrentPosition(({
-                    coords
-                }) => {
+                nativeTransfer.getLocation(
+                    coords => {
                     // 坐标转换
-                    let coordsFor84 = CoordsHelper.gcj02towgs84(coords.longitude, coords.latitude)
+                    let coordsFor84 = CoordsHelper.gcj02towgs84(coords.lng, coords.lat)
                     // 组装数据对象
                     let timestamp = new Date();
                     let position = {
@@ -105,11 +108,11 @@ export default class GeoLocator {
                     if (extent && !_.isEmpty(extent)) {
                         // 有范围限定
                         if (
-                            // position.longitude <= extent.longitude[1] &&
-                            // position.longitude >= extent.longitude[0] &&
-                            // position.latitude <= extent.latitude[1] &&
-                            // position.latitude >= extent.latitude[0]
-                            true
+                            position.longitude <= extent.longitude[1] &&
+                            position.longitude >= extent.longitude[0] &&
+                            position.latitude <= extent.latitude[1] &&
+                            position.latitude >= extent.latitude[0]
+                           // true
                         ) {
                             // 位置点在给定范围内
                             console.log("%cGeoLocator: 位置点有效", 'color: green');
@@ -153,18 +156,6 @@ export default class GeoLocator {
                         console.log("%cGeoLocator: 位置点有效且合理 %s", 'color: green');
                         eventbus.$emit('geolocation', position)
                     }
-                }, err => {
-                    console.error('GeoLocator: 获取位置点出错: ', err)
-                    _failedCount++
-                    if (_failedCount === 3) {
-                        GeoLocator.restart()
-                    }
-                }, {
-                    enableHighAccuracy: computedConfig.enableHighAccuracy,
-                    maximumAge: computedConfig.maximumAge,
-                    provider: computedConfig.provider,
-                    coordsType: computedConfig.coordsType,
-                    timeout: computedConfig.timeout
                 })
             }, computedConfig.interval)
             _state = 2

@@ -1,27 +1,10 @@
 // 项目前端配置  
 export default {
   apiPath: {
-    // 用户相关
-    user: 'http://39.100.62.29:9819/api',
-    //user: 'http://192.168.88.181:8087/api',
-    // 巡检养护
-    //inspection: 'http://218.0.0.33:9923/asmx/Inspection.asmx',
-    //inspection: 'http://192.168.88.181:8087/api',
-    //inspection: 'http://47.104.3.68:9819/api',
-    inspection: 'http://39.100.62.29:9819/api',
-    //maintain: 'http://218.0.0.33:9923/asmx/Mantain.asmx',
-    maintain: 'http://39.100.62.29:9819/api',
-    maintainNew: 'http://218.0.0.33:9921/Smart_Mantain/WebPages/EventManage/WebAPI',
     gis: 'http://218.0.0.33:9921/GisWeb/PipeManage/GetGisData.aspx',
     //monitor&company为监控类api 巡检可以不用
     monitor: 'http://218.0.0.33:9922/MonitorAPI/api',
-    company: 'http://218.0.0.33:9922/MonitorAPI/api/FlowSync/Web_NewsInfo',
-  },
-  // 上传文件的可访问的静态资源根目录
-  uploadFilePath: {
-    // 巡检模块中的图片
-    //inspection: 'http://192.168.88.181:8087' 
-    inspection: 'http://39.100.62.29:9819/api' 
+    company: 'http://218.0.0.33:9922/MonitorAPI/api/FlowSync/Web_NewsInfo'
   },
   // 地图服务sdk Key
   mapKey: 'VunddhrWNA4rloeRPi7KYifYSFBqVwPv',
@@ -777,7 +760,7 @@ export default {
   }],
   // 开启定位功能支持的地理范围
   locationExtent: {
-    longitude: [113.35975811932538, 113.71391131426837],
-    latitude: [34.7501362981023, 34.876861366065775]
+    longitude: [114.06135797342202, 116.21207952657821],
+    latitude: [32.68158871470103, 33.451171875000036]
   }
 }

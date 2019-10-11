@@ -96,7 +96,6 @@
 
 <script>
 import _ from "lodash";
-import config from "@config/config";
 import apiInspection from "@api/inspection";
 import apiMaintain from "@api/maintain";
 import dateHelper from "@common/dateHelper";
@@ -119,7 +118,7 @@ export default {
   data() {
     return {
       defaultPicture: "./static/images/none.jpg",
-      pictureBasePath: config.uploadFilePath.inspection,
+      pictureBasePath: process.env.API_ROOT+'/api',
       activeTabName: "",
       todoOrders: [],
       doneOrders: []

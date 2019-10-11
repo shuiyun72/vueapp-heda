@@ -1,9 +1,11 @@
+// 配置API接口地址
+var rootURL = process.env.API_ROOT
 import axios from 'axios'
 import qs from 'querystring'
-import config from '@config/config.js'
+//import config from '@config/config.js'
 // axios.defaults.withCredentials = true
 const instance = axios.create({
-    baseURL: config.apiPath.inspection,
+    baseURL: rootURL+'/api',
     //解决跨域
     crossDomain:true,
     timeout: 30000,
@@ -32,9 +34,12 @@ instance.interceptors.request.use(
 export default {
     // 上传当前地理位置
     UploadLocation(longitude, latitude, currentTime, personId, isOnline = 0) {
-        return instance.post('/CurrentPosition/Post?positionX='+longitude+'&positionY='+latitude+'&upTime='+currentTime+'&personId='+personId+'&isOnline='+isOnline)
+        return instance.post('/CurrentPosition/Post?positionX='+longitude
+        +'&positionY='+latitude
+        +'&upTime='+currentTime
+        +'&personId='+personId
+        +'&isOnline='+isOnline)
     },
-    
     /**
      *  获取巡检任务列表
      * userId, (巡检员ID)
