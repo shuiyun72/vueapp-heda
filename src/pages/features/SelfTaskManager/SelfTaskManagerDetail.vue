@@ -498,14 +498,15 @@ export default {
         // 调用回复接口
         apiMaintain
           .PostReplyMessage(
-            this.replyMessage,
-            this.currentUserId,
-            this.orderInfo.EventID
+            this.orderInfo.EventID,
+            this.orderInfo.OrderId,
+            this.currentUser.iAdminID,
+            this.replyMessage
           )
           .then(res => {
             console.log("回复接口res", res);
-            if (res.data.ErrCode == 0) {
-              mui.toast("分派成功！");
+            if (res.data.Flag) {
+              mui.toast("回复成功！");
               this.actionDialogVisible.assign = false;
               // 刷新详情
               this.refreshOrderDetail();

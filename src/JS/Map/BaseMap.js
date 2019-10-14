@@ -73,10 +73,10 @@ import {
 import nativeTransfer from '@JS/native/nativeTransfer'
 
 function BaseMap() {
-  this.center = [115.25814467,33.06315419];
+  this.center = [113.530453,34.812602];
   this.defaultOptions = {
-    center: [115.25814467,33.06315419],
-    zoom: 7
+    center: [113.530453,34.812602],
+    zoom: 3
   };
   // 地图实例，在Init中初始化
   this.map = null;
@@ -116,7 +116,7 @@ function BaseMap() {
 
   this.projection = new ProjectionProj({
     code: 'EPSG:1233',
-    extent: [114.06135797342202, 32.68158871470103, 116.21207952657821, 33.451171875000036]
+    extent: [113.35975811932538, 34.7501362981023, 113.71391131426837, 34.876861366065775]
   });
   //遥感数据
   // this.SatellOptions = OptionsFromCapabilitiesWMTSSource(MapData, {
@@ -185,9 +185,9 @@ BaseMap.prototype.Init = function (containerId, options = {}) {
   // 遥感图层
   this.SatellLayer = new TileLayer({
     opacity: 1,
-    extent: [114.06135797342202, 32.68158871470103, 116.21207952657821, 33.451171875000036],
+    extent: [113.44619750976562, 34.70306396484375, 113.62747192382812, 34.859619140625],
     source: new TileArcGISRestSource({
-     url: 'http://114.98.235.14:6080/arcgis/rest/services/lq/LQ_yxt/MapServer'
+      url: 'http://39.100.62.29:6080/arcgis/rest/services/zz/ZZ_yxt/MapServer'
     }),
     visible: true
   });
@@ -195,9 +195,9 @@ BaseMap.prototype.Init = function (containerId, options = {}) {
   // 街道图层
   this.StreetLayer = new TileLayer({
     opacity: 1,
-    extent: [114.06135797342202, 32.68158871470103, 116.21207952657821, 33.451171875000036],
+    extent: [113.37890625, 34.62890625, 113.642578125, 34.892578125],
     source: new TileArcGISRestSource({
-      url: 'http://114.98.235.14:6080/arcgis/rest/services/lq/LQ_jdt/MapServer'
+      url: 'http://39.100.62.29:6080/arcgis/rest/services/zz/ZZ_jdt/MapServer'
     }),
     visible: false
   });
@@ -205,10 +205,9 @@ BaseMap.prototype.Init = function (containerId, options = {}) {
   // 管线图层
   this.PipeLayer = new TileLayer({
     opacity: 1,
-    extent: [114.06135797342202, 32.68158871470103, 116.21207952657821, 33.451171875000036],
+    extent: [113.35975811932538, 34.7501362981023, 113.71391131426837, 34.876861366065775],
     source: new TileArcGISRestSource({
-     // url: 'http://39.100.62.29:6080/arcgis/rest/services/zz/ZZ_pipe/MapServer'
-     url: 'http://114.98.235.14:6080/arcgis/rest/services/lq/LQ_jdt/MapServer'
+      url: 'http://39.100.62.29:6080/arcgis/rest/services/zz/ZZ_pipe/MapServer'
     }),
     visible: true
   });
@@ -257,7 +256,7 @@ BaseMap.prototype.Init = function (containerId, options = {}) {
     layers: [
       this.SatellLayer,
       this.StreetLayer,
-     // this.PipeLayer,
+      this.PipeLayer,
       // this.DMAlayer,
       this.Vectorlayer,
       this.objectQueryLayer,

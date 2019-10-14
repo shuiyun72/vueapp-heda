@@ -166,7 +166,10 @@ export default {
       this.isPicShow = true;
     },
     onPicHide(){
-      this.isPicShow = false;
+      let _this = this;
+      setTimeout(function(){
+        _this.isPicShow = false;
+      },100) 
     },
     // 长按预览图片
     onPreviewLongtap(tapIndex) {
@@ -386,6 +389,7 @@ export default {
 .picture_uploader_rel {
   position: relative;
   display: inline-block;
+  vertical-align: top;
   #imgPhoto {
     display: inline-block;
     position: absolute;

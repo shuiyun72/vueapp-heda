@@ -586,7 +586,7 @@ export default {
         let mapController = (this.mapController = new BaseMap());
         console.log("构建完成", mapController);
         mapController.Init("event_map");
-         this.mapController.SetMapLayerShow(2, 1);
+        this.mapController.SetMapLayerShow(2, 1);
         mapController.getInstance().on("map-click", data => {
           console.log("data", data);
           let coordinate = data.coords;
