@@ -22,7 +22,7 @@
                 <span class="el-icon el-icon-location-outline"></span>
                 <span :style="{color: order.EventAddress ? '#001d26' : '#aaa'}">{{order.EventAddress || '暂无位置信息'}}</span>
               </div>
-              <div class="status" :style="{color: order.isTimeout ? 'orange' : 'lightgreen'}"><span class="el-icon el-icon-time"></span>{{order.isTimeout ? '已超时' : '进行中'}}</div>
+              <div class="status" :style="{color: !order.isTimeout ? 'orange' : 'lightgreen'}"><span class="el-icon el-icon-time"></span>{{!order.isTimeout ? '已超时' : '进行中'}}</div>
               <div
                   class="distance" 
                   v-if="typeof order.distance === 'number'"
@@ -56,7 +56,7 @@
                 <span class="el-icon el-icon-location-outline"></span>
                 <span :style="{color: order.EventAddress ? '#001d26' : '#aaa'}">{{order.EventAddress || '暂无位置信息'}}</span>
               </div>
-              <div class="status" :style="{color: order.isTimeout ? 'orange' : 'lightgreen'}"><span class="el-icon el-icon-time"></span>{{order.isTimeout ? '已超时' : '进行中'}}</div>
+              <div class="status" :style="{color: !order.isTimeout ? 'orange' : 'lightgreen'}"><span class="el-icon el-icon-time"></span>{{!order.isTimeout ? '已超时' : '进行中'}}</div>
               <div
                   class="distance" 
                   v-if="typeof order.distance === 'number'"
@@ -192,7 +192,6 @@ export default {
             callback instanceof Function && callback(null, cacheData);
           } else {
             callback instanceof Function && callback(err);
-            mui.toast("暂无网络");
              console.log("从cache读取未接订单暂无网络")
           }
         });
@@ -271,7 +270,7 @@ export default {
     },
     // 点击一个具体的订单卡片，进入详情页面
     onOrderClick(orderInfo) {
-      this.$router.push({ name: "OrderDetail", query: { orderInfo } });
+      this.$router.push({ name: "OrderDetail", query: { orderInfo ,tabStatus:this.activeTabStatus} });
     },
     onTabClick(target) {
       console.log("tab click!", target);

@@ -56,6 +56,11 @@
               <span class="list_item_label">事件内容：</span>
               <span class="list_item_content">{{orderInfo.EventContent}}</span>
             </li>
+            <li>
+              <span class="list_item_label">联系电话：</span>
+              <span class="list_item_content" v-if="isPhone"><a :href="'tel:'+orderInfo.LinkCall">{{orderInfo.LinkCall}}</a></span>
+              <span class="list_item_content" v-else>{{orderInfo.LinkCall}}:无效号码</span>
+            </li>
           </div>
         </div>
       </el-card>
@@ -66,6 +71,32 @@
         </div>
         <div class="card_body">{{orderInfo.EventDesc}}</div>
       </el-card>
+
+      <!-- 延期描述 -->
+      <el-card v-if="finalOrderDetail && finalOrderDetail.length > 0">
+        <div slot="header" class="clearfix card_header">
+          <span class="header_text">延期描述</span>
+        </div>
+        <el-card v-for="(item,index) in finalOrderDetail" :key="index" class="card_body">
+          <div class="clearfix">
+            <span>延期到：{{item.PostponeTime}}</span>
+            <span class="order_detail_is_agree" :class="item.IsValid==6?'green':'red'">{{item.IsValid == 6 ? '同意' : item.IsValid == 7 ? '退回' : '暂无结果'}}</span>
+          </div>
+          <div class="order_detail_describe_t">
+            <div>延期描述：{{item.Cause}}</div>
+            <div v-if="item.Cause2 && item.Cause2.length>0">回复描述：{{item.Cause2}}</div>
+          </div>
+        </el-card>
+      </el-card>
+
+      <!-- 退单描述 -->
+      <el-card v-if="orderInfo.EventDesc && orderInfo.EventDesc.length > 0">
+        <div slot="header" class="clearfix card_header">
+          <span class="header_text">退单描述</span>
+        </div>
+        <div class="card_body">{{orderInfo.EventDesc}}</div>
+      </el-card>
+
       <!-- 现场图片 -->
       <el-card v-if="pictureList && pictureList.length > 0">
         <div slot="header" class="clearfix card_header">
@@ -98,15 +129,17 @@
       >接 单</button>
       <div class="button-group" v-if="orderOperState >= 3">
         <!-- tap事件在PC端测试的时候，会有一点bug -->
+         <!-- { name: "退 回", index: 0, interface: apiMaintainNew.RejectOrder }, -->
         <button
           type="button"
           class="button custom_bgcolor_light"
           v-for="action in actionList"
           :key="action.name"
-          v-if="!((orderInfo.EventFrom === '热线系统' && action.index===1) || (orderInfo.EventFrom !== '热线系统' && action.index===0))"
-          :disabled="action.index > 2 && !(action.index === orderOperState)"
+          v-if="!(orderInfo.EventFrom === '热线系统' && action.index===0)"
+          :disabled="action.index > 2 && !(action.index === orderOperState) || tabStatus == 3"
           @click="onActionClick(action)"
         >{{action.name}}</button>
+         <!-- v-if="!((orderInfo.EventFrom === '热线系统' && action.index===1) || (orderInfo.EventFrom !== '热线系统' && action.index===0))" -->
       </div>
     </div>
     <!-- 操作弹出框 -->
@@ -142,6 +175,9 @@ export default {
   },
   mounted(){
     this.onPickDeptClick()
+    console.log(this.orderInfo)
+    this.poneOrderDetail()
+    console.log(this.tabStatus)
   },
   beforeRouteEnter(to, from, next) {
     // 进入该路由的钩子函数，可通过next回调函数拿到组件的实例对象引用
@@ -180,10 +216,10 @@ export default {
         { name: "退 单", index: 1, interface: apiMaintain.ChargeBackOrder },
         { name: "延 期", index: 2, interface: apiMaintain.DelayOrder },
         { name: "到 场", index: 3, interface: apiMaintain.ChangeMissionStatus },
-        { name: "维 修", index: 4, interface: apiMaintain.ChangeMissionStatus },
+        // { name: "维 修", index: 4, interface: apiMaintain.ChangeMissionStatus },
         { name: "完 工", index: 5, interface: apiMaintain.ChangeMissionStatus }
       ],
-      orderOperState: Number(this.orderInfo.OperId),
+      orderOperState: Number(this.orderInfo.OperId) == 4 ? 5 : Number(this.orderInfo.OperId),
       orderStatus: Number(this.orderInfo.OrderStatus),
       // 订单操作弹出框是否弹出
       actionDialogVisible: false,
@@ -196,7 +232,8 @@ export default {
       },
       isChangeColor:this.orderInfo.EventX,
       //任务状态中,提交按钮是否可用
-      canSubmit:true
+      canSubmit:true,
+      finalOrderDetail:[]   //延迟及退单详情
     };
   },
   computed: {
@@ -218,9 +255,43 @@ export default {
     },
     pictureList() {
       return this.splitPicturesStr(this.orderInfo.EventPictures);
+    },
+    tabStatus(){
+      return this.$route.query.tabStatus
+    },
+    isPhone(){
+      let phone = /^([1]\d{10}|([\(（]?0[0-9]{2,3}[）\)]?[-]?)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?)$/.test(this.orderInfo.LinkCall);
+      if(phone){
+        return true
+      }else{
+        return false
+      }   
     }
   },
   methods: {
+    //工单详情信息
+    poneOrderDetail(){
+      console.log("poneOrderDetail")
+      apiMaintain.PoneOrderDetail(this.orderInfo.EventId,this.orderInfo.OrderId).then(data => {
+        console.log(data)
+        if(data.data.result){
+          let finalOrderD = [];
+          data.data.data2 = JSON.parse(JSON.stringify(data.data.data2).replace(/Cause/g, "Cause2"));
+          _.map(data.data.data,(res1,index)=>{  
+            delete data.data.data2[index].PostponeTime;
+            finalOrderD.push(_.assign({},data.data.data[index],data.data.data2[index]))
+          })
+          console.log(finalOrderD)
+          this.finalOrderDetail = finalOrderD;
+        }else{
+          mui.toast("获取详情数据失败！");
+        }
+      })
+      .catch(err => {
+          this.isLoading = false;
+          mui.toast("网络请求超时，请稍后重试");
+        });
+    },
     onPickDeptClick() {
       // 调用部门接口
       apiMaintain
@@ -383,7 +454,9 @@ export default {
                 operationId: 3,
                 description: "",
                 pictureList: [],
-                speechData: ""
+                speechData: "",
+                execPersonId:this.currentUser.PersonId,
+                execDetpID:this.currentUser.DeptId
               }
             );
             apiMaintain
@@ -430,14 +503,17 @@ export default {
       if (this.activeAction.index == 0) {
         // 如果是退回，给出提示，描述必填
         mui.toast("请填写本退回描述信息");
+        return;
       } else if (this.activeAction.operationId === 2) {
         // 如果是退单
         if (!hasDescOption) {
           mui.toast("请选择一个退单原因");
+          return;
         }
       } else if (this.activeAction.operationId === 4) {
         if (!hasDescOption) {
           mui.toast("请选择一个到场描述");
+          return;
         }
       } else if (
         [
@@ -468,7 +544,9 @@ export default {
         personId: this.currentUserId,
         orderId: this.currentOrderId,
         eventType: this.currentOrderEventType,
-        operationId: this.activeAction.operationId
+        operationId: this.activeAction.operationId,
+        execPersonId:this.currentUser.PersonId,
+        execDetpID:this.currentUser.DeptId
       });
       console.log(`${this.activeAction.actionName} req:`, reqData);
       this.$showLoading();
@@ -489,13 +567,23 @@ export default {
               mui.toast("操作成功！");
               if (
                 this.activeAction.operationId === 2 ||
-                this.activeAction.index == 0
+                this.activeAction.index == 0 || 
+                this.activeAction.operationId === 3
               ) {
                 // 如果当前是退单或者退回操作，则成功后返回上一级
                 this.$router.go(-1);
               }
               if (![2, 3].includes(this.activeAction.operationId)) {
-                this.orderOperState++;
+                if([4].includes(this.activeAction.operationId)){
+                  this.orderOperState = this.orderOperState+2 ;
+                }else{
+                  this.orderOperState++;
+                }
+              }
+              else{
+                if([2].includes(this.activeAction.operationId)){
+                  this.$router.go(-1);
+                }
               }
             } else {
               mui.toast(`操作失败！${res.data.data[0].message}`);
@@ -623,6 +711,10 @@ export default {
     }
   }
 }
+.order_detail_is_agree{float:right;}
+.order_detail_is_agree.red{color:red;}
+.order_detail_is_agree.green{color:green;}
+.order_detail_describe_t div{border-top:1px solid #eee;margin-top:5px;padding-top:5px;}
 </style>
 
 

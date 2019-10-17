@@ -95,13 +95,13 @@ export default {
     })
   },
   // 工单退回
-  RejectOrder(desc, personId, eventId) {
+  RejectOrder(data) {
     return instance.get('/EventInfo.ashx', {
       params: {
         Oper: 'BackToOper',
-        iAdminID: personId,
-        EventID: eventId,
-        BackDesc: desc
+        iAdminID: String(data.personId),
+        EventID: data.eventId,
+        BackDesc: "desc"
       }
     })
   },

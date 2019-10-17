@@ -67,11 +67,12 @@ export default {
   },
   // 退单
   ChargeBackOrder(data) {
+    console.log(data)
     return instance.get('CommitChargeBack', {
       params: {
         eventId:data.eventId,
-        OrderId: String(data.orderId),
-        PersonId: String(data.personId),
+        OrderId: data.orderId,
+        PersonId: data.personId,
         describe: data.description
       }
     })
@@ -83,7 +84,18 @@ export default {
         eventId:data.eventId,
         OrderId: data.orderId,
         complishTime: data.date,
-        describe: data.description
+        describe: data.description,
+        ExecPersonId:data.execPersonId,
+        ExecDetpID:data.execDetpID
+      }
+    })
+  },
+  //工单详情
+  PoneOrderDetail(eventId,orderId){
+    return instance.get('GetPostponeOrder', {
+      params: {
+        eventId:eventId,
+        OrderId:orderId
       }
     })
   },
@@ -96,6 +108,9 @@ export default {
       describe: data.description,
       EventPictures: data.pictureList[0] || '',
       EventVoices: data.speechData,
+      ExecPersonId:data.execPersonId,
+      ExecDetpID:data.execDetpID,
+
       /*
         接单：3,
         到场：4,

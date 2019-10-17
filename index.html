@@ -10,9 +10,36 @@
     <link href="./static/css/fontawesome-all.min.css" rel="stylesheet">
     <link href="./static/css/button.css" rel="stylesheet">
     <script src="./static/js/mui.js"></script>
+    <style>
+      #loading_index div{     
+        position: relative;
+        height: calc(60vh);
+      }
+      #loading_index img{
+        position: absolute;
+        width: 160px;
+        border-radius: 50%;
+        left: 50%;
+        margin-left: -80px;
+        bottom: 20px;
+      }
+      #loading_index p{ 
+        font-size: 26px;
+        color: #83b6f0;
+        text-align: center;
+        padding-top: 20px;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <div id="loading_index">
+      <div>
+        <img src="./static/images/loading.gif" >
+      </div>
+      <p>加载中，请稍等</p>
+      <p>。。。</p>
+    </div> 
   </body>
 </html>

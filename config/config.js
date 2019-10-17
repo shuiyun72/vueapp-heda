@@ -1,11 +1,14 @@
 // 项目前端配置
 export default {
-  apiPath: {
+  apiPath: { 
     // 用户相关
     user: 'http://218.0.0.33:9923/asmx/admin.asmx',
     // 巡检养护
     inspection: 'http://218.0.0.33:9923/asmx/Inspection.asmx',
-    maintain: 'http://218.0.0.33:9923/asmx/Mantain.asmx',
+    //inspection: 'http://192.168.88.181:20013/asmx/Inspection.asmx',
+    maintain: 'http://218.0.0.33:9923/asmx/Mantain.asmx', 
+    //maintain: 'http://192.168.88.181:20013/asmx/Mantain.asmx',
+    //192.168.88.181:20013
     maintainNew: 'http://218.0.0.33:9921/Smart_Mantain/WebPages/EventManage/WebAPI',
     gis: 'http://218.0.0.33:9921/GisWeb/PipeManage/GetGisData.aspx',
     //monitor&company为监控类api 巡检可以不用

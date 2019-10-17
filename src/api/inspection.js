@@ -115,5 +115,23 @@ export default {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
         })
+    },
+    //关键单到位改变状态
+    PostTaskEqument(taskId,devicename,devicesmid,x,y,personId,equType){
+        devicename = devicename || "设备"
+        equType = equType || ""
+        return instance.post('/PostTaskEqument', qs.stringify({
+            taskId:taskId,
+            devicename:devicename,
+            devicesmid:devicesmid,
+            x:x,
+            y:y,
+            personId:personId,
+            equType:equType
+        }), {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        })
     }
 }

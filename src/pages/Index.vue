@@ -132,144 +132,9 @@ export default {
       permissionJson: "",
       headerBgImagePath: "./static/images/index_header.png",
       // 首页功能块的配置信息
-      sections: [
-        //         {
-        //           index: 1,
-        //           sectionTitle: "日常办公",
-        //           rows: [
-        //             {
-        //               index: 1,
-        //               items: [
-        //                 {
-        //                   id: 90049077,
-        //                   index: 1,
-        //                   title: "公司信息",
-        //                   mode: "vertical",
-        //                   picture: "./static/images/boardcast.png",
-        //                   destination: "CompanyInfoIndex",
-        //                   class: "mui-col-sm-3 mui-col-xs-3"
-        //                 },
-        //                 {
-        //                   id: 90049078,
-        //                   index: 2,
-        //                   title: "待办流程",
-        //                   mode: "vertical",
-        //                   picture: "./static/images/pending_process.png",
-        //                   destination: "OATodoIndex",
-        //                   class: "mui-col-sm-3 mui-col-xs-3"
-        //                 },
-        //                 {
-        //                   id: 90049079,
-        //                   index: 3,
-        //                   title: "已办流程",
-        //                   mode: "vertical",
-        //                   picture: "./static/images/done_process.png",
-        //                   destination: "OADoneIndex",
-        //                   class: "mui-col-sm-3 mui-col-xs-3"
-        //                 },
-        //                 {
-        //                   id: 90049080,
-        //                   index: 4,
-        //                   title: "OA发起",
-        //                   mode: "vertical",
-        //                   picture: "./static/images/process_mgmt.png",
-        //                   destination: "OAPublisherIndex",
-        //                   class: "mui-col-sm-3 mui-col-xs-3"
-        //                 }
-        //               ]
-        //             }
-        //           ]
-        //         },
-        // {
-        //   index: 2,
-        //   sectionTitle: "生产调度",
-        //   rows: [
-        //     {
-        //       index: 1,
-        //       items: [
-        //         {
-        //           id: 90049081,
-        //           index: 1,
-        //           title: "运行总览",
-        //           mode: "vertical",
-        //           destination: "StateSummary",
-        //           picture: "./static/images/status_overview.png",
-        //           class: "mui-col-sm-3 mui-col-xs-3"
-        //         },
-        //         {
-        //           id: 90049082,
-        //           index: 2,
-        //           title: "过程监控",
-        //           mode: "vertical",
-        //           destination: "ProcessMonitor",
-        //           picture: "./static/images/process_monitoring.png",
-        //           class: "mui-col-sm-3 mui-col-xs-3"
-        //         },
-        //         {
-        //           index: 3,
-        //           id: 90049083,
-        //           title: "值班日志",
-        //           mode: "vertical",
-        //           destination: "DutyLog",
-        //           picture: "./static/images/duty_log.png",
-        //           class: "mui-col-sm-3 mui-col-xs-3"
-        //         },
-        //         {
-        //           index: 4,
-        //           id: 90049084,
-        //           title: "数据查询",
-        //           mode: "vertical",
-        //           destination: "StatisticIndex",
-        //           picture: "./static/images/statistic.png",
-        //           class: "mui-col-sm-3 mui-col-xs-3"
-        //         }
-        //       ]
-        //     },
-        //     {
-        //       index: 2,
-        //       items: [
-        //         {
-        //           index: 1,
-        //           id: 90049085,
-        //           title: "压力监测",
-        //           mode: "vertical",
-        //           destination: "PressureMonitorIndex",
-        //           picture: "./static/images/press_monitoring.png",
-        //           class: "mui-col-sm-3 mui-col-xs-3"
-        //         },
-        //         {
-        //           index: 2,
-        //           id: 90049086,
-        //           title: "流量监测",
-        //           mode: "vertical",
-        //           destination: "FlowMonitorIndex",
-        //           picture: "./static/images/flow_monitoring.png",
-        //           class: "mui-col-sm-3 mui-col-xs-3"
-        //         },
-        //         {
-        //           index: 3,
-        //           id: 90049087,
-        //           title: "水质监测",
-        //           mode: "vertical",
-        //           destination: "WaterQualityMonitorIndex",
-        //           picture: "./static/images/quality_monitoring.png",
-        //           class: "mui-col-sm-3 mui-col-xs-3"
-        //         },
-        //         {
-        //           index: 4,
-        //           id: 90049088,
-        //           title: "DMA监测",
-        //           mode: "vertical",
-        //           destination: "DMAMonitorIndex",
-        //           picture: "./static/images/DMA_monitoring.png",
-        //           class: "mui-col-sm-3 mui-col-xs-3"
-        //         }
-        //       ]
-        //     }
-        //   ]
-        // },
+      sections: [     
         {
-          index: 3,
+          index: 1,
           sectionTitle: "巡检养护",
           rows: [
             {
@@ -303,11 +168,6 @@ export default {
                   withBorder: true,
                   class: "mui-col-sm-6 mui-col-xs-6"
                 },
-            //   ]
-            // },
-            // {
-            //   index: 2,
-            //   items: [
                 {
                   index: 3,
                   id: 90049091,
@@ -322,26 +182,6 @@ export default {
                   withBorder: true,
                   class: "mui-col-sm-6 mui-col-xs-6"
                 },
-                // {
-                //   index: 2,
-                //   id: 90049092,
-                //   title: "个人工单",
-                //   desc: "维修任务分派",
-                //   mode: "horizontal",
-                //   picture: "./static/images/order_assignment.png",
-                //   pictureContainerStyle: {
-                //     "background-size": "80% 95%"
-                //   },
-                //   // destination: "OrderAssignment",
-                //   destination: "SelfTaskManagerIndex",
-                //   withBorder: true,
-                //   class: "mui-col-sm-6 mui-col-xs-6"
-                // }
-            //   ]
-            // },
-            // {
-            //   index: 3,
-            //   items: [
                 {
                   index: 4,
                   id: 90049093,
@@ -369,24 +209,13 @@ export default {
                   destination: "EventSubmission",
                   withBorder: true,
                   class: "mui-col-sm-6 mui-col-xs-6"
-                }
-                // {
-                //   index: 2,
-                //   title: "养护任务",
-                //   desc: "管网养护处理",
-                //   mode: "horizontal",
-                //   picture: "./static/images/conservation_mission.png",
-                //   destination: "ConservationMission",
-                //   withBorder: true,
-                //   class: "mui-col-sm-6 mui-col-xs-6"
-                // }
-                
+                }           
               ]
             }
           ]
         },
         {
-          index: 4,
+          index: 2,
           sectionTitle: "系统信息",
           rows: [
             {
@@ -453,8 +282,8 @@ export default {
         );
         console.log("index--$route",this.$route.query)
       }else{      
-        let currentUserMsg = getSessionItem("currentUser");
-        if(currentUserMsg === null || currentUserMsg === "null" ){
+        let sss = getSessionItem("currentUser");
+        if(sss === null || sss === "null" ){
           this.$router.replace({
             path: "/login"
           });
@@ -537,7 +366,7 @@ export default {
     //任务信息推送
     hintMsgCount(){
       this.getEventCount();
-      this.getSelfTask();
+    //  this.getSelfTask();
       this.getOredes();
     },
     //维修工单

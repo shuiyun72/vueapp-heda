@@ -121,7 +121,9 @@ import {
   Style as StyleStyle,
   Stroke as StrokeStyle,
 } from "ol/style";
-
+import {
+  getSessionItem,
+} from "@common/util";
 
 export default {
   props: {
@@ -492,6 +494,9 @@ export default {
     // 事件总线中geolocation事件的回调函数
     geoCallback(position) {
       console.log("Map:  通过事件总线拿到位置！", position);
+      let TaskId = this.$route.query.taskId;
+      let PersonId = JSON.parse(getSessionItem("currentUser")).PersonId;
+      let this_ = this;
       // 遍历关键点列表
       if (!_.isEmpty(this.unfinishedImportantArr)) {
         _.each(this.unfinishedImportantArr, point => {
@@ -504,11 +509,21 @@ export default {
               6
             ) * 1000;
           console.log("计算得到的距离：", distanceForMeter);
-          if (distanceForMeter <= 40) {
+          if (distanceForMeter <= 1000000) {
             _.find(this.importantArr, { id: point.id }).state = 1;
             // mui.toast(`您已到位名称为 ${point.name} 的关键点`);
-            this.mapController.reachPointWhichId(point.id);
-            this.$alert(`您已到位名称为 ${point.name} 的关键点`, "到位通知");
+            apiInspection.PostTaskEqument(
+              TaskId,
+              point.ImportPointName,
+              point.ImportPointId,
+              point.X,
+              point.Y,
+              PersonId
+            ).then(res=>{
+              this_.mapController.reachPointWhichId(point.id);
+              this_.$alert(`您已到位名称为 ${point.name} 的关键点`, "到位通知");
+            })
+           
           }
         });
       }
@@ -523,11 +538,24 @@ export default {
               deivce.latitude,
               6
             ) * 1000;
-          if (distanceForMeter <= 40) {
+          if (distanceForMeter <= 1000000) {
             _.find(this.deviceArr, { smid: deivce.smid }).state = 1;
             // mui.toast(`您已到位SMID为 ${deivce.smid} 的设备点`);
-            this.mapController.reachPointWhichId(deivce.smid);
-            this.$alert(`您已到位SMID为 ${deivce.smid} 的设备点`, "到位通知");
+            apiInspection.PostTaskEqument(
+              TaskId,
+              "",
+              deivce.Smid,
+              deivce.X,
+              deivce.Y,
+              PersonId,
+              deivce.EquType
+            ).then(res=>{
+              if(res.result){
+                this_.mapController.reachPointWhichId(deivce.smid);
+                this_.$alert(`您已到位SMID为 ${deivce.smid} 的设备点`, "到位通知");
+              }
+            })
+           
           }
         });
       }

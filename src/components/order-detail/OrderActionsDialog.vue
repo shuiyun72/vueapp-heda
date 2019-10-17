@@ -167,14 +167,13 @@ export default {
         }
       });
     },
-
+    GetDateDiff(DiffTime) {  
+        return DiffTime.replace(/\-/g, "/");
+    },
     onDateRowClick() {
       // 日期选择
       this._datePicker.show(result => {
-        this.pickedDate = dateHelper.format(
-          new Date(result.value),
-          "yyyy-MM-dd hh:mm:ss"
-        );
+        this.pickedDate = new Date(this.GetDateDiff(result.value)).Format("yyyy-MM-dd hh:mm:ss")
       });
     },
     onPictureUploaderChange(pictureList) {

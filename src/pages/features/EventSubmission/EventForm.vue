@@ -196,13 +196,13 @@ export default {
             placeholder: "请选择处理部门",
             content: ""
           },
-          {
-            id: "handlerPerson",
-            label: "处理人",
-            labelStyle: { color: "#999", fontSize: "1.2rem", width: "25%" },
-            placeholder: "请选择处理人",
-            content: ""
-          },
+          // {
+          //   id: "handlerPerson",
+          //   label: "处理人-",
+          //   labelStyle: { color: "#999", fontSize: "1.2rem", width: "25%" },
+          //   placeholder: "请选择处理人",
+          //   content: ""
+          // },
           {
             id: "eventType",
             label: "事件类型",
@@ -320,36 +320,6 @@ export default {
           }
         ];
       }
-      // 定位
-      window.mui.plusReady(() => {
-        // window.plus.geolocation.getCurrentPosition(
-        //   location => {
-        //     console.log("事件上报， location ", location);
-        //     // 坐标转换
-        //     let coordsFor84 = CoordsHelper.gcj02towgs84(
-        //       location.coords.longitude,
-        //       location.coords.latitude
-        //     );
-        //     location.longitude = coordsFor84[0];
-        //     location.latitude = coordsFor84[1];
-        //     instance.locationInfo = deepCopy(location);
-        //     // 从items配置项中找到date项
-        //     let locationItem = _.find(instance.items, item => {
-        //       return item.id === "location";
-        //     });
-        //     // 填入当前定位信息
-        //     locationItem.content = instance.currentAddressText;
-        //   },
-        //   err => {},
-        //   {
-        //     enableHighAccuracy: true,
-        //     maximumAge: 5000,
-        //     timeout: 10000,
-        //     provider: "baidu",
-        //     coordsType: "gcj02"
-        //   }
-        // );
-      });
       // 如果是非临时，根据路由参数设置当前事件上报选择的任务
       if (instance.isTemp == 0) {
         instance.pickerValue.mission = {
@@ -357,15 +327,6 @@ export default {
           value: instance.taskId
         };
       }
-
-      // 计算当前时间
-      let now = new Date();
-      // 从items配置项中找到date项
-      //   let dateItem = _.find(instance.items, item => {
-      //     return item.id === "date";
-      //   });
-      //   // 填入当前时间
-      //   dateItem.content = dateHelper.format(now, "yyyy-MM-dd hh:mm:ss");
     });
   },
   data() {
@@ -376,14 +337,6 @@ export default {
       locationInfo: {},
       // 所有列表项的配置， 在每次进入当前路由（beforeRouteEnter）时动态初始化
       items: [],
-      // 所有下拉菜单的值
-      /* 
-      @format 
-        mission: {
-          text: String, 后端返回的每一项的name 
-          value: String, 后端返回的每一项的id
-        }
-      */
       pickerValue: {
         // 是否有隐患
         hasHiddenDanger: {
@@ -404,7 +357,7 @@ export default {
         // 处理部门
         handlerDepartment: "",
         // 部门人员
-        handlerPerson: "",
+       // handlerPerson: "",
         // 事件类型
         eventType: {},
         // 事件内容列表
@@ -432,29 +385,16 @@ export default {
     };
   },
   computed: {
+    //判断是否为手机号
+    isPhone(){
+      let phone = /^([1]\d{10}|([\(（]?0[0-9]{2,3}[）\)]?[-]?)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?)$/.test(this.reporterMobile);
+      if(phone){
+        return true
+      }else{
+        return false
+      }   
+    },
     // 当前的用户信息
-    /*
-    @format
-      {
-        PersonId: Int,
-        DeptId: Int,
-        PersonName: String,
-        PassWord: String,
-        DeptName: String,
-        RoleName: String,
-        Smid: String,
-        IsEdit: Int,
-        UpMeter: Int,
-        iRoleID: Int,
-        deviceInfo: {
-          uuid: String, 设备唯一标识
-          imei: String, 国际移动设备身份码
-          imsi: String, 国际移动用户识别码
-          model: String, 设备型号
-          vendor: String, 设备厂商
-        }
-      }
-    */
     currentUser() {
       return JSON.parse(getSessionItem("currentUser"));
     },
@@ -462,12 +402,6 @@ export default {
     currentDevice() {
       return this.currentUser.deviceInfo;
     },
-    // currentAddressText() {
-    //   let addr = this.locationInfo.address;
-    //   return addr instanceof Object
-    //     ? addr.poiName || this.locationInfo.addresses || ""
-    //     : "";
-    // },
     descSlotName() {
       return (
         "item_" +
@@ -560,22 +494,11 @@ export default {
           .content.split("<br>")[1]
           .toString(),
         ExecDetpID: this.pickerValue.handlerDepartment.value.toString(),
-        ExecPersonId: this.pickerValue.handlerPerson.value.toString(),
+        ExecPersonId: 1,   // 处理人员暂无意义 
         EventDesc: this.detailDescription,
         // 只能上传一张图片
         // 格式化原始的base64字符串为后端能接受的base64格式
         Bae64Image: this.pictureListStr || ""
-
-        // TaskId: this.pickerValue.mission.value || -1,
-        // // 以下四个字段值来自非临时事件路由参数， 且有默认值
-        // Devicename: this.deviceName,
-        // Devicesmid: this.deviceSmid,
-        // PointType: this.pointType,
-        // // 是否是临时事件
-        // IsTemp: this.isTemp,
-        // // 来自非临时事件的表单中的单选按钮， 默认值为1
-        // IsHidden: this.pickerValue.hasHiddenDanger.value
-        // // IsHidden: 1
       };
     }
   },
@@ -589,32 +512,6 @@ export default {
     },
     // 使用当前位置按钮
     onUseCurrentCoordButtonClick() {
-      //   window.plus.geolocation.getCurrentPosition(
-      //     location => {
-      //       // 坐标转换
-      //       let coordsFor84 = CoordsHelper.gcj02towgs84(
-      //         location.coords.longitude,
-      //         location.coords.latitude
-      //       );
-      //       //转换为地方坐标
-      //       coordsFor84 = this.mapController.destinationCoordinateProj(
-      //         coordsFor84
-      //       );
-      //       this.mapController.addPoiFeature(coordsFor84);
-      //       this.cacheCoord = coordsFor84;
-      //     },
-      //     err => {
-      //       mui.toast("获取当前位置失败");
-      //     },
-      //     {
-      //       enableHighAccuracy: true,
-      //       maximumAge: 5000,
-      //       timeout: 10000,
-      //       provider: "baidu",
-      //       coordsType: "gcj02"
-      //     }
-      //   );
-
       nativeTransfer.getLocation(result => {
         
         if (result) {
@@ -636,21 +533,14 @@ export default {
       })
     },
     onMapDialogOpened() {
-      console.log("打开");
       this.cacheCoord = [];
       setTimeout(() => {
         console.log("开始构建地图");
         let dom = document.getElementById("event_map");
-        if (dom) {
-          console.log("dom存在");
-        }
         let mapController = (this.mapController = new BaseMap());
-        console.log("构建完成", mapController);
         mapController.Init("event_map");
         mapController.getInstance().on("map-click", data => {
-          console.log("data", data);
           let coordinate = data.coords;
-          console.log("coord", coordinate);
           this.cacheCoord = coordinate;
           mapController.addPoiFeature(coordinate);
         });
@@ -721,9 +611,6 @@ export default {
                       textKey: "TaskName"
                     });
                   }
-                  // console.log('C1')
-                  // this.isLoading = false;
-                  // mui.toast("网络请求超时，请稍后重试");
                 }
               })
               .catch(err => {
@@ -919,18 +806,6 @@ export default {
             }).content = "";
           }
         }
-        /* 
-          如果当前打开的是处理部门的picker
-          则每次选择后判断本次是否与之前选择的部门一致
-          若发生改变，则应清空下方处理人的内容
-        */
-        if (row.id === "handlerDepartment") {
-          if (pickedItem.value !== this.pickerValue.handlerDepartment.value) {
-            _.find(this.items, item => {
-              return item.id === "handlerPerson";
-            }).content = "";
-          }
-        }
         this.pickerValue[row.id] = pickedItem;
         this.items[rowIndex].content = pickedItem.text;
       });
@@ -958,9 +833,15 @@ export default {
     },
     // 点击上传按钮，上传全部事件数据
     onSubmitButtonClick() {
-      this.isLoading = true;
-      this.fullscreenLoadingText = "正在上报事件，请耐心等待...";
+     
+      
       console.log("事件上报数据：", this.eventSubmissionData);
+      if(!this.isPhone){
+         mui.toast("手机号格式不正确！");
+         return
+      }
+      this.fullscreenLoadingText = "正在上报事件，请耐心等待...";
+      this.isLoading = true;
       apiInspection
         .SubmitEvent(this.eventSubmissionData)
         .then(res => {
@@ -991,12 +872,6 @@ export default {
 .event_submission_container {
   width: 100%;
   font-size: 1.3rem;
-  /* el-inpit与el-textarea都有默认的下边距，在列表中效果不好，所以清除掉 */
-  // .el-select {
-  //   input {
-  //     margin-bottom: 0px;
-  //   }
-  // }
   .picture_uploader {
     width: 100%;
     min-height: 20vw;
