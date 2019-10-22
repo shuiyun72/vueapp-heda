@@ -219,7 +219,7 @@ export default {
     currentAddressText() {
       let addr = this.locationInfo.address;
       return ( JSON.stringify(addr) != '{}' )
-        ? addr.poiName || this.locationInfo.addresses || "获取位置信息失败"
+        ? this.locationInfo.addresses || "获取位置信息失败"
         : "定位中...";
     },
     // 签到按钮可用状态

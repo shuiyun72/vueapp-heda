@@ -140,8 +140,8 @@ export default {
     }
   },
   beforeDestroy() {
-    // clearInterval(this.hintMsgCountTimer);
-    // this.hintMsgCountTimer = null;
+    clearInterval(this.hintMsgCountTimer);
+    this.hintMsgCountTimer = null;
     /*clearInterval(this.UploadLocationTimer);
     this.UploadLocationTimer = null;*/
   },
@@ -582,7 +582,8 @@ export default {
             JSON.parse(getSessionItem("currentUser")).iAdminID ||
             this.currentUser.iAdminID;
           personId = personId || 1;
-          apiInspection
+          // console.log("location---------------",dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),personId)
+          apiInspection 
             .UploadLocation(
               location.lng,
               location.lat,
@@ -591,10 +592,10 @@ export default {
               1
             )
             .then(res => {
-              console.log("上传位置信息成功", res.data.Msg);
+              console.log("上传位置信息成功", res.data.Msg,"14444");
             });
         } else {
-          mui.toast("获取当前位置失败");
+          mui.toast("获取当前位置失败!");
         }
       });
     },

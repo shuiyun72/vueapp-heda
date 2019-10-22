@@ -18,7 +18,6 @@ function _postMessage(methodName, callBack, params) {
       return _openSysMap(methodName, callBack, params)
     }
   }else{
-    mui.toast("webview页面打开");
     let os = _md.os();
     let postEntity = _creatPostEntity(methodName, callBack, params)
     let result = []
@@ -96,7 +95,7 @@ function _positionPlus(type,callback){
       callback instanceof Function && callback(nowLocation)  
     },
     err => {
-      mui.toast("获取当前位置失败");
+      mui.toast("获取当前位置失败。");
     },
     {
       enableHighAccuracy: true,

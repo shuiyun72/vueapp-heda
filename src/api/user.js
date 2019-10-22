@@ -1,9 +1,12 @@
+
+// 配置API接口地址
+var rootURL = process.env.API_ROOT
 import axios from 'axios'
 import config from '@config/config.js'
 // axios.defaults.withCredentials = true
 
 const instance = axios.create({
-  baseURL: config.apiPath.user,
+  baseURL: rootURL+'/api',
   //解决跨域
   crossDomain:true,
   timeout: 10000,
@@ -54,5 +57,15 @@ export default {
   // 所有部门数据 accountCenter页面
   GetDepartment() {
     return instance('/Department/GetUserComboboxList')
+  },
+
+  //和达账户验证
+  SignInWithHdAcc(hdAcc, hdStamp, hdSSOKey) {
+   // return sha1('HD#@!' + hdAcc + hdStamp) == hdSSOKey
+    return instance.post('/System/HDLogin?hdAcc='+hdAcc
+    +'&hdStamp='+hdStamp
+    +'&hdSSOKey='+hdSSOKey
+    +'&systemType=3')
   }
+
 }

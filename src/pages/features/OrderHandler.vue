@@ -114,7 +114,6 @@
 </template>
 
 <script>
-import config from "@config/config";
 import { getSessionItem } from "@common/util";
 import dateHelper from "@common/dateHelper";
 import MuiList from "@comp/common/MuiList.vue";
@@ -131,7 +130,8 @@ export default {
     return {
       assignDialogVisiable: false,
       departmentList: [],
-      pictureBasePath: config.uploadFilePath.inspection
+      // pictureBasePath: process.env.API_ROOT+'/api'
+      pictureBasePath: process.env.API_ROOT
     };
   },
   computed: {

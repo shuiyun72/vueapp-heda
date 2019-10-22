@@ -28,7 +28,7 @@
     <!-- 拍照上传 -->
     <div class="picture_uploader" v-if="pictureUploaderEnabled">
       <PictureUploader
-        :uploadLimit="4"
+        :uploadLimit="2"
         enableButton
         @change="onPictureUploaderChange"
         ref="pictureUploader"
@@ -186,11 +186,7 @@ export default {
     onDateRowClick() {
       // 日期选择
       this._datePicker.show(result => {
-        this.pickedDate = dateHelper.format(
-          new Date(result.value),
-          "yyyy-MM-dd hh:mm:ss"
-        );
-        console.log(this.pickedDate)
+        this.pickedDate = new Date(result.value.replace(/\-/g, "/")).Format("yyyy-MM-dd  hh:mm:ss");
       });
     },
     onPictureUploaderChange(pictureList) {

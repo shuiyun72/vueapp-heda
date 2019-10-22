@@ -70,7 +70,7 @@ import {
   getLength as GetLengthSphere,
   getDistance as GetDistanceSphere
 } from "ol/sphere.js";
-
+import nativeTransfer from '@JS/native/nativeTransfer'
 
 function BaseMap() {
   this.center = [113.530453,34.812602];
@@ -185,7 +185,7 @@ BaseMap.prototype.Init = function (containerId, options = {}) {
   // 遥感图层
   this.SatellLayer = new TileLayer({
     opacity: 1,
-    extent: [113.35975811932538, 34.7501362981023, 113.71391131426837, 34.876861366065775],
+    extent: [113.44619750976562, 34.70306396484375, 113.62747192382812, 34.859619140625],
     source: new TileArcGISRestSource({
       url: 'http://39.100.62.29:6080/arcgis/rest/services/zz/ZZ_yxt/MapServer'
     }),
@@ -195,9 +195,9 @@ BaseMap.prototype.Init = function (containerId, options = {}) {
   // 街道图层
   this.StreetLayer = new TileLayer({
     opacity: 1,
-    extent: [113.35975811932538, 34.7501362981023, 113.71391131426837, 34.876861366065775],
+    extent: [113.37890625, 34.62890625, 113.642578125, 34.892578125],
     source: new TileArcGISRestSource({
-      url: 'http://39.100.62.29:6080/arcgis/rest/services/zz/ZZ_yxt/MapServer'
+      url: 'http://39.100.62.29:6080/arcgis/rest/services/zz/ZZ_jdt/MapServer'
     }),
     visible: false
   });
@@ -369,6 +369,7 @@ BaseMap.prototype.setRoutes = function (points) {
 };
 
 BaseMap.prototype.geoCallback = function (position) {
+  console.log("geoCallback")
   if (
     position &&
     position.longitude &&
@@ -458,10 +459,12 @@ BaseMap.prototype.enableGeolocation = function (actionType) {
     actionType = true
   }
   // map实例必须存在
+  console.log("map实例必须存在")
   if (this.map) {
     if (actionType) {
       // 启动
       if (!this.watchId) {
+        console.log("map实例必须存在---------------")
         // let view = this.map.getView()
         // 定位点要素
         var positionFeature = new Feature();
@@ -490,41 +493,36 @@ BaseMap.prototype.enableGeolocation = function (actionType) {
 
         this.map.addLayer(this.geolocationLayer);
 
-        this.watchId = window.plus.geolocation.watchPosition(
-          position => {
-            let coordinates = position.coords;
-             console.log('Coords, ', coordinates)
-            if (
-              coordinates &&
-              coordinates.longitude &&
-              coordinates.latitude
-            ) {
-              // window.mui.toast(`经度：${coordinates.longitude}, 纬度：${coordinates.latitude}`)
-              positionFeature.setGeometry(
-                new PointGeom([
-                  coordinates.longitude,
-                  coordinates.latitude
-                ])
-              );
-              this.map
-                .getView()
-                .setCenter([
-                  coordinates.longitude,
-                  coordinates.latitude
-                ]); //平移地图
-            }
-          },
-          err => {
-            console.log("geo err!!!!!", err);
-          }, {
-            // enableHighAccuracy: true,
-            maximumAge: 500,
-            timeout: 5000,
-            provider: 'system',
-            coordsType: 'wgs84',
-            // provider: 'baidu'
-          }
-        );
+        this.watchId = window.setInterval(() => {
+          console.log("baseMap------interval----position")
+          nativeTransfer.getLocation(
+            position => {
+              let coordinates = {
+                longitude:position.lng,
+                latitude:position.lat
+              };
+              console.log('Coords, ', coordinates)
+              if (
+                coordinates &&
+                coordinates.longitude &&
+                coordinates.latitude
+              ) {
+                // window.mui.toast(`经度：${coordinates.longitude}, 纬度：${coordinates.latitude}`)
+                positionFeature.setGeometry(
+                  new PointGeom([
+                    coordinates.longitude,
+                    coordinates.latitude
+                  ])
+                );
+                this.map
+                  .getView()
+                  .setCenter([
+                    coordinates.longitude,
+                    coordinates.latitude
+                  ]); //平移地图
+              }
+            });
+        },2000)
         console.log(`开启监听成功，watchId `, this.watchId)
       }
     } else {
@@ -533,7 +531,7 @@ BaseMap.prototype.enableGeolocation = function (actionType) {
         this.map.removeLayer(this.geolocationLayer);
       }
       console.log(`准备关闭监听，watchId为 `, this.watchId)
-      window.plus && window.plus.geolocation.clearWatch(this.watchId);
+      window.clearInterval(this.watchId);
       this.watchId = ''
       console.log(`监听定位已关闭`, this.watchId)
     }

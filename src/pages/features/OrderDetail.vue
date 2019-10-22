@@ -14,7 +14,7 @@
             </li>
             <li>
               <span class="list_item_label">所属部门：</span>
-              <span class="list_item_content">{{orderInfoDeptId}}</span>
+              <span class="list_item_content">{{orderInfo.cDepName}}</span>
             </li>
             <li>
               <span class="list_item_label">派单人：</span>
@@ -56,6 +56,15 @@
               <span class="list_item_label">事件内容：</span>
               <span class="list_item_content">{{orderInfo.EventTypeName2}}</span>
             </li>
+            <li>
+              <span class="list_item_label">联系电话：</span>
+              <span class="list_item_content" v-if="isPhone">
+                <a :href="'tel:'+orderInfo.LinkCall">{{orderInfo.LinkCall}}</a>
+              </span>
+              <span class="list_item_content" v-else>
+                {{orderInfo.LinkCall}}:联系电话不可用 
+              </span>
+            </li>
           </div>
         </div>
       </el-card>
@@ -80,6 +89,9 @@
           >
         </div>
       </el-card>
+      <div class="flex_pic_p" @tap="onPicHide" v-show="isPicShowP">
+        <img src="" class="flex_pic_img_p">
+      </div>
     </div>
     <!-- 底部按钮组 -->
     <div class="fixed_footer">
@@ -98,11 +110,12 @@
       >接 单</button>
       <div class="button-group" v-if="orderOperState >= 3">
         <!-- tap事件在PC端测试的时候，会有一点bug -->
+         <!-- v-if="!((orderInfo.EventFrom === '热线系统' && action.index===1) || (orderInfo.EventFrom !== '热线系统' && action.index===0))" -->
         <button
           type="button"
           class="button custom_bgcolor_light"
           v-for="action in actionList"
-          v-if="!((orderInfo.EventFrom === '热线系统' && action.index===1) || (orderInfo.EventFrom !== '热线系统' && action.index===0))"
+          v-if="action.index !=0 "
           :key="action.name"
           :disabled="action.index > 2 && !(action.index === orderOperState)"
           @click="onActionClick(action)"
@@ -127,7 +140,6 @@
 </template>
 <script>
 import _ from "lodash";
-import config from "@config/config";
 import { getSessionItem } from "@common/util";
 import apiMaintain from "@api/maintain";
 import apiMonitor from "@api/monitor";
@@ -167,8 +179,10 @@ export default {
   },
   data() {
     return {
+      isPicShowP:false,
       defaultPicture: "./static/images/none.jpg",
-      pictureBasePath: config.uploadFilePath.inspection,
+      // pictureBasePath:  process.env.API_ROOT+'/api',
+      pictureBasePath:  process.env.API_ROOT,
       // 本页面的四种操作及其对应调用的restful api
       actionList: [
         { name: "退 回", index: 0, interface: apiMaintain.RejectOrder },
@@ -212,29 +226,24 @@ export default {
     },
     pictureList() {
       return _.pull(this.splitPicturesStr(this.orderInfo.EventPictures),"");   
+    },
+    //验证电话是否符合
+    isPhone(){
+      let phone = /^([1]\d{10}|([\(（]?0[0-9]{2,3}[）\)]?[-]?)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?)$/.test(this.orderInfo.LinkCall);
+      if(phone){                                                                                                                        
+        return true
+      }else{
+        return false
+      }   
     }
   },
-  created(){
-    this.GetDepartmentList();
-  },
-  methods: {
-    //获取部门信息
-    GetDepartmentList(){
-      apiMaintain.GetDepartmentList().then(res=>{
-        console.log(res)
-        if(res.data.Flag){
-          this.DeptIDList = res.data.Data.Result;
-          this.orderInfoDeptId = _.filter(this.DeptIDList,res=>{
-              return res.iDeptID == this.orderInfo.DeptId
-            })[0].cDepName;
-          console.log(_.filter(this.DeptIDList,res=>{
-              return res.iDeptID == this.orderInfo.DeptId
-            })[0])
-        }else{
-          mui.toast("获取部门信息失败，服务器异常");
-        }   
-      })
-    },  
+  methods: { 
+    onPicHide(){
+      let _this = this;
+      setTimeout(function(){
+        _this.isPicShowP = false;
+      },100) 
+    },
     splitPicturesStr(str) {
       if (str && str.length > 0) {
         return str.includes("|") ? str.split("|") : [str];
@@ -422,7 +431,13 @@ export default {
       let list = this.pictureList.map(url => {
         return `${this.pictureBasePath}${url}`;
       });
-      plus.nativeUI.previewImage(list, { current: index });
+      if(window.plus){
+        plus.nativeUI.previewImage(list, { current: index });
+      }else{
+        let picImg = document.getElementsByClassName("flex_pic_img_p")[0];
+        picImg.src = list[index];
+        this.isPicShowP = true;
+      }
     }
   },
   filters: {
@@ -525,6 +540,22 @@ export default {
       }
     }
   }
+}
+.flex_pic_p{
+  width: 100%;
+  height: calc(100vh);
+  background: #eee;
+  z-index: 1000;
+  position:fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content:center;
+  align-items: center
+}
+.flex_pic_img_p{
+  width: 100%;
+  position: absolute;
 }
 </style>
 

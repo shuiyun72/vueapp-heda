@@ -1,9 +1,11 @@
+// 配置API接口地址
+var rootURL = process.env.API_ROOT
 import axios from 'axios'
 import qs from 'querystring'
 import config from '@config/config.js'
 // axios.defaults.withCredentials = true
 const instance = axios.create({
-    baseURL: config.apiPath.inspection,
+    baseURL: rootURL+'/api',
     //解决跨域
     crossDomain:true,
     timeout: 30000,
@@ -317,14 +319,7 @@ export default {
     +'&StepNum=7'
     +'&iAdminID='+iAdminID)
   },
-  // 获取延期申请信息
-  GetDelayInfo(eventId) {
-    return instance.get('/EventManageForMaintain/GetEventWorkorderStepForMaintain', {
-      params: {
-        EventID: eventId
-      }
-    })
-  },
+  
   // 延期审核确认
   CheckOrderDelay(eventId, orderId, iDeptID, iAdminID,OperRemarks,complishTime) {
     OperRemarks = OperRemarks || "满意"

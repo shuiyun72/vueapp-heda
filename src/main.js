@@ -47,9 +47,27 @@ Vue.use(VueScroller)
 import infiniteScroll from 'vue-infinite-scroll'
 Vue.use(infiniteScroll)
 
+//引入tooltip插件
+var tooltip = require('tooltip')
+let config = {
+  showDelay: 10,
+  style: {
+    padding: 6,
+    'font-size': '12px',
+    'z-index': 2500,
+    background: '#2f3239',
+    color: '#fff',
+    'border-radius': '2px',
+    border: 'none',
+    'margin-left': '-15px',
+  }
+}
+tooltip(config)
+
+document.getElementById("loading_index").style.display = "none";
 // 引入openlayers的样式
 import 'ol/ol.css'
-
+//import './permission'
 // 为每个Vue实例添加方法
 ((Vue, mui) => {
   let defaultBack = mui.back;
@@ -147,16 +165,16 @@ if (window.mui) {
         })
       }
     })
-    // 初始化GeoLocator
-    GeoLocator.init({
-        extent: AppConfig.locationExtent || {}
-      })
-      .then(GeoLocator.start)
-      .catch(err => {
-        console.log(`开启定位服务失败 `, err);
-      });
   });
 }
+// 初始化GeoLocator
+GeoLocator.init({
+  extent: AppConfig.locationExtent || {}
+})
+.then(GeoLocator.start)
+.catch(err => {
+  console.log(`开启定位服务失败 `, err);
+});
 
 
 
@@ -206,3 +224,21 @@ if (window.mui) {
 //     provider: "system",
 //     coordsType: "wgs84"
 // });
+
+//日期兼容ios
+Date.prototype.Format = function (fmt) { //author: meizz 
+  var o = {
+    "M+": this.getMonth() + 1, //月份 
+    "d+": this.getDate(), //日 
+    "h+": this.getHours(), //小时 
+    "m+": this.getMinutes(), //分 
+    "s+": this.getSeconds(), //秒 
+    "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+    "S": this.getMilliseconds() //毫秒 
+  };
+  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+  for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+  return fmt;
+}
+
