@@ -28,7 +28,7 @@
     <!-- 拍照上传 -->
     <div class="picture_uploader" v-if="pictureUploaderEnabled">
       <PictureUploader
-        :uploadLimit="4"
+        :uploadLimit="2"
         enableButton
         @change="onPictureUploaderChange"
         ref="pictureUploader"

@@ -10,13 +10,14 @@
     >
       <img :src="pictureInfo.fileName" />
     </div>
-    <div class="picture_uploader_rel">
+    <div class="picture_uploader_rel" :style="!enableButtonForm?'position: relative;':''">
       <el-button v-if="enableButton" @click.native="onAddPictrueClick">添加图片</el-button>
       <input
         type="file"
         accept="image/*"
         capture="camera"
         id="imgPhoto"
+        :class="!enableButtonForm?'imgPhoto':'imgPhotoForm'"
         v-if="!isPlus"
         @click="onAddPictrueInput"
       /> 
@@ -35,6 +36,10 @@ import _ from "lodash";
 export default {
   props: {
     enableButton: {
+      type: Boolean,
+      default: false
+    },
+    enableButtonForm:{
       type: Boolean,
       default: false
     },
@@ -59,7 +64,7 @@ export default {
     }
   },
   methods: {
-    onAddPictrueInput() {
+    onAddPictrueInput(el) {
       this.openCamera(this.parsePictureFile);
     },
     onAddPictrueClick() {
@@ -370,7 +375,6 @@ export default {
 <style lang="less">
 .picture_uploader_plus_container {
   margin: 0 auto;
-
   .preview_container {
     margin: 1%;
     // width: 45vw;
@@ -387,17 +391,34 @@ export default {
   }
 }
 .picture_uploader_rel {
-  position: relative;
   display: inline-block;
   vertical-align: top;
-  #imgPhoto {
+  .camerat_button_form{
     display: inline-block;
+    position: absolute;
+    opacity: 1;
+    top: 0;
+    left: 0;
+    width: 98px;
+    height: 40px;
+  }
+  .imgPhoto {
     position: absolute;
     opacity: 0;
     top: 0;
     left: 0;
     width: 98px;
     height: 40px;
+  }
+  .imgPhotoForm {
+    position: absolute;
+    opacity: 0;
+    bottom: 0;
+    left: 50%;
+    width: 40%;
+    margin-left:-42%;
+    height: 40px;
+    z-index:2;
   }
 }
 .flex_pic{

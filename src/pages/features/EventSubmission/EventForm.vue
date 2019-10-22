@@ -28,7 +28,7 @@
       </span>
     </MuiList>
     <div
-      style="width: 100%;"
+      style="width: 100%;position:relative;z-index:1;"
       v-loading="pictureUploaderLoading"
       element-loading-text="正在生成预览..."
       element-loading-spinner="el-icon-loading"
@@ -37,6 +37,7 @@
       <PictureUploaderPlus
         :uploadLimit="uploadLimit"
         @change="onUploaderChange"
+        enableButtonForm
         @captured="pictureUploaderLoading = true"
         ref="uploader"
         class="picture_uploader"
@@ -829,7 +830,10 @@ export default {
     },
     // 点击拍照按钮
     onCameraButtonClick() {
-      this.$refs.uploader.openCamera();
+      console.log(window.plus)
+      if(window.plus){
+       this.$refs.uploader.openCamera();
+      }
     },
     // 点击上传按钮，上传全部事件数据
     onSubmitButtonClick() {

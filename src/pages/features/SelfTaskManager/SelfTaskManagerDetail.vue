@@ -98,6 +98,9 @@
           >
         </div>
       </el-card>
+      <div class="flex_pic_p" @tap="onPicHide" v-show="isPicShowP">
+        <img src="" class="flex_pic_img_p">
+      </div>
     </div>
     <!-- 底部按钮组 -->
     <div class="fixed_footer">
@@ -264,6 +267,7 @@ export default {
   },
   data() {
     return {
+      isPicShowP:false,
       orderInfo: {},
       defaultPicture: "./static/images/none.jpg",
       pictureBasePath: config.uploadFilePath.inspection,
@@ -322,6 +326,12 @@ export default {
     }
   },
   methods: {
+    onPicHide(){
+      let _this = this;
+      setTimeout(function(){
+        _this.isPicShowP = false;
+      },100) 
+    },
     refreshOrderDetail() {
       apiMaintainNew.GetEventDetailInfo(this.oriOrderInfo.EventID).then(res => {
         console.log("刷新工单详情信息res", res);
@@ -651,7 +661,13 @@ export default {
       let list = this.pictureList.map(url => {
         return `${this.pictureBasePath}${url}`;
       });
-      plus.nativeUI.previewImage(list, { current: index });
+      if(window.plus){
+        plus.nativeUI.previewImage(list, { current: index });
+      }else{
+        let picImg = document.getElementsByClassName("flex_pic_img_p")[0];
+        picImg.src = list[index];
+        this.isPicShowP = true;
+      }
     }
   },
   filters: {
@@ -774,6 +790,22 @@ export default {
       }
     }
   }
+}
+.flex_pic_p{
+  width: 100%;
+  height: calc(100vh);
+  background: #eee;
+  z-index: 1000;
+  position:fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content:center;
+  align-items: center
+}
+.flex_pic_img_p{
+  width: 100%;
+  position: absolute;
 }
 </style>
 

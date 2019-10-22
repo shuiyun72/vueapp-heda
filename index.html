@@ -4,42 +4,58 @@
     <meta charset="utf-8">
     <!-- <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"> -->
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
-    <title>奉化智慧水务移动平台</title>
+    <title>智慧水务移动平台</title>
     <link rel="stylesheet" href="./static/css/mui.min.css">
     <link rel="stylesheet" type="text/css" href="./static/sicon/sfont.css"> 
     <link href="./static/css/fontawesome-all.min.css" rel="stylesheet">
     <link href="./static/css/button.css" rel="stylesheet">
     <script src="./static/js/mui.js"></script>
     <style>
-      #loading_index div{     
-        position: relative;
-        height: calc(60vh);
-      }
-      #loading_index img{
-        position: absolute;
-        width: 160px;
-        border-radius: 50%;
-        left: 50%;
-        margin-left: -80px;
-        bottom: 20px;
-      }
-      #loading_index p{ 
-        font-size: 26px;
-        color: #83b6f0;
-        text-align: center;
-        padding-top: 20px;
-      }
+      #loading_index{
+        width: 140px;
+			height: 140px;
+			margin:50px auto;
+			text-align:center;
+			line-height:120px;
+			position: relative;
+			border: 1px solid transparent;
+			border-radius: 100px;
+			background: #eee;
+			padding: 10px;
+			font-size:16px;
+			top:200px
+
+		}
+		#loading_index::after{
+			position: absolute;
+			top: -20px; 
+			bottom: -20px;
+			left: -20px;
+			 right: -20px;
+			background: linear-gradient(to right,#4798e3, #47dae3);
+			content: '';
+			z-index: -1;
+			border-radius: 100px;
+			animation:mymoveIndex 1s infinite linear;
+			-webkit-animation:mymoveIndex 1s infinite linear; /*Safari and Chrome*/
+		}
+		
+		@keyframes mymoveIndex
+		{
+      from {transform:rotate(0deg);}
+      to {transform:rotate(360deg);}
+		}
+
+		@-webkit-keyframes mymoveIndex /*Safari and Chrome*/
+		{
+      from {-webkit-transform:rotate(0deg);}
+      to {-webkit-transform:rotate(360deg);}
+		}
     </style>
   </head>
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
-    <div id="loading_index">
-      <div>
-        <img src="./static/images/loading.gif" >
-      </div>
-      <p>加载中，请稍等</p>
-      <p>。。。</p>
-    </div> 
+    <div id="loading_index">正在加载中...</div>   
   </body>
 </html>

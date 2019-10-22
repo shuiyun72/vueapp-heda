@@ -90,12 +90,12 @@
       </el-card>
 
       <!-- 退单描述 -->
-      <el-card v-if="orderInfo.EventDesc && orderInfo.EventDesc.length > 0">
+      <!-- <el-card v-if="orderInfo.EventDesc && orderInfo.EventDesc.length > 0">
         <div slot="header" class="clearfix card_header">
           <span class="header_text">退单描述</span>
         </div>
         <div class="card_body">{{orderInfo.EventDesc}}</div>
-      </el-card>
+      </el-card> -->
 
       <!-- 现场图片 -->
       <el-card v-if="pictureList && pictureList.length > 0">
@@ -111,6 +111,9 @@
           >
         </div>
       </el-card>
+      <div class="flex_pic_p" @tap="onPicHide" v-show="isPicShowP">
+        <img src="" class="flex_pic_img_p">
+      </div>
     </div>
     <!-- 底部按钮组 -->
     <div class="fixed_footer">
@@ -135,7 +138,7 @@
           class="button custom_bgcolor_light"
           v-for="action in actionList"
           :key="action.name"
-          v-if="!(orderInfo.EventFrom === '热线系统' && action.index===0)"
+          v-if="!((orderInfo.EventFrom === '热线系统' && action.index===0) || (orderInfo.EventFrom !== '热线系统' && action.index===0))"
           :disabled="action.index > 2 && !(action.index === orderOperState) || tabStatus == 3"
           @click="onActionClick(action)"
         >{{action.name}}</button>
@@ -206,6 +209,8 @@ export default {
   },
   data() {
     return {
+      //显示大图片
+      isPicShowP:false,
       //所选部门ID 
       DispatchPerson:null,
       defaultPicture: "./static/images/none.jpg",
@@ -269,6 +274,13 @@ export default {
     }
   },
   methods: {
+    //隐藏图片详情
+    onPicHide(){
+      let _this = this;
+      setTimeout(function(){
+        _this.isPicShowP = false;
+      },100) 
+    },
     //工单详情信息
     poneOrderDetail(){
       console.log("poneOrderDetail")
@@ -331,9 +343,10 @@ export default {
               let listData = res.data.data;
               console.log(listData)
               //指定的处理人员
-              this.DispatchPerson = _.find(listData,res=>{
+              let DispatchPerson = _.find(listData,res=>{
                 return Number(res.personId) == Number(this.orderInfo.DispatchPerson)
-              }).personName;
+              });
+              this.DispatchPerson = DispatchPerson ? DispatchPerson.personName:"未知"
             } else {
               mui.toast("该部门下暂无人员");
               this.isLoading = false;
@@ -606,7 +619,13 @@ export default {
       let list = this.pictureList.map(url => {
         return `${this.pictureBasePath}${url}`;
       });
-      plus.nativeUI.previewImage(list, { current: index });
+      if(window.plus){
+        plus.nativeUI.previewImage(list, { current: index });
+      }else{
+        let picImg = document.getElementsByClassName("flex_pic_img_p")[0];
+        picImg.src = list[index];
+        this.isPicShowP = true;
+      }
     }
   },
   filters: {
@@ -715,6 +734,22 @@ export default {
 .order_detail_is_agree.red{color:red;}
 .order_detail_is_agree.green{color:green;}
 .order_detail_describe_t div{border-top:1px solid #eee;margin-top:5px;padding-top:5px;}
+.flex_pic_p{
+  width: 100%;
+  height: calc(100vh);
+  background: #eee;
+  z-index: 1000;
+  position:fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content:center;
+  align-items: center
+}
+.flex_pic_img_p{
+  width: 100%;
+  position: absolute;
+}
 </style>
 
 
