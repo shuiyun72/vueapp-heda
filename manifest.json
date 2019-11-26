@@ -1,7 +1,7 @@
 {
 	"@platforms": ["android", "iPhone", "iPad"],
-	"id": "H57C3C11E",/*应用的标识，创建应用时自动生成，勿手动修改*/
-	"name": "郑州高新区",/*应用名称，程序桌面图标名称*/
+	"id": "H5990BF75",/*应用的标识，创建应用时自动生成，勿手动修改*/
+	"name": "巡检养护APP",/*应用名称，程序桌面图标名称*/
 	"version": {
 		"name": "1.0.0",/*应用版本名称*/
 		"code": "83"
@@ -149,7 +149,7 @@
 			"plugins": {
 				"maps": {
 					"baidu": {
-						"appkey_android": "uiR86a9l0uQun6ZItaEj2PMshyG5jNGD","appkey_ios":"uiR86a9l0uQun6ZItaEj2PMshyG5jNGD"
+						"appkey_android": "Iu2uP1GuFa3CXa7OXueMuqHoATLTp2nc","appkey_ios":"Iu2uP1GuFa3CXa7OXueMuqHoATLTp2nc"
 					}
 				}
 			},

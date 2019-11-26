@@ -87,6 +87,7 @@ export default class GeoLocator {
             _taskId = window.setInterval(() => {
                 nativeTransfer.getLocation(
                     coords => {
+                    setSessionItem("coordsMsg", JSON.stringify(coords));
                     // 坐标转换
                     let coordsFor84 = CoordsHelper.gcj02towgs84(coords.lng, coords.lat)
                     // 组装数据对象

@@ -128,8 +128,6 @@ import nativeTransfer from '@JS/native/nativeTransfer'
 import PositionUploader from "@JS/position-uploader/PositionUploader";
 export default {
   created() {},
-  mounted() {
-  },
   beforeRouteEnter(to, from, next) {
     // 进入该路由的钩子函数，可通过next回调函数拿到组件的实例对象引用
     next(instance => {
@@ -153,24 +151,7 @@ export default {
         instance.dateValueFormat
       );
       instance.lastSelectedDate = instance.selectedDate;
-      instance.fetchAttendanceRecords();
-        nativeTransfer.getLocation(positionRes => {
-          if (positionRes) {
-            console.warn("=====考勤管理定位成功", positionRes);
-            // 坐标转换
-            let coordsFor84 = CoordsHelper.gcj02towgs84(
-              positionRes.lng,
-              positionRes.lat
-            );
-            position.longitude = coordsFor84[0];
-            position.latitude = coordsFor84[1];
-            position.addresses = positionRes.addr;
-            instance.locationInfo = deepCopy(position);
-          } else {
-            console.warn("=====考勤管理定位错误", err);
-          }
-        });
-        
+      instance.fetchAttendanceRecords();      
     });
   },
   data() {
@@ -190,7 +171,9 @@ export default {
       // 签到表格数据
       tableData: [],
       // 当前（今天）出勤状态 （0：为签到  1：已签到未签退   2：已签退）
-      state: 0
+      state: 0,
+      //当前位置获取状态 0 为为获取 1为已获取
+      TransferStatu:0
     };
   },
   computed: {
@@ -217,17 +200,17 @@ export default {
       };
     },
     currentAddressText() {
-      let addr = this.locationInfo.address;
+      let addr = this.locationInfo;
       return ( JSON.stringify(addr) != '{}' )
-        ? this.locationInfo.addresses || "获取位置信息失败"
+        ? this.locationInfo.addr || "获取位置信息失败"
         : "定位中...";
     },
     // 签到按钮可用状态
     isSignInButtonEnabled() {
       return (
         this.locationInfo &&
-        this.locationInfo.longitude &&
-        this.locationInfo.latitude &&
+        this.locationInfo.lng &&
+        this.locationInfo.lat &&
         this.state < 2
       );
     },
@@ -237,10 +220,10 @@ export default {
       let xy = "";
       if (
         this.locationInfo &&
-        this.locationInfo.longitude &&
-        this.locationInfo.latitude
+        this.locationInfo.lng &&
+        this.locationInfo.lat
       ) {
-        xy = `${this.locationInfo.longitude},${this.locationInfo.latitude}`;
+        xy = `${this.locationInfo.lng},${this.locationInfo.lat}`;
       }
       // 请求数据
       let data = {
@@ -264,7 +247,33 @@ export default {
       };
     }
   },
+  mounted() {   
+    //获取位置信息
+    this.getLocation(); 
+    console.log("11111+getLocation")
+  },
   methods: {
+    //获取位置信息
+    getLocation(){
+      console.log("diaoyon//获取位置信息")
+      
+      let position = JSON.parse(getSessionItem("coordsMsg"));
+      if (position) {
+        this.locationInfo = deepCopy(position); 
+        this.TransferStatu  = 1;       
+      } else {
+        console.warn("=====考勤管理定位错误");
+      }
+      let _this = this; 
+      let TransferTimer = setTimeout(function(){
+        if(this.TransferStatu == 0){
+          _this.getLocation();  
+        }else{
+          TransferTimer = null;
+          clearTimeout(TransferTimer)
+        }
+      },2000)
+    },
     // 获取考勤记录数据
     fetchAttendanceRecords() {
       // 发送请求

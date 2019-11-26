@@ -298,13 +298,15 @@ export default {
     +'&ExecTime=36')
   },
 
-  PostReplyMessage(eventId, orderId, personId,OperRemarks) {
-    orderId = orderId || ""
-    return instance.post(' /EventManageForMaintain/WorkListEventReply?EventID='+eventId
-    +'&OrderId='+orderId
-    +'&DispatchPersonID='+personId
-    +'&OperRemarks='+OperRemarks
-    )
+  PostReplyMessage(msg, personId, eventId) {
+    return instance.get('/EventInfo.ashx', {
+      params: {
+        Oper: 'EventReply',
+        OperRemarks: msg,
+        DispatchPersonID: personId,
+        EventID: eventId
+      }
+    })
   },
 
   // 审核工单 iAdminID,eventId,deptId, personId

@@ -346,21 +346,21 @@ export default {
                   withBorder: true,
                   class: "mui-col-sm-6 mui-col-xs-6"
                 },
-                {
-                  index: 4,
-                  id: 90049092,
-                  title: "个人工单",
-                  desc: "维修任务分派",
-                  mode: "horizontal",
-                  picture: "./static/images/order_assignment.png",
-                  pictureContainerStyle: {
-                    "background-size": "80% 95%"
-                  },
-                  // destination: "OrderAssignment",
-                  destination: "SelfTaskManagerIndex",
-                  withBorder: true,
-                  class: "mui-col-sm-6 mui-col-xs-6"
-                },
+                // {
+                //   index: 4,
+                //   id: 90049092,
+                //   title: "个人工单",
+                //   desc: "维修任务分派",
+                //   mode: "horizontal",
+                //   picture: "./static/images/order_assignment.png",
+                //   pictureContainerStyle: {
+                //     "background-size": "80% 95%"
+                //   },
+                //   // destination: "OrderAssignment",
+                //   destination: "SelfTaskManagerIndex",
+                //   withBorder: true,
+                //   class: "mui-col-sm-6 mui-col-xs-6"
+                // },
                 {
                   index: 5,
                   id: 90049093,
@@ -547,12 +547,12 @@ export default {
               console.log(trueData)
               console.log(this_.memoryCountSelfTask < trueData)
               console.log(this_.memoryCountSelfTask != undefined)
-              if( this_.memoryCountSelfTask < trueData && this_.eventCountSelfTask != undefined){
-                //发送消息推送
-                console.log("//发送消息推送")
-                AudioId.src = AudioIdSrc[1];
-                AudioId.play()
-              }
+              // if( this_.memoryCountSelfTask < trueData && this_.eventCountSelfTask != undefined){
+              //   //发送消息推送
+              //   console.log("//发送消息推送")
+              //   AudioId.src = AudioIdSrc[1];
+              //   AudioId.play()
+              // }
               this_.memoryCountSelfTask = trueData
               this_.$set(this_.OrdersMsg,"eventCountSelfTask",trueData)
             }

@@ -6,6 +6,11 @@ import {
     deepCopy,
 } from "@common/util";
 import nativeTransfer from '@JS/native/nativeTransfer'
+import {
+    setSessionItem,
+    getSessionItem,
+  } from "@common/util";
+
 // 全局事件总线
 let eventbus = null
 // 默认config，参考 http://www.html5plus.org/doc/zh_cn/geolocation.html#plus.geolocation.PositionOptions
@@ -85,6 +90,7 @@ export default class GeoLocator {
 
                 nativeTransfer.getLocation(
                     coords => {
+                    setSessionItem("coordsMsg", JSON.stringify(coords));
                     // 坐标转换
                     let coordsFor84 = CoordsHelper.gcj02towgs84(coords.lng, coords.lat)
                     // 组装数据对象
@@ -95,6 +101,7 @@ export default class GeoLocator {
                         timestamp
                     }
                     console.log("%cGeoLocator: 获取到一次位置： ", 'color: green', position);
+
                     // 判断位置是否超过约定范围
                     let extent = {}
                     if (computedConfig.extent.longitude &&

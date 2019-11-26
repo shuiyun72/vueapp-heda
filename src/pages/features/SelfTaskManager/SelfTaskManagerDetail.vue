@@ -139,9 +139,10 @@
         <button
           type="button"
           class="button custom_bgcolor_light"
-          v-if="isCurrentExecPerson && (orderInfo.IsValid == 5 || orderOperState == 13)"
+          v-if="false"
           @click="onDialogButtonClick('postpone')"     
         >延期确认</button>
+         <!-- v-if="isCurrentExecPerson && (orderInfo.IsValid == 5 || orderOperState == 13)" -->
         <button
           type="button"
           class="button custom_bgcolor_light"
@@ -508,15 +509,14 @@ export default {
         // 调用回复接口
         apiMaintain
           .PostReplyMessage(
-            this.orderInfo.EventID,
-            this.orderInfo.OrderId,
-            this.currentUser.iAdminID,
-            this.replyMessage
+            this.replyMessage,
+            this.currentUserId,
+            this.orderInfo.EventID
           )
           .then(res => {
             console.log("回复接口res", res);
-            if (res.data.Flag) {
-              mui.toast("回复成功！");
+            if (res.data.ErrCode == 0) {
+              mui.toast("分派成功！");
               this.actionDialogVisible.assign = false;
               // 刷新详情
               this.refreshOrderDetail();
