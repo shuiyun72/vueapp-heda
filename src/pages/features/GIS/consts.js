@@ -112,16 +112,17 @@ export default {
               text: "街道地图",
               style: {}
             }
-          },
-          {
-            id: "DMA-view",
-            text: "DMA区域",
-            image: {
-              path: './static/images/layer_DMA.png',
-              text: "DMA区域",
-              style: {}
-            }
           }
+          // ,
+          // {
+          //   id: "DMA-view",
+          //   text: "DMA区域",
+          //   image: {
+          //     path: './static/images/layer_DMA.png',
+          //     text: "DMA区域",
+          //     style: {}
+          //   }
+          // }
         ]
       }
     ],
@@ -189,16 +190,17 @@ export default {
               text: "街道地图",
               style: {}
             }
-          },
-          {
-            id: "DMA-view",
-            text: "DMA区域",
-            image: {
-              path: './static/images/layer_DMA.png',
-              text: "DMA区域",
-              style: {}
-            }
           }
+          // ,
+          // {
+          //   id: "DMA-view",
+          //   text: "DMA区域",
+          //   image: {
+          //     path: './static/images/layer_DMA.png',
+          //     text: "DMA区域",
+          //     style: {}
+          //   }
+          // }
         ]
       }
     ],
@@ -266,16 +268,17 @@ export default {
               text: "街道地图",
               style: {}
             }
-          },
-          {
-            id: "DMA-view",
-            text: "DMA区域",
-            image: {
-              path: './static/images/layer_DMA.png',
-              text: "DMA区域",
-              style: {}
-            }
           }
+          // ,
+          // {
+          //   id: "DMA-view",
+          //   text: "DMA区域",
+          //   image: {
+          //     path: './static/images/layer_DMA.png',
+          //     text: "DMA区域",
+          //     style: {}
+          //   }
+          // }
         ]
       }
     ]

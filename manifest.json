@@ -1,9 +1,9 @@
 {
 	"@platforms": ["android", "iPhone", "iPad"],
-	"id": "H57C3C11E",/*应用的标识，创建应用时自动生成，勿手动修改*/
-	"name": "郑州高新区",/*应用名称，程序桌面图标名称*/
+	"id": "H5B07BBE1",/*应用的标识，创建应用时自动生成，勿手动修改*/
+	"name": "丰县维修养护",/*临泉应用名称，程序桌面图标名称*/
 	"version": {
-		"name": "1.0.0",/*应用版本名称*/
+		"name": "1.0.0",/*应用版本名称现有版本1.0.5*/
 		"code": "83"
 	},
 	"description": "",/*应用描述信息*/
@@ -143,13 +143,13 @@
 				},
 				"android": {
 					"mdpi": "", /*普通屏启动图片，分辨率：240x282*/
-					"ldpi": "","hdpi":"app_logos/start_480-800.png","xhdpi":"app_logos/start_720-1280.png","xxhdpi":"app_logos/start_1080-1920.png"
+					"ldpi": "","hdpi":"D:/桌面文件/巡检养护APP/巡检养护APP/start_480-800.png","xhdpi":"D:/桌面文件/巡检养护APP/巡检养护APP/start_720-1280.png","xxhdpi":"D:/桌面文件/巡检养护APP/巡检养护APP/start_1080-1920.png"
 				}
 			},
 			"plugins": {
 				"maps": {
 					"baidu": {
-						"appkey_android": "uiR86a9l0uQun6ZItaEj2PMshyG5jNGD","appkey_ios":"uiR86a9l0uQun6ZItaEj2PMshyG5jNGD"
+						"appkey_android": "GmhbSwfPn4pNxIduYoOqsxNGfiAPNhQf","appkey_ios":"GmhbSwfPn4pNxIduYoOqsxNGfiAPNhQf"
 					}
 				}
 			},

@@ -17,6 +17,13 @@
         >基本信息</button>
       </AccountCard>
     </div>
+    <div
+      class="audio"
+      @click="audioPause"
+      :style="'background: url(static/images/'+audioSrc+') no-repeat  center center'"
+    >
+      <audio src controls id="audio_index"></audio>
+    </div>
     <!-- 功能块 -->
     <div class="module_section" v-for="section in newPermissionJson" :key="section.index">
       <!-- 功能块Header -->
@@ -47,7 +54,12 @@
 
 <script>
 import _ from "lodash";
-import { setSessionItem, getSessionItem } from "@common/util";
+import {
+  setSessionItem,
+  getSessionItem,
+  setLocalItem,
+  getLocalItem
+} from "@common/util";
 import Timer from "@common/timer";
 import dateHelper from "@common/dateHelper";
 import apiInspection from "@api/inspection";
@@ -55,10 +67,10 @@ import apiUser from "@api/user";
 import AccountCard from "@comp/common/AccountCard";
 import SectionHeader from "@comp/common/ModuleSectionHeader";
 import apiMaintain from "@api/maintain";
-// 引入nativeTransfer.js
-import nativeTransfer from "@JS/native/nativeTransfer";
+
 // 该组件表示首页中一个子功能的入口
 import ModuleItem from "@comp/common/ModuleItem";
+import BaseMap from "@JS/Map/BaseMap";
 
 // 指出哪些页面在跳转时需要开启稍候提示
 const ShowLoadingWhenEnter = ["Map", "DMAMonitorIndex"];
@@ -97,7 +109,26 @@ export default {
     }
   },
   mounted() {
-    this.isShowPage(); //权限控制要显示的页面及排序
+    //语音提示设置初始化数据
+    let OrdersMsg = JSON.parse(getLocalItem("OrdersMsg"));
+    this.OrdersMsg = OrdersMsg ? OrdersMsg : {};
+    this.eventCountPatrol =
+      JSON.stringify(this.OrdersMsg) !== "{}"
+        ? this.OrdersMsg.eventCountPatrol
+        : undefined;
+    this.memoryCountPatrol = this.eventCountPatrol;
+    this.eventCountSelfTask =
+      JSON.stringify(this.OrdersMsg) !== "{}"
+        ? this.OrdersMsg.eventCountSelfTask
+        : undefined;
+    this.memoryCountSelfTask = this.eventCountSelfTask;
+    this.eventCountOrders =
+      JSON.stringify(this.OrdersMsg) !== "{}"
+        ? this.OrdersMsg.eventCountOrders
+        : undefined;
+    this.memoryCountOrders = this.eventCountOrders;
+    //权限控制要显示的页面及排序
+    this.isShowPage();
     // 从全局变量读取并恢复滚动条状态
     // 不优雅的实现
     setTimeout(() => {
@@ -114,11 +145,13 @@ export default {
       }, 5000);
     }
 
+    this.mapController = new BaseMap();
+    this.mapController.Init();
     //上传位置信息
     if (!this.UploadLocationTimer) {
       this.UploadLocationTimer = setInterval(() => {
         this.onUploadLocation();
-      }, 10000);
+      }, 6000);
     }
   },
   beforeDestroy() {
@@ -129,14 +162,20 @@ export default {
   },
   data() {
     return {
+      audioVolume: true, //是否开启声音
       hintMsgCountTimer: null,
       UploadLocationTimer: null,
-      eventCountPatrol: 0,
-      eventCountSelfTask: 0,
-      eventCountOrders: 0,
+      eventCountPatrol: undefined, //巡检任务
+      eventCountSelfTask: undefined, //个人工单
+      eventCountOrders: undefined, //维修工单
+      memoryCountPatrol: undefined, //历史巡检任务
+      memoryCountSelfTask: undefined, //历史个人工单
+      memoryCountOrders: undefined, //历史维修工单
+      OrdersMsg: {},
       permissionJson: "",
       headerBgImagePath: "./static/images/index_header.png",
       newPermissionJson: [],
+      mapController: undefined,
       // 首页功能块的配置信息
       sections: [
         //         {
@@ -407,6 +446,9 @@ export default {
     };
   },
   computed: {
+    audioSrc() {
+      return this.audioVolume ? "audioTrue.png" : "audioFalse.png";
+    },
     currentUser() {
       return JSON.parse(getSessionItem("currentUser"));
     },
@@ -430,39 +472,36 @@ export default {
     isShowPage() {
       let permissionList = JSON.parse(getSessionItem("currentUser"))
         .UserAuthority;
-       console.dir(permissionList)
       this.permissionJson = JSON.stringify(permissionList);
-     
-      let arrParent = [];  //父级对象
+
+      let arrParent = []; //父级对象
       let sectionsItem = this.sections[0].rows[0].items;
-      _.map(permissionList,per=>{
-          _.map(sectionsItem, res => {
-            if (res.destination == per.cFunUrl) {
-              arrParent.push(_.assignIn({}, per, res));
-            }
-          });
-      })
+      _.map(permissionList, per => {
+        _.map(sectionsItem, res => {
+          if (res.destination == per.cFunUrl) {
+            arrParent.push(_.assignIn({}, per, res));
+          }
+        });
+      });
       //排序
       arrParent = _.orderBy(arrParent, res => {
         return res.iFunOrder;
       });
       let newPermissionJson = [];
-      console.log(permissionList);
       _.map(permissionList, res => {
         if (res.cFunUrl == 0 && res.cFunName != "APP管理") {
           newPermissionJson.push(res);
         }
       });
       console.log(newPermissionJson);
-      _.map(newPermissionJson,newPer=>{  
-          newPer.children = [];  //子级对象
-          _.map(arrParent, res => {
-            if (res.iFunFatherID == newPer.iFunID) {
-              newPer.children.push(res);
-            }
-          });
-        
-      })
+      _.map(newPermissionJson, newPer => {
+        newPer.children = []; //子级对象
+        _.map(arrParent, res => {
+          if (res.iFunFatherID == newPer.iFunID) {
+            newPer.children.push(res);
+          }
+        });
+      });
       console.log(newPermissionJson);
       this.newPermissionJson = newPermissionJson;
     },
@@ -472,111 +511,219 @@ export default {
       this.getSelfTask();
       this.getOredes();
     },
+    //控制播放器静音
+    audioPause() {
+      console.log(this.audioVolume ? "暂停" : "播放");
+      let AudioId = document.getElementById("audio_index");
+      if (this.audioVolume) {
+        AudioId.volume = 0;
+        this.audioVolume = false;
+      } else {
+        AudioId.volume = 1;
+        this.audioVolume = true;
+      }
+    },
+    //更新推送信息数据
+    updateOrdersMsg(num, trueData) {
+      console.log("//更新推送信息数据", num, trueData);
+      let this_ = this;
+      let AudioId = document.getElementById("audio_index");
+      let AudioIdSrc = [
+        "static/audio/weixiugongdan.mp3",
+        "static/audio/gerengongdan.mp3",
+        "static/audio/xunjianrenwu.mp3"
+      ];
+      Promise.all([this.getEventCount, this.getSelfTask, this.getOredes]).then(
+        res => {
+          console.log(this_.OrdersMsg);
+          if (
+            JSON.stringify(this.OrdersMsg) === "{}" &&
+            this_.eventCountOrders &&
+            this_.eventCountSelfTask &&
+            this_.eventCountPatrol
+          ) {
+            this_.OrdersMsg = {
+              eventCountOrders: this_.eventCountOrders,
+              eventCountSelfTask: this_.eventCountSelfTask,
+              eventCountPatrol: this_.eventCountPatrol
+            };
+            setLocalItem("OrdersMsg", JSON.stringify(this_.OrdersMsg));
+          } else {
+            if (trueData != undefined) {
+              console.log(num);
+              if (num == 1) {
+                if (
+                  this_.memoryCountOrders < trueData &&
+                  this_.eventCountOrders != undefined
+                ) {
+                  //发送消息推送
+                  console.log("//发送消息推送");
+                  AudioId.src = AudioIdSrc[0];
+                  AudioId.play();
+                }
+                this_.memoryCountOrders = trueData;
+                this_.$set(this_.OrdersMsg, "eventCountOrders", trueData);
+              } else if (num == 2) {
+                console.log(this_.memoryCountSelfTask);
+                console.log(trueData);
+                console.log(this_.memoryCountSelfTask < trueData);
+                console.log(this_.memoryCountSelfTask != undefined);
+                if (
+                  this_.memoryCountSelfTask < trueData &&
+                  this_.eventCountSelfTask != undefined
+                ) {
+                  //发送消息推送
+                  console.log("//发送消息推送");
+                  AudioId.src = AudioIdSrc[1];
+                  AudioId.play();
+                }
+                this_.memoryCountSelfTask = trueData;
+                this_.$set(this_.OrdersMsg, "eventCountSelfTask", trueData);
+              } else if (num == 3) {
+                if (
+                  this_.memoryCountPatrol < trueData &&
+                  this_.eventCountPatrol != undefined
+                ) {
+                  //发送消息推送
+                  console.log("//发送消息推送");
+                  AudioId.src = AudioIdSrc[2];
+                  AudioId.play();
+                }
+                this_.memoryCountPatrol = trueData;
+                this_.$set(this_.OrdersMsg, "eventCountPatrol", trueData);
+              }
+              setLocalItem("OrdersMsg", JSON.stringify(this_.OrdersMsg));
+            }
+          }
+        }
+      );
+    },
     //上传位置信息
     onUploadLocation() {
-      if (window.plus != undefined) {
-        window.plus.geolocation.getCurrentPosition(
-          location => {
-            let personIds = JSON.parse(getSessionItem("currentUser"));
-            //console.log("personIds-----",personIds)
-            let personId =
-              JSON.parse(getSessionItem("currentUser")).iAdminID ||
-              this.currentUser.iAdminID;
-            personId = personId || 1;
-            //console.log("geolocation----------",location.coords.longitude,location.coords.latitude,dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),personId)
-            apiInspection
-              .UploadLocation(
-                location.coords.longitude,
-                location.coords.latitude,
-                dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
-                personId,
-                1
-              )
-              .then(res => {
-                console.log("上传位置信息成功", res.data.Msg);
-              });
-          },
-          err => {
-            mui.toast("获取当前位置失败");
-          },
-          {
-            enableHighAccuracy: true,
-            maximumAge: 5000,
-            timeout: 10000,
-            provider: "baidu",
-            coordsType: "gcj02"
-          }
-        );
-      } else {
-        //mui.toast("需要在移动端上传位置");
-        nativeTransfer.getLocation(location => { 
-          if (location) {
-              let personIds = JSON.parse(getSessionItem("currentUser"));
-              //console.log("personIds-----",personIds)
-              let personId =
-                JSON.parse(getSessionItem("currentUser")).iAdminID ||
-                this.currentUser.iAdminID;
-              personId = personId || 1;
-              apiInspection
-                .UploadLocation(
-                  location.lng,
-                  location.lat,
-                  dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
-                  personId,
-                  1
-                )
-                .then(res => {
-                  console.log("上传位置信息成功", res.data.Msg);
-                });
-          }else{
-            mui.toast("获取当前位置失败");
-          }
-        })
+      let personIds = JSON.parse(getSessionItem("currentUser"));
+      let locationInfo = JSON.parse(getSessionItem("coordsMsg")) || "";
+      let personId =
+        JSON.parse(getSessionItem("currentUser")).iAdminID ||
+        this.currentUser.iAdminID;
+      if (personId && locationInfo) {
+        //坐标转换
+        let YingLocation = this.mapController.transformProjReturn([
+          Number(locationInfo.lng),
+          Number(locationInfo.lat)
+        ]);
+        console.log("onUploadLocation----", YingLocation[0],
+            YingLocation[1],
+            dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
+            personId)
+        apiInspection
+          .UploadLocation(
+            YingLocation[0],
+            YingLocation[1],
+            dateHelper.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
+            personId,
+            1
+          )
+          .then(res => {
+            console.log("上传位置信息成功", res.data.Msg, "14444");
+          });
       }
     },
     //维修工单
     getOredes() {
-      apiMaintain
-        .GetEventManage(this.currentUserId, 2)
-        .then(res => {
-          if (res.data.Flag) {
-            this.eventCountOrders = res.data.Data.TotalRows;
-          }
-        })
-        .catch(err => {
-          mui.toast("暂无网络");
-        });
+      let this_ = this;
+      let eventCountOrders_;
+      if (JSON.stringify(this.OrdersMsg) !== "{}") {
+        eventCountOrders_ = this_.eventCountOrders;
+      }
+      return new Promise(function(resolve, reject) {
+        apiMaintain
+          .GetEventManage(this_.currentUserId, 2)
+          .then(res => {
+            if (res.data.Flag) {
+              if (eventCountOrders_ != res.data.Data.TotalRows) {
+                this_.updateOrdersMsg(1, res.data.Data.TotalRows);
+              }
+              this_.eventCountOrders = res.data.Data.TotalRows;
+              this_.$set(
+                this_.OrdersMsg,
+                "eventCountOrders",
+                this_.eventCountOrders
+              );
+              resolve(this_.eventCountOrders);
+            } else {
+              mui.toast("获取维修工单失败");
+            }
+          })
+          .catch(err => {
+            mui.toast("网络错误，请联系管理员,");
+          });
+      });
     },
     //个人工单-代办工单
     getSelfTask() {
-      apiMaintain
-        .GetOrderList(this.currentUserId, 0)
-        .then(res => {
-          this.fullscreenLoading = false;
-          if (res.data.Flag) {
-            this.eventCountSelfTask = res.data.Data.TotalRows;
-          }else{
-            mui.toast("获取个人工单失败");
-          }
-        }).catch(err => {
-          mui.toast("网络错误，获取工单失败");
-        });
+      let this_ = this;
+      let eventCountSelfTask_;
+      if (JSON.stringify(this.OrdersMsg) !== "{}") {
+        eventCountSelfTask_ = this_.eventCountSelfTask;
+      }
+      return new Promise(function(resolve, reject) {
+        apiMaintain
+          .GetOrderList(this_.currentUserId, 0)
+          .then(res => {
+            this_.fullscreenLoading = false;
+            if (res.data.Flag) {
+              if (eventCountSelfTask_ != res.data.Data.TotalRows) {
+                this_.updateOrdersMsg(2, res.data.Data.TotalRows);
+              }
+              this_.eventCountSelfTask = res.data.Data.TotalRows;
+              this_.$set(
+                this_.OrdersMsg,
+                "eventCountSelfTask",
+                this_.eventCountSelfTask
+              );
+              resolve(this_.eventCountSelfTask);
+            } else {
+              mui.toast("获取个人工单失败");
+            }
+          })
+          .catch(err => {
+            mui.toast("网络错误，请联系管理员");
+          });
+      });
     },
     //监听巡检任务
     getEventCount() {
-      let userId = this.currentUserId;
-      let currentDayDate = dateHelper.format(new Date(), "yy-MM-dd");
-      apiInspection
-        .GetMissionList(userId, currentDayDate)
-        .then(res => {
-          if (res.data.Flag) {
-            this.eventCountPatrol = res.data.Data.TotalRows;
-          }
-          this.$hideLoading();
-        })
-        .catch(err => {
-          console.log("err", err);
-        });
+      let this_ = this;
+      let eventCountPatrol_;
+      if (JSON.stringify(this.OrdersMsg) !== "{}") {
+        eventCountPatrol_ = this_.eventCountPatrol;
+      }
+      return new Promise(function(resolve, reject) {
+        let userId = this_.currentUserId;
+        let currentDayDate = dateHelper.format(new Date(), "yy-MM-dd");
+        apiInspection
+          .GetMissionList(userId, currentDayDate)
+          .then(res => {
+            if (res.data.Flag) {
+              if (eventCountPatrol_ != res.data.Data.TotalRows) {
+                this_.updateOrdersMsg(3, res.data.Data.TotalRows);
+              }
+              this_.eventCountPatrol = res.data.Data.TotalRows;
+              this_.$set(
+                this_.OrdersMsg,
+                "eventCountPatrol",
+                this_.eventCountPatrol
+              );
+              resolve(this_.eventCountPatrol);
+            } else {
+              mui.toast("获取巡检任务失败");
+            }
+            this_.$hideLoading();
+          })
+          .catch(err => {
+            mui.toast("网络错误，请联系管理员");
+          });
+      });
     },
     // 点击某个具体功能块时切换路由（页面）
     switchPage(itemConfig) {
@@ -591,7 +738,7 @@ export default {
       window.rr = this.$router;
 
       this.$router.push({ name: destination });
-    },
+    }
   },
   components: {
     AccountCard,
@@ -631,6 +778,20 @@ div.index_container {
       font-size: 1.1rem;
     }
   }
+}
+.audio {
+  width: 40px;
+  height: 40px;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 501;
+  overflow: hidden;
+}
+#audio_index {
+  opacity: 0;
+  position: absolute;
+  top: 100px;
 }
 </style>
 

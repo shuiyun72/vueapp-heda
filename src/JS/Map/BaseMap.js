@@ -25,7 +25,7 @@ import {
 import {
   transform as transformProj,
   Projection as ProjectionProj
-} from 'ol/proj';    
+} from 'ol/proj';
 import {
   register as RegisterProj4
 } from "ol/proj/proj4";
@@ -70,13 +70,15 @@ import {
   getLength as GetLengthSphere,
   getDistance as GetDistanceSphere
 } from "ol/sphere.js";
-
-
+import nativeTransfer from '@JS/native/nativeTransfer';
+import ConfigBase from '@config/config';
+let MapRelated = ConfigBase.MapRelated;
 function BaseMap() {
-  this.center = [113.530453,34.812602];
+  console.log(ConfigBase)
+  this.center = MapRelated.mapCenter;
   this.defaultOptions = {
-    center: [113.530453,34.812602],
-    zoom: 3
+    center: MapRelated.mapCenter,
+    zoom: MapRelated.mapZoom
   };
   // 地图实例，在Init中初始化
   this.map = null;
@@ -89,7 +91,6 @@ function BaseMap() {
   this.textFeatureFormat = new WKTFormat();
   this.CoordinatesDetials; //绘制完成后坐标信息存放位置
   //this.BaseMapData = this.GetBaseMapData(); //获取基础地图配置信息
-  //this.BasePipeData = this.GetPipeMapData(); //获取管线配置信息
   this.PolygonControlName; //多边形控件名称
 
   // 路线矢量层
@@ -112,24 +113,12 @@ function BaseMap() {
   this.DMASource = new VectorSource(); //DMA矢量图层数据源声明 
   this.VectorSource = new VectorSource(); //DMA矢量图层数据源声明 
   proj4.defs("EPSG:1233", "+proj=longlat +ellps=GRS80 +no_defs"); //生名自定义wkid
-  proj4.defs("EPSG:4549", "+proj=tmerc +lat_0=0 +lon_0=120 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
+  proj4.defs("EPSG:" + MapRelated.EPSG.number, MapRelated.EPSG.compile);
 
   this.projection = new ProjectionProj({
     code: 'EPSG:1233',
-    extent: [113.35975811932538, 34.7501362981023, 113.71391131426837, 34.876861366065775]
+    extent: MapRelated.EPSG.extent
   });
-  //遥感数据
-  // this.SatellOptions = OptionsFromCapabilitiesWMTSSource(MapData, {
-  //   layer: "遥感地图2"
-  // });
-  // //街道数据
-  // this.StreetOptions = OptionsFromCapabilitiesWMTSSource(MapData, {
-  //   layer: "街道地图"
-  // });
-  // //管线数据
-  // this.PipeOptions = OptionsFromCapabilitiesWMTSSource(PipeData, {
-  //   layer: "管线地图"
-  // });
 }
 
 BaseMap.prototype.PipeLayer; //管线图层
@@ -185,9 +174,9 @@ BaseMap.prototype.Init = function (containerId, options = {}) {
   // 遥感图层
   this.SatellLayer = new TileLayer({
     opacity: 1,
-    extent: [113.35975811932538, 34.7501362981023, 113.71391131426837, 34.876861366065775],
+    extent: MapRelated.SatellLayer.extent,
     source: new TileArcGISRestSource({
-      url: 'http://39.100.62.29:6080/arcgis/rest/services/zz/ZZ_yxt/MapServer'
+      url: MapRelated.SatellLayer.url
     }),
     visible: true
   });
@@ -195,9 +184,9 @@ BaseMap.prototype.Init = function (containerId, options = {}) {
   // 街道图层
   this.StreetLayer = new TileLayer({
     opacity: 1,
-    extent: [113.35975811932538, 34.7501362981023, 113.71391131426837, 34.876861366065775],
+    extent: MapRelated.StreetLayer.extent,
     source: new TileArcGISRestSource({
-      url: 'http://218.0.0.33:6080/arcgis/rest/services/Lm_FH_DXT/MapServer'
+      url: MapRelated.StreetLayer.url
     }),
     visible: false
   });
@@ -205,9 +194,9 @@ BaseMap.prototype.Init = function (containerId, options = {}) {
   // 管线图层
   this.PipeLayer = new TileLayer({
     opacity: 1,
-    extent: [113.35975811932538, 34.7501362981023, 113.71391131426837, 34.876861366065775],
+    extent: MapRelated.PipeLayer.extent,
     source: new TileArcGISRestSource({
-      url: 'http://39.100.62.29:6080/arcgis/rest/services/zz/ZZ_pipe/MapServer'
+      url: MapRelated.PipeLayer.url
     }),
     visible: true
   });
@@ -267,7 +256,7 @@ BaseMap.prototype.Init = function (containerId, options = {}) {
       projection: this.projection,
       zoom: this.defaultOptions.zoom,
       //,minZoom: 12,
-      maxZoom:13
+      maxZoom: 13
     }),
     controls: [new ZoomControl()]
   });
@@ -369,6 +358,7 @@ BaseMap.prototype.setRoutes = function (points) {
 };
 
 BaseMap.prototype.geoCallback = function (position) {
+  console.log("geoCallback")
   if (
     position &&
     position.longitude &&
@@ -379,6 +369,12 @@ BaseMap.prototype.geoCallback = function (position) {
     //     type: 'div'
     // })
     try {
+      let newPosition = this.transformProjReturn([position.longitude, position.latitude]);
+      position = {
+        longitude: newPosition[0],
+        latitude: newPosition[1]
+      };
+
       this.positionFeature.setGeometry(
         new PointGeom([
           position.longitude,
@@ -458,10 +454,12 @@ BaseMap.prototype.enableGeolocation = function (actionType) {
     actionType = true
   }
   // map实例必须存在
+  console.log("map实例必须存在")
   if (this.map) {
     if (actionType) {
       // 启动
       if (!this.watchId) {
+        console.log("map实例必须存在---------------")
         // let view = this.map.getView()
         // 定位点要素
         var positionFeature = new Feature();
@@ -490,16 +488,26 @@ BaseMap.prototype.enableGeolocation = function (actionType) {
 
         this.map.addLayer(this.geolocationLayer);
 
-        this.watchId = window.plus.geolocation.watchPosition(
-          position => {
-            let coordinates = position.coords;
-             console.log('Coords, ', coordinates)
+        this.watchId = window.setInterval(() => {
+          console.log("baseMap------interval----position")
+          let positionBaseMap = JSON.parse(getSessionItem("coordsMsg"));
+          if (positionBaseMap) {
+            let coordinates = {
+              longitude: positionBaseMap.lng,
+              latitude: positionBaseMap.lat
+            };
+            console.log('Coords, ', positionBaseMap)
+            let newPosition = this.transformProjReturn([coordinates.longitude, coordinates.latitude]);
+            coordinates = {
+              longitude: newPosition[0],
+              latitude: newPosition[1]
+            };
             if (
               coordinates &&
               coordinates.longitude &&
               coordinates.latitude
             ) {
-              // window.mui.toast(`经度：${coordinates.longitude}, 纬度：${coordinates.latitude}`)
+              window.mui.toast(`经度：${coordinates.longitude}, 纬度：${coordinates.latitude}`)
               positionFeature.setGeometry(
                 new PointGeom([
                   coordinates.longitude,
@@ -513,18 +521,8 @@ BaseMap.prototype.enableGeolocation = function (actionType) {
                   coordinates.latitude
                 ]); //平移地图
             }
-          },
-          err => {
-            console.log("geo err!!!!!", err);
-          }, {
-            // enableHighAccuracy: true,
-            maximumAge: 500,
-            timeout: 5000,
-            provider: 'system',
-            coordsType: 'wgs84',
-            // provider: 'baidu'
           }
-        );
+        }, 2000)
         console.log(`开启监听成功，watchId `, this.watchId)
       }
     } else {
@@ -533,7 +531,7 @@ BaseMap.prototype.enableGeolocation = function (actionType) {
         this.map.removeLayer(this.geolocationLayer);
       }
       console.log(`准备关闭监听，watchId为 `, this.watchId)
-      window.plus && window.plus.geolocation.clearWatch(this.watchId);
+      window.clearInterval(this.watchId);
       this.watchId = ''
       console.log(`监听定位已关闭`, this.watchId)
     }
@@ -866,24 +864,6 @@ BaseMap.prototype.GetBaseMapData = function () {
   return ReturnValue;
 };
 
-//取得管线图层数据信息
-BaseMap.prototype.GetPipeMapData = function () {
-  var ReturnValue;
-  $.ajax({
-    type: "GET",
-    url: "http://116.117.157.176:8091/iserver/services/map-GIS/wmts100",
-    dataType: "XML",
-    async: false,
-    error: function (xml) {
-      alert("加载XML文档出错");
-    },
-    success: function (data) {
-      ReturnValue = data;
-    }
-  });
-  return ReturnValue;
-};
-
 //清空绘制过的要素
 BaseMap.prototype.removeAllFeature_Region = function () {
   var features = this.VectorSource.getFeatures();
@@ -1011,7 +991,8 @@ BaseMap.prototype.ADDFeatureForPoint = function (X, Y, iconConfig = {}, props = 
     image: new IconStyle({
       color: iconConfig.color || defaultColor,
       src: iconConfig.url || defaultSrc,
-      scale: 0.5
+      scale: 0.5,
+      anchor: [0.5, 1]
     })
   });
   feature.setId(props.id);
@@ -1050,11 +1031,11 @@ BaseMap.prototype.addPoiFeature = function (coords, id = "poi-feature", source =
     // 指定标注poi的feature使用哪张图
     url: './static/images/2.png'
   }, {
-      id,
-      name: id
-    }, source)
+    id,
+    name: id
+  }, source)
   this.map.getView().setCenter(coords)
-  this.map.getView().setZoom(13)
+  this.map.getView().setZoom(8)
 }
 
 BaseMap.prototype.addQueryObjectFeature = function (coords, id = 'query-feature', source = this.objectQuerySource) {
@@ -1065,9 +1046,9 @@ BaseMap.prototype.addQueryObjectFeature = function (coords, id = 'query-feature'
     // 指定标注poi的feature使用哪张图
     url: './static/images/2.png'
   }, {
-      id,
-      name: id
-    }, source)
+    id,
+    name: id
+  }, source)
 }
 
 BaseMap.prototype.removePoiFeature = function (id = "poi-feature", source = this.VectorSource) {
@@ -1269,6 +1250,17 @@ wgs84SphereC.prototype.getLength = GetLengthSphere;
 wgs84SphereC.prototype.getDistance = GetDistanceSphere;
 let wgs84Sphere = new wgs84SphereC();
 
+//投影转经纬度
+BaseMap.prototype.transformProjTurn = function (coordinate) {
+  let destinationCoordinates = transformProj([coordinate[0], coordinate[1]], 'EPSG:' + MapRelated.EPSG.number, 'EPSG:4326');
+  return destinationCoordinates;
+}
+//经纬度转投影
+BaseMap.prototype.transformProjReturn = function (coordinate) {
+  let destinationCoordinates = transformProj([coordinate[0], coordinate[1]], 'EPSG:4326', 'EPSG:' + MapRelated.EPSG.number);
+  return destinationCoordinates;
+}
+
 // 测量距离与面积 (参数action为true时开启，false时关闭)
 BaseMap.prototype.enableMeasure = function (measureType, action = true) {
   if (this.measureTooltip) {
@@ -1361,6 +1353,8 @@ BaseMap.prototype.enableMeasure = function (measureType, action = true) {
       let output = 0;
       if (geom instanceof PolygonGeom) {
         output = formatArea.call(this, geom, wgs84Sphere); //面积值
+        //output = geom.getGeometry().transform("+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs", 'EPSG:4547')
+        //output = geom.getArea()
         tooltipCoord = geom.getInteriorPoint().getCoordinates(); //坐标
       } else if (geom instanceof LineStringGeom) {
         output = formatLength.call(this, geom, wgs84Sphere); //长度值
@@ -1399,7 +1393,7 @@ function createMeasureTooltip() {
     this.measureTooltipElement = null;
   }
   this.measureTooltipElement = document.createElement('div');
-  this.measureTooltipElement.className = 'tooltip tooltip-measure';
+  this.measureTooltipElement.className = 'tooltip tooltip-measure tooltip-measure_dblock';
   this.measureTooltip = new Overlay({
     element: this.measureTooltipElement,
     offset: [0, -15],
@@ -1411,16 +1405,19 @@ function createMeasureTooltip() {
  * 测量长度输出
  */
 function formatLength(line, wgs84Sphere) {
-  var length;
-  var coordinates = line.getCoordinates(); //解析线的坐标
-  length = 0;
-  var sourceProj = this.map.getView().getProjection(); //地图数据源投影坐标系
-  //通过遍历坐标计算两点之前距离，进而得到整条线的长度
-  for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
-    var c1 = transformProj(coordinates[i], sourceProj, 'EPSG:4326');
-    var c2 = transformProj(coordinates[i + 1], sourceProj, 'EPSG:4326');
-    length += wgs84Sphere.getDistance(c1, c2);
-  }
+  // var length;
+  // var coordinates = line.getCoordinates(); //解析线的坐标
+  // length = 0;
+  // var sourceProj = this.map.getView().getProjection(); //地图数据源投影坐标系
+  // //通过遍历坐标计算两点之前距离，进而得到整条线的长度
+  // for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+  //   var c1 = transformProj(coordinates[i], sourceProj, 'EPSG:4326');
+  //   var c2 = transformProj(coordinates[i + 1], sourceProj, 'EPSG:4326');
+  //   length += wgs84Sphere.getDistance(c1, c2);
+  // }
+  var sourceProj = this.map.getView().getProjection();//获取投影坐标系
+  var geom = (line.clone().transform(sourceProj, 'EPSG:3857'));
+  var length = line.getLength(geom);
   var output;
   if (length > 100) {
     output = (Math.round(length / 1000 * 10000) / 10000) + ' ' + 'km'; //换算成KM单位
@@ -1436,9 +1433,9 @@ function formatArea(polygon, wgs84Sphere) {
   var area;
   var sourceProj = this.map.getView().getProjection(); //地图数据源投影坐标系
   var geom = (polygon.clone().transform(sourceProj, 'EPSG:4326')); //将多边形要素坐标系投影为EPSG:4326
-  var coordinates = geom.getLinearRing(0).getCoordinates(); //解析多边形的坐标值
-  area = Math.abs(wgs84Sphere.getArea(geom.getLinearRing(0))); //获取面积
-
+  // area = Math.abs(wgs84Sphere.getArea(geom.getLinearRing(0))); //获取面积
+  area = Math.abs(polygon.getArea(geom)); //获取面积
+  //area = polygon.getArea();
   var output;
   if (area > 10000) {
     output = (Math.round(area / 1000000 * 10000) / 10000) + ' ' + 'km<sup>2</sup>'; //换算成KM单位

@@ -1,9 +1,11 @@
+// 配置API接口地址
+var rootURL = process.env.API_ROOT
 import axios from 'axios'
 import qs from 'querystring'
 import config from '@config/config.js'
 // axios.defaults.withCredentials = true
 const instance = axios.create({
-    baseURL: config.apiPath.inspection,
+    baseURL: rootURL+'/api',
     //解决跨域
     crossDomain:true,
     timeout: 30000,
@@ -296,50 +298,38 @@ export default {
     +'&ExecTime=36')
   },
 
-  PostReplyMessage(msg, personId, eventId) {
-    return instance.get('/EventInfo.ashx', {
-      params: {
-        Oper: 'EventReply',
-        OperRemarks: msg,
-        DispatchPersonID: personId,
-        EventID: eventId
-      }
-    })
+  PostReplyMessage(eventId, orderId, personId,OperRemarks) {
+    orderId = orderId || ""
+    return instance.post(' /EventManageForMaintain/WorkListEventReply?EventID='+eventId
+    +'&OrderId='+orderId
+    +'&DispatchPersonID='+personId
+    +'&OperRemarks='+OperRemarks
+    )
   },
 
-  // 审核工单
-  CheckOrder(personId, eventId, orderId, operId) {
-    return instance.get('/WorkList.ashx', {
-      params: {
-        Oper: 'CommitOrderStepSet',
-        EventID: eventId,
-        OrderId: orderId,
-        StepNum: operId + 1,
-        iAdminID: personId
-      }
-    })
+  // 审核工单 iAdminID,eventId,deptId, personId
+  CheckOrder(eventId, orderId, iDeptID, iAdminID,OperRemarks,satisfaction) {
+    OperRemarks = OperRemarks || "满意"
+    satisfaction = satisfaction || "满意"
+    return instance.post('/EventManageForMaintain/WorkListAudit?EventID='+eventId
+    +'&OrderId='+orderId
+    +'&iDetpID='+iDeptID
+    +'&OperRemarks='+OperRemarks
+    +'&satisfaction='+satisfaction
+    +'&StepNum=7'
+    +'&iAdminID='+iAdminID)
   },
-  // 获取延期申请信息
-  GetDelayInfo(eventId, orderId) {
-    return instance.get('/WorkList.ashx', {
-      params: {
-        Oper: 'GetWordListDelayInfo',
-        EventID: eventId,
-        OrderId: orderId
-      }
-    })
-  },
+  
   // 延期审核确认
-  CheckOrderDelay(personId, eventId, orderId, complishTime) {
-    return instance.get('/WorkList.ashx', {
-      params: {
-        Oper: 'WordListDelayExec',
-        EventID: eventId,
-        OrderId: orderId,
-        complishTime: complishTime,
-        iAdminID: personId,
-      }
-    })
+  CheckOrderDelay(eventId, orderId, iDeptID, iAdminID,OperRemarks,complishTime) {
+    OperRemarks = OperRemarks || "满意"
+    console.log(eventId, orderId, iDeptID, iAdminID,OperRemarks,complishTime)
+   return instance.post('/EventManageForMaintain/WorkListDelayExec?EventID='+eventId
+   +'&OrderId='+orderId
+   +'&iDeptID='+iDeptID
+   +'&OperRemarks='+OperRemarks
+   +'&complishTime='+complishTime
+   +'&iAdminID='+iAdminID)
   }
 
 }

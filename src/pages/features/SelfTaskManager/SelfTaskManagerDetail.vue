@@ -38,7 +38,12 @@
             </li>
             <li>
               <span class="list_item_label">联系电话：</span>
-              <span class="list_item_content">{{orderInfo.LinkCall}}</span>
+              <span class="list_item_content" v-if="isPhone">
+                <a :href="'tel:'+orderInfo.LinkCall">{{orderInfo.LinkCall}}</a>
+              </span>
+              <span class="list_item_content" v-else>
+                {{orderInfo.LinkCall}}:联系电话不可用 
+              </span>
             </li>
             <li>
               <span class="list_item_label">当前进度：</span>
@@ -98,6 +103,9 @@
           >
         </div>
       </el-card>
+      <div class="flex_pic_p" @tap="onPicHide" v-show="isPicShowP">
+        <img src="" class="flex_pic_img_p">
+      </div>
     </div>
     <!-- 底部按钮组 -->
     <div class="fixed_footer">
@@ -110,9 +118,10 @@
         <button
           type="button"
           class="button custom_bgcolor_light"
-          v-if="isCurrentExecPerson && orderOperState == 11"
+          v-if="false"
           @click="actionDialogVisible.reply = true"
         >回复</button>
+        <!-- v-if="isCurrentExecPerson && orderOperState == 11" -->
         <button
           type="button"
           class="button custom_bgcolor_light"
@@ -122,21 +131,23 @@
         <button
           type="button"
           class="button custom_bgcolor_light"
-          v-if="isCurrentExecPerson && orderOperState == 11"
+          v-if="false"
           @click="actionDialogVisible.reject=true"
         >退回</button>
+         <!-- v-if="isCurrentExecPerson && orderOperState == 11" -->
         <!-- operId 13 -->
         <button
           type="button"
           class="button custom_bgcolor_light"
-          v-if="isCurrentExecPerson && (orderInfo.IsValid == 5 || orderOperState == 13)"
-          @click="onCheckDelayButtonClick"
+          v-if="false"
+          @click="onDialogButtonClick('postpone')"     
         >延期确认</button>
+         <!-- v-if="isCurrentExecPerson && (orderInfo.IsValid == 5 || orderOperState == 13)" -->
         <button
           type="button"
           class="button custom_bgcolor_light"
-          v-if="isCurrentExecPerson && orderOperState == 6"
-          @click="onCheckOrderButtonClick"
+          v-if=" currentUserId == orderInfo.DispatchPerson && orderOperState == 6"
+          @click="onDialogButtonClick('audit')"   
         >审核</button>
       </div>
     </div>
@@ -209,16 +220,74 @@
         <el-button type="primary" @click="onAssignConfirmButtonClick">提 交</el-button>
       </div>
     </el-dialog>
+    <!-- 审核弹出框 -->
+    <el-dialog
+      title="审核"
+      :visible.sync="actionDialogVisible.audit"
+      width="80%"
+      @close="onActionDialogClose"
+      center
+    >
+      <div v-if="actionDialogVisible.audit" class="dialog_content dialog_content-assign">
+        <div class="list_row">
+          <span>操作意见：</span>
+          <el-input
+            type="textarea"
+            :autosize="{minRows: 2, maxRows:6}"
+            v-model="rejectMessage"
+            placeholder="请输入操作意见"
+          ></el-input>
+        </div>
+        <div class="list_row">
+          <span>满意度：</span>
+          <el-input
+            type="textarea"
+            :autosize="{minRows: 1, maxRows:2}"
+            v-model="satisfyMessage"
+            placeholder="请输入满意度"
+          ></el-input>
+        </div>
+      </div>
+      <div slot="footer">
+        <el-button @click="onActionDialogCancel">取 消</el-button>
+        <el-button type="primary" @click=" onCheckOrderButtonClick">提 交</el-button>
+      </div>    
+    </el-dialog>
+    <!-- 延期确认弹出框 -->
+    <el-dialog
+      title="延期确认"
+      :visible.sync="actionDialogVisible.postpone"
+      width="80%"
+      @close="onActionDialogClose"
+      center
+    >
+      <div v-if="actionDialogVisible.postpone" class="dialog_content dialog_content-assign">
+        <div class="list_row">
+          <span>操作意见：</span>
+          <el-input
+            type="textarea"
+            :autosize="{minRows: 2, maxRows:6}"
+            v-model="rejectMessage"
+            placeholder="请输入操作意见"
+          ></el-input>
+        </div>
+      </div>
+      <div slot="footer">
+        <el-button @click="onActionDialogCancel">取 消</el-button>
+        <el-button type="primary" @click="onCheckDelayButtonClick ">提 交</el-button> 
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import _ from "lodash";
-import config from "@config/config";
 import { getSessionItem } from "@common/util";
 import apiMaintain from "@api/maintain";
 import OrderActionsDialog from "@comp/order-detail/OrderActionsDialog.vue";
 // 引入nativeTransfer.js
 import nativeTransfer from '@JS/native/nativeTransfer'
+import BaseMap from "@JS/Map/BaseMap";
+
 export default {
   props: {
     oriOrderInfo: [Object, String]
@@ -265,15 +334,18 @@ export default {
   },
   data() {
     return {
+      isPicShowP:false,
       orderInfo: {},
       defaultPicture: "./static/images/none.jpg",
-      pictureBasePath: config.uploadFilePath.inspection,
-
+      // pictureBasePath: process.env.API_ROOT+'/api',
+      pictureBasePath: process.env.API_ROOT,
       // 订单操作弹出框是否弹出
       actionDialogVisible: {
         assign: false,
         reply: false,
-        reject: false
+        reject: false,
+        audit:false,
+        postpone:false
       },
 
       // 弹出框相关数据
@@ -288,7 +360,8 @@ export default {
         }
       },
       replyMessage: "",
-      rejectMessage: ""
+      rejectMessage: "",
+      satisfyMessage:"",  //满意度
     };
   },
   computed: {
@@ -317,9 +390,23 @@ export default {
     },
     orderOperState() {
       return Number(this.orderInfo.OperId);
+    },
+    isPhone(){
+      let phone = !(/^([1]\d{10}|([\(（]?0[0-9]{2,3}[）\)]?[-]?)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?)$/.test(this.orderInfo.LinkCall));
+      if(phone){                                                                                                                        
+        return false
+      }else{
+        return true
+      }   
     }
   },
   methods: {
+    onPicHide(){
+      let _this = this;
+      setTimeout(function(){
+        _this.isPicShowP = false;
+      },100) 
+    },
     refreshOrderDetail() {
       apiMaintain.GetEventDetailInfo(this.oriOrderInfo.EventID).then(res => {
         console.log("刷新工单详情信息res", res);
@@ -423,14 +510,15 @@ export default {
         // 调用回复接口
         apiMaintain
           .PostReplyMessage(
-            this.replyMessage,
-            this.currentUserId,
-            this.orderInfo.EventID
+            this.orderInfo.EventID,
+            this.orderInfo.OrderId,
+            this.currentUser.iAdminID,
+            this.replyMessage
           )
           .then(res => {
             console.log("回复接口res", res);
-            if (res.data.ErrCode == 0) {
-              mui.toast("分派成功！");
+            if (res.data.Flag) {
+              mui.toast("回复成功！");
               this.actionDialogVisible.assign = false;
               // 刷新详情
               this.refreshOrderDetail();
@@ -508,21 +596,37 @@ export default {
         mui.toast("请选择部门与人员");
       }
     },
+    //审核及延期弹出框
+    onDialogButtonClick(el){
+      //audit  postpone
+      //审核
+      if(el == "audit"){
+        this.actionDialogVisible.audit = true;
+      }
+      //延期
+      else if(el == "postpone"){
+        this.actionDialogVisible.postpone = true;
+      }
+    },
     // 审核
     onCheckOrderButtonClick() {
       this.$showLoading();
+      console.log("审核")
       apiMaintain
         .CheckOrder(
-          this.currentUserId,
           this.orderInfo.EventID,
           this.orderInfo.OrderId,
-          this.orderInfo.OperId
+          this.currentUser.iDeptID,
+          this.currentUserId,
+          this.rejectMessage,
+          this.satisfyMessage
         )
         .then(res => {
           console.log("审核res", res);
-          if (res.data.ErrCode == 0) {
+          if (res.data.Flag) {
             mui.toast("审核完成！");
             this.$hideLoading();
+            this.$router.go(-1);
             // 刷新详情
             this.refreshOrderDetail();
           } else {
@@ -535,18 +639,52 @@ export default {
     },
     // 延期确认
     onCheckDelayButtonClick() {
+       console.log("延期确认")
       apiMaintain
-        .GetDelayInfo(this.orderInfo.EventID, this.orderInfo.OrderId)
-        .then(res => {
+        .GetEventDetailInfo(this.orderInfo.EventID)
+        .then(yanMsg => {
           this.$showLoading();
-          console.log("获取到延期申请信息", res);
-          let data = res.data.rows[0];
+          console.log("获取到延期申请信息", yanMsg);
+          if(yanMsg.data.Flag){
+            let DelayTime = _.filter(yanMsg.data.Data.Result,msg=>{
+              return msg.IsValid == 5
+            })[0].PostponeTime;
+            apiMaintain
+            .CheckOrderDelay(
+              this.orderInfo.EventID,
+              this.orderInfo.OrderId,
+              this.currentUser.iDeptID,
+              this.currentUserId,
+              this.rejectMessage,
+              DelayTime)
+            .then(res => {
+              console.log("延期确认res", res);
+              this.$hideLoading();
+              if (res.data.Flag) {
+                mui.toast("确认成功！");
+                this.$router.go(-1);
+                // 刷新详情
+                this.refreshOrderDetail();
+              } else {
+                mui.toast(res.data.ErrInfo);
+              }
+            })
+            .catch(err => {
+              this.$hideLoading();
+
+              mui.toast("延期确认失败！");
+            });
+
+          }else{
+            mui.toast("获取延期信息失败！");
+          }
+          /*let data = res.data.rows[0];
           let time = data.ApplicationTime;
           let personId = this.currentUserId;
           let eventId = data.EventID;
           let orderId = data.OrderId;
-          let desc = data.Cause;
-          apiMaintain
+          let desc = data.Cause;*/
+          /*apiMaintain
             .CheckOrderDelay(personId, eventId, orderId, time)
             .then(res => {
               console.log("延期确认res", res);
@@ -563,41 +701,21 @@ export default {
               this.$hideLoading();
 
               mui.toast("延期确认失败！");
-            });
+            });*/
         });
     },
     onAddrRowClick() {
       // 调用百度地图app导航
       if (this.orderInfo.EventX && this.orderInfo.EventY) {
-        if (window.plus && window.plus.maps && window.plus.geolocation) {
-          this.$showLoading();
-          window.plus.geolocation.getCurrentPosition(
-            position => {
-              let srcPoint = new plus.maps.Point(
-                position.coords.longitude,
-                position.coords.latitude
-              );
-              let destDesc = "目标设备";
-              let destPoint = new plus.maps.Point(
-                Number(this.orderInfo.EventX),
-                Number(this.orderInfo.EventY)
-              );
-              window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-              this.$hideLoading();
-            },
-            err => {
-              this.$hideLoading();
-              window.mui.toast("定位失败，无法调起导航");
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 10000,
-              provider: "system",
-              coordsType: "wgs84"
-            }
-          );
-        }else{
-          nativeTransfer.startNavi(this.orderInfo.EventX, this.orderInfo.EventY, "");
+        let mapController = new BaseMap();
+        mapController.Init("map");
+        // 调用百度地图app导航
+        if (this.orderInfo.EventX && this.orderInfo.EventY) {
+          let newPosition = Number(this.orderInfo.EventX) > 200 ? 
+              mapController.transformProjTurn([Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)]) : 
+              [Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)];  
+          console.log(newPosition)
+          nativeTransfer.startNavi(newPosition[0], newPosition[1], "");
         }
       }
     },
@@ -620,7 +738,13 @@ export default {
       let list = this.pictureList.map(url => {
         return `${this.pictureBasePath}${url}`;
       });
-      plus.nativeUI.previewImage(list, { current: index });
+      if(window.plus){
+        plus.nativeUI.previewImage(list, { current: index });
+      }else{
+        let picImg = document.getElementsByClassName("flex_pic_img_p")[0];
+        picImg.src = list[index];
+        this.isPicShowP = true;
+      }
     }
   },
   filters: {
@@ -742,6 +866,22 @@ export default {
       }
     }
   }
+}
+.flex_pic_p{
+  width: 100%;
+  height: calc(100vh);
+  background: #eee;
+  z-index: 1000;
+  position:fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content:center;
+  align-items: center
+}
+.flex_pic_img_p{
+  width: 100%;
+  position: absolute;
 }
 </style>
 

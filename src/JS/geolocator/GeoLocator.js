@@ -2,26 +2,33 @@ import Vue from 'vue'
 import _ from 'lodash'
 import CoordsHelper from 'coordtransform'
 import {
-  deepCopy,
-  calcDistance,
+    setSessionItem,
+    calcDistance,
+    deepCopy,
 } from "@common/util";
-// 开发环境toast的开关
-const LOG = false
+import nativeTransfer from '@JS/native/nativeTransfer'
 // 全局事件总线
 let eventbus = null
 // 默认config，参考 http://www.html5plus.org/doc/zh_cn/geolocation.html#plus.geolocation.PositionOptions
 const defaultConfig = {
-  // 默认不使用高精度，除非必要，因为其会占用大量资源并使获取位置的时间变久导致定位延迟或获取位置失败
-  enableHighAccuracy: true,
-  maximumAge: 5000,
-  timeout: 5000,
-  provider: "baidu",
-  coordsType: "gcj02",
-  // 经纬度范围，如果在范围之外，则（获取但）不记录该位置点
-  extent: {
-    longitude: [],
-    latitude: []
-  }
+    // 默认不使用高精度，除非必要，因为其会占用大量资源并使获取位置的时间变久导致定位延迟或获取位置失败
+    enableHighAccuracy: true,
+    /* 
+       根据html5+api文档，maximumAge参数只在使用plus.watchPosition方法时生效，
+       本模块没有使用watchPosition方法，
+       而是使用setInterval+plus.getCurrentPosition方法周期性获取位置
+       因此本模块使用一个自定义的interval参数表示定时任务的周期
+    */
+    maximumAge: 5000,
+    interval: 1000,
+    provider: "baidu",
+    coordsType: "gcj02",
+    timeout: 8000,
+    // 经纬度范围，如果在范围之外，则（获取但）不记录该位置点
+    extent: {
+        longitude: [],
+        latitude: []
+    }
 }
 
 // 最终的config
@@ -36,161 +43,166 @@ let _lastPosition = null
 
 let _failedCount = 0
 
-let _coords_per_2s = {}
-
 export default class GeoLocator {
-  constructor() {}
-  static init(initConfig) {
-    window.plus.device.setWakelock(true)
-    // 只有未初始化状态和已销毁的状态下（_state=0）才能init
-    if (_state === 0) {
-      // 每次start都要将_failedCount清零
-      _failedCount = 0
-      return new Promise((resolve, reject) => {
-        if (window.plus && window.plus.geolocation) {
-          // 添加一系列设备相关的事件
-          document.addEventListener('pause', () => {
-            console.info('App Pause')
-          })
-          document.addEventListener('resume', () => {
-            console.info('App Resume')
-            // GeoLocator.restart()
-          })
-          // 整理配置
-          computedConfig = _.assign({}, defaultConfig, initConfig)
-          eventbus = Vue.prototype.$eventbus
-          if (!eventbus) {
-            console.error(`Vue全局总线没有被定义，将影响该模块的功能，请在调用init方法之前，为Vue的原型添加名为 '$eventbus' 的事件总线`)
-          }
-          _state = 1
-          console.log(`%cGeoLocator: 初始化成功， 配置对象为： `, 'color: blue', computedConfig)
-          resolve(deepCopy(computedConfig))
+    constructor() {}
+
+    static init(initConfig) {
+        if (_state === 0) {
+            _failedCount = 0
+            return new Promise((resolve, reject) => {
+               // if (window.plus && window.plus.geolocation) {
+                    // 添加一系列设备相关的事件
+                    document.addEventListener('pause', () => {
+                        window.mui.toast('Pause')
+                        console.info('App Pause')
+                    })
+                    document.addEventListener('resume', () => {
+                        window.mui.toast('Resume')
+                        console.info('App Resume')
+                        GeoLocator.restart()
+                    })
+                    // 整理配置
+                    computedConfig = _.assign({}, defaultConfig, initConfig)
+                    eventbus = Vue.prototype.$eventbus
+                    if (!eventbus) {
+                        console.error(`Vue全局总线没有被定义，将影响该模块的功能，请在调用init方法之前，为Vue的原型添加名为 '$eventbus' 的事件总线`)
+                    }
+                    _state = 1
+                    console.log(`GeoLocator: 初始化成功， 配置对象为： `, computedConfig)
+                    resolve(JSON.parse(JSON.stringify(computedConfig)))
+                // } else {
+                //     reject(new Error('GeoLocator: 不在html5+运行环境，初始化失败。'))
+                // }
+            })
         } else {
-          reject(new Error('GeoLocator: 不在html5+运行环境，初始化失败。'))
+            console.warn(`GeoLocator: GeoLocator在其他地方已被初始化，配置对象为： `, computedConfig)
         }
-      })
-    } else {
-      console.warn(`GeoLocator: GeoLocator在其他地方已被初始化，配置对象为： `, computedConfig)
     }
-  }
 
-  static start() {
-    if (_state === 1 || _state === 3) {
-      console.log('%cGeoLocator: 开启start...', 'color: blue')
-      _failedCount = 0
-      // 抛弃刚开始的三个点
-      let initThreeCount = 0
-      _taskId = window.plus.geolocation.watchPosition(({
-        coords
-      }) => {
-        console.log("过滤掉换-----",coords.longitude,coords.latitude,coords)
-        // window.mui.toast('拿到位置了')
-        if (_state == 2) {
-          if (initThreeCount < 3) {
-            console.log(`%c过滤掉第${initThreeCount+1}个点：`, 'color: blue', coords)
-            initThreeCount++
-            if (initThreeCount === 3) {
-              console.log('%c前三个点已过滤，正式开始...', 'color: green')
-            }
-            return
-          }
-          let timestamp = new Date();
-          // 坐标转换
-          let coordsFor84 = CoordsHelper.gcj02towgs84(coords.longitude, coords.latitude)
-          // 组装数据对象
-          let position = {
-            longitude: coordsFor84[0],
-            latitude: coordsFor84[1],
-            timestamp
-          }
-          console.log("%cGeoLocator: 获取到一次位置： ", 'color: green', position);
-          // 判断位置是否在規定范围之內
-          _checkCoordsBounds(position, result => {
-            if (result) {
-              // 比較上個點，計算這次的點是否合理
-              _compareWithLastCoords(position, (result) => {
-                if (result) {
-                  _lastPosition = position
-                  LOG && window.mui.toast(`经度：${position.longitude}, 纬度：${position.latitude}`, {
-                    duration: '1000',
-                    type: 'div'
-                  })
-                  _failedCount = 0
-                  eventbus.$emit('geolocation', position)
-                } else {
-                  LOG && window.mui.toast('与上次校验时失败。。。')
-                  _failedCount++
-                  if (_failedCount === 3) {
-                    GeoLocator.restart()
-                  }
-                }
-              })
-            } else {
-              LOG && window.mui.toast('越界校验时失败。。。')
-              _failedCount++
-              if (_failedCount === 5) {
-                GeoLocator.restart()
-              }
-            }
-          })
+    static start() {
+        if (_state === 1 || _state === 3) {
+            _failedCount = 0
+            _taskId = window.setInterval(() => {
+
+                nativeTransfer.getLocation(
+                    coords => {
+                    // 坐标转换
+                    let coordsFor84 = CoordsHelper.gcj02towgs84(coords.lng, coords.lat)
+                    // 组装数据对象
+                    let timestamp = new Date();
+                    let position = {
+                        longitude: coordsFor84[0],
+                        latitude: coordsFor84[1],
+                        timestamp
+                    }
+                    let coordsMsg = {
+                        "addr":coords.addr,
+                        "lng":coords.lng,
+                        "lat":coords.lat
+                    }
+                    setSessionItem("coordsMsg",JSON.stringify(coordsMsg));
+                    console.log("%cGeoLocator: 获取到一次位置： ", 'color: green', coords);
+
+                    // 判断位置是否超过约定范围
+                    let extent = {}
+                    if (computedConfig.extent.longitude &&
+                        computedConfig.extent.latitude &&
+                        computedConfig.extent.longitude.length === 2 &&
+                        computedConfig.extent.latitude.length === 2) {
+                        extent = computedConfig.extent
+                    }
+                    if (extent && !_.isEmpty(extent)) {
+                        // 有范围限定
+                        if (
+                            // position.longitude <= extent.longitude[1] &&
+                            // position.longitude >= extent.longitude[0] &&
+                            // position.latitude <= extent.latitude[1] &&
+                            // position.latitude >= extent.latitude[0]
+                            true
+                        ) {
+                            // 位置点在给定范围内
+                            console.log("%cGeoLocator: 位置点有效", 'color: green');
+                            // 判断该点是否合理
+                            if (!_lastPosition) {
+                                _lastPosition = position
+                                _failedCount = 0
+                                eventbus.$emit('geolocation', position)
+                            } else {
+                                let distanceForMeter = calcDistance(
+                                    position.longitude,
+                                    position.latitude,
+                                    _lastPosition.longitude,
+                                    _lastPosition.latitude,
+                                    6
+                                ) * 1000;
+                                // 最大阀值为15m/秒
+                                if (distanceForMeter <= 0.015 * computedConfig.interval) {
+                                    console.log("%cGeoLocator: 位置点合理 %s", 'color: green', distanceForMeter);
+                                    eventbus.$emit('geolocation', position)
+                                    _lastPosition = position
+                                    _failedCount = 0
+                                } else {
+                                    console.warn('GeoLocator: 位置点不合理: ', distanceForMeter)
+                                    _failedCount++
+                                    if (_failedCount === 3) {
+                                        GeoLocator.restart()
+                                    }
+                                }
+                            }
+                        } else {
+                            console.warn('GeoLocator: 该位置点越界')
+                            _failedCount++
+                            if (_failedCount === 3) {
+                                GeoLocator.restart()
+                            }
+                        }
+
+                    } else {
+                        // 无范围限定
+                        console.log("%cGeoLocator: 位置点有效且合理 %s", 'color: green');
+                        eventbus.$emit('geolocation', position)
+                    }
+                })
+            }, computedConfig.interval)
+            _state = 2
+            console.log('%cGeoLocator: 定时任务已开启', 'color: blue')
+        } else if (_state === 0) {
+            console.error('GeoLocator: 调用start之前必须先调用init方法并传入一个自定义配置对象')
+        } else if (_state === 2) {
+            console.error(`GeoLocator: _taskId为 ${_taskId} 的定时任务正在进行中，无法重复start`)
         }
-      }, err => {
-        console.log('%cGeoLocator: 获取位置点出错: ', 'color: red', err)
-        // _failedCount++
-        // console.log('%cGeoLocator: 失敗次數 ', 'color: red', _failedCount)
-        GeoLocator.restart()
-      }, {
-        enableHighAccuracy: computedConfig.enableHighAccuracy,
-        // maximumAge: computedConfig.maximumAge,
-        provider: computedConfig.provider,
-        coordsType: computedConfig.coordsType,
-        // timeout: computedConfig.timeout
-      })
-      // 改变当前状态，至此往后的值才有效
-      _state = 2
-      console.log('%cGeoLocator: 定时任务已开启', 'color: blue')
-    } else if (_state === 0) {
-      console.error('GeoLocator: 调用start之前必须先调用init方法并传入一个自定义配置对象')
-    } else if (_state === 2) {
-      console.error(`GeoLocator: _taskId为 ${_taskId} 的定时任务正在进行中，无法重复start`)
     }
-  }
 
-  static stop() {
-    console.log('%cGeoLocator: 停止stop...', 'color: blue')
-    if (_state === 2 && _taskId) {
-      window.plus.geolocation.clearWatch(_taskId)
-      _taskId = null
-      _lastPosition = null
-      _state = 3
-      _failedCount = 0
-      console.log('%cGeoLocator: 定时任务已停止', 'color: orange')
-    } else {
-      console.warn('%cGeoLocator: 定时任务尚不存在，无法（没有必要）执行stop方法', 'color: yellow')
+    static stop() {
+        if (_state === 2 && _taskId) {
+            window.clearInterval(_taskId)
+            _lastPosition = null
+            _state = 3
+            _failedCount = 0
+            console.log('%cGeoLocator: 定时任务已停止', 'color: orange')
+        } else {
+            console.warn('%cGeoLocator: 定时任务尚不存在，无法（没有必要）执行stop方法', 'color: yellow')
+        }
     }
-  }
 
-  static restart() {
-    console.log('%cGeoLocator: 准备重启...', 'color: blue')
-    LOG && window.mui.toast('准备重启。。。。。。。。')
-    GeoLocator.stop()
-    setTimeout(() => {
-      GeoLocator.start()
-    }, 1000)
-  }
-
-  static destroy() {
-    if (_state === 2) {
-      GeoLocator.stop()
+    static restart() {
+        console.log('%cGeoLocator: 准备重启...', 'color: blue')
+        GeoLocator.stop()
+        GeoLocator.start()
     }
-    computedConfig = {}
-    _state = 0
-    _failedCount = 0
-  }
 
-  static getCurrentState() {
-    return _state
-  }
+    static destroy() {
+        if (_state === 2) {
+            GeoLocator.stop()
+        }
+        computedConfig = {}
+        _state = 0
+        _failedCount = 0
+    }
+
+    static getCurrentState() {
+        return _state
+    }
 }
 
 // 與上次的點作比較，判斷獲得的點是否合理

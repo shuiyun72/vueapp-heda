@@ -1,136 +1,98 @@
 <template>
-    <div class="legend_table_container">
-        <div class="legend_table_header">
-            <span  class="sys-icon-TuLi">&nbsp;</span>
-            <span>图例</span>
-        </div>
-        <div class="legend_table_body">
-            <table id="TuLi_Table" cellpadding="0" cellspacing="0" style="width: 100%; backgroundColor:#999;" class="TuLi_Table" >
-                <tr>
-                    <td >
-                        <div style="height:5px; background-color:#00ff00;border:2px black solid;width:90%"></div>
-                    </td>
-                    <td>&lt;=DN100</td>
-                </tr>
-                <tr>
-                    <td >
-                        <div style="height:5px; background-color:#669933;border:2px black solid;width:90%"></div>
-                    </td>
-                    <td>DN100-200</td>
-                </tr>
-                <tr>
-                    <td >
-                        <div style="height:5px; background-color:#0000ff;border:2px black solid;width:90%"></div>
-                    </td>
-                    <td>DN200-300</td>
-                </tr>
-                <tr>
-                    <td >
-                        <div style="height:5px; background-color:#ff0000;border:2px black solid;width:90%"></div>
-                    </td>
-                    <td>DN300-400</td>
-                </tr>
-                <tr>
-                    <td >
-                        <div style="height:5px; background-color:#cc0000;border:2px black solid;width:90%"></div>
-                    </td>
-                    <td>DN400-500</td>
-                </tr>
-                <tr>
-                    <td >
-                        <div style="height:5px; background-color:#9900ff;border:2px black solid;width:90%"></div>
-                    </td>
-                    <td>DN500-600</td>
-                </tr>
-                <tr>
-                    <td >
-                        <div style="height:5px; background-color:#663399;border:2px black solid;width:90%"></div>
-                    </td>
-                    <td>>DN600</td>
-                </tr>
-                <tr>
-                    <td><img class="TuLi_icon" alt="" height="30" :src="'./static/gis/Templates/Black/Images/icon/famenbi.png'" /></td>
-                    <td>阀门闭</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/famenkai.png'"/></td>
-                    <td>阀门开</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img  class="TuLi_icon" alt="" :src="'./static/gis/Templates/Black/Images/icon/famenjing.png'"/></td>
-                    <td>阀门井</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img  class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/jiayazhan.png'"/></td>
-                    <td>加压站</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img  class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/jianxiujing.png'"/></td>
-                    <td>检修井</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/paiqifa.png'"/></td>
-                    <td>排气阀</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/paiqijing.png'"/></td>
-                    <td>排气井</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/paishajing.png'"/></td>
-                    <td>排沙井</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/santongjing.png'"/></td>
-                    <td>三通井</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/sitongjing.png'"/></td>
-                    <td>四通井</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img  class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/xiaofangjing.png'"/></td>
-                    <td>消防井</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/xiaofangshuan.png'"/></td>
-                    <td>消防栓</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/zhijing.png'"/></td>
-                    <td>支井</td>
-                </tr>
-                <tr>
-                    <td>
-                    <img class="TuLi_icon"  alt="" :src="'./static/gis/Templates/Black/Images/icon/zhitongjing.png'"/></td>
-                    <td>直通井</td>
-                </tr>
-            </table>
-        </div>
-        <div 
-            id="TuLi_DivBootom" 
-            class="LayerControDivBootom"
-        >
-            <span  class="sys-icon-close">&nbsp;</span>
-            <span  style="cursor: pointer;" @click="onCloseClick">&nbsp;关闭&nbsp;</span> 
-        </div>
+  <div class="legend_table_container">
+    <div class="legend_table_header">
+      <span class="sys-icon-TuLi">&nbsp;</span>
+      <span>图例</span>
     </div>
+    <div class="legend_table_body">
+      <table
+        id="TuLi_Table"
+        cellpadding="0"
+        cellspacing="0"
+        style="width: 100%; backgroundColor:#999;"
+        class="TuLi_Table"
+      >
+        <tr>
+          <td>
+            <div style="height:4px; background-color:#0880d7;width:90%"></div>
+          </td>
+          <td>管网</td>
+        </tr>
+        <tr v-for="item in allLayers" :key="item.name">
+          <!-- <td>
+             <img
+              class="TuLi_icon"
+              alt
+              height="30"
+              :src="'./static/gis/Templates/Black/toolIcon/mapIcon/'+item.url"
+            />
+          </td> -->
+          <td>
+             <img
+              class="TuLi_icon"
+              alt
+              height="30"
+              :src="item.url"
+            />
+          </td> 
+          <td>{{item.name}}</td>
+        </tr>
+      </table>
+    </div>
+    <div id="TuLi_DivBootom" class="LayerControDivBootom">
+      <span class="sys-icon-close">&nbsp;</span>
+      <span style="cursor: pointer;" @click="onCloseClick">&nbsp;关闭&nbsp;</span>
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
+  props:{
+    allLayers:{
+      type:Array,
+      default() {
+        return{
+          toolIcon: [
+            { name: "转折点", url: "zhuanzhedian.png" },
+            { name: "三通", url: "santong.png" },
+            { name: "四通", url: "sitong.png" },
+            { name: "盖堵", url: "gaidu.png" },
+            { name: "出水口", url: "chushuikou.png" },
+            { name: "非普查区", url: "feipuchaqu.png" },
+            { name: "水表井", url: "shuibiaojing.png" },
+            { name: "消防栓", url: "xiaofangshuan.png" },
+            { name: "消防井", url: "xiaofangjing.png" },
+            { name: "检修井", url: "jianxiujing.png" },
+            { name: "排气井", url: "paiqijing.png" },
+            { name: "泵站", url: "bengzhan.png" },
+            { name: "变径", url: "bianjing.png" },
+            { name: "变材", url: "biancai.png" }
+          ]
+        }
+      }
+    }
+  },
+  data() {
+    return {
+      toolIcon: [
+        { name: "转折点", url: "zhuanzhedian.png" },
+        { name: "三通", url: "santong.png" },
+        { name: "四通", url: "sitong.png" },
+        { name: "盖堵", url: "gaidu.png" },
+        { name: "出水口", url: "chushuikou.png" },
+        { name: "非普查区", url: "feipuchaqu.png" },
+        { name: "水表井", url: "shuibiaojing.png" },
+        { name: "消防栓", url: "xiaofangshuan.png" },
+        { name: "消防井", url: "xiaofangjing.png" },
+        { name: "检修井", url: "jianxiujing.png" },
+        { name: "排气井", url: "paiqijing.png" },
+        { name: "泵站", url: "bengzhan.png" },
+        { name: "变径", url: "bianjing.png" },
+        { name: "变材", url: "biancai.png" }
+      ]
+    };
+  },
   methods: {
     onCloseClick() {
       this.$emit("close");
@@ -181,8 +143,8 @@ export default {
     font-size: 12pt;
   }
   .TuLi_icon {
-    height: 30px;
-    width: 30px;
+    height: 20px;
+    width: 20px;
   }
 
   .TuLi_Div {

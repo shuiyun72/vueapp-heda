@@ -1,5 +1,5 @@
-import ApiMonitor from '@api/monitor'
-
+import ApiMonitor from '@api/user'
+var rootURL = process.env.API_ROOT
 
 let _newVersionInfo = {
   versionCode: '',
@@ -12,18 +12,20 @@ export default class VersionManager {
   constructor() {}
   static CheckUpdate() {
     // 先监测是否在plus环境下
-    if (window && window.plus) {
+     if (window && window.plus) {
       // 发送ajax请求
       return ApiMonitor.CheckAppUpdate().then(res => {
-        console.log('版本更新res', res)
+        console.log('版本更新res', res.data.Data.Result[0].VERSIONID)
+        let VERSIONID = res.data.Data.Result[0].VERSIONID;
         return new Promise((resolve, reject) => {
           window.plus.runtime.getProperty(window.plus.runtime.appid, function (inf) {
             let wgtVer = inf.version;
-            console.log("当前应用版本：" + wgtVer, '最新版本:' + res.data[0].VersionId);
-            let haveNewVersion = (res.data[0].VersionId > wgtVer)
-            _newVersionInfo.versionCode = res.data[0].VersionId
-            _newVersionInfo.description = res.data[0].description
-            _newVersionInfo.url = res.data[0].AndroidDownloadPath
+            console.log("当前应用版本：" + wgtVer, '最新版本:' + VERSIONID);
+            let haveNewVersion = (VERSIONID > wgtVer)
+            _newVersionInfo.versionCode = VERSIONID
+            // _newVersionInfo.description = res.data[0].description
+            _newVersionInfo.description = "最新版本为"+VERSIONID+",是否下载更新？"
+            _newVersionInfo.url = rootURL+"/H5188E903_0425021627.apk"
             resolve(haveNewVersion)
           });
         })

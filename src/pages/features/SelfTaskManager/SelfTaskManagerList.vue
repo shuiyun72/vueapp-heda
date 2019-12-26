@@ -6,7 +6,7 @@
         <NoContent :visible="todoOrders.length === 0" content="暂无待办事件"></NoContent>
         <el-card
           v-for="(order, index) in todoOrders"
-          :key="order.OrderId || index"
+          :key="index"
           class="order_card mui-table-view-cell"
           @tap.native="onOrderClick(order)"
         >
@@ -51,7 +51,7 @@
         <!-- 已完成工单页内容 -->
         <el-card
           v-for="(order, index) in doneOrders"
-          :key="order.OrderId || index"
+          :key="index"
           class="order_card mui-table-view-cell"
           @tap.native="onOrderClick(order)"
         >
@@ -96,7 +96,6 @@
 
 <script>
 import _ from "lodash";
-import config from "@config/config";
 import apiInspection from "@api/inspection";
 import apiMaintain from "@api/maintain";
 import dateHelper from "@common/dateHelper";
@@ -119,7 +118,8 @@ export default {
   data() {
     return {
       defaultPicture: "./static/images/none.jpg",
-      pictureBasePath: config.uploadFilePath.inspection,
+      // pictureBasePath: process.env.API_ROOT+'/api',
+      pictureBasePath: process.env.API_ROOT,
       activeTabName: "",
       todoOrders: [],
       doneOrders: []

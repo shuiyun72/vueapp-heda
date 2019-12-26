@@ -25,6 +25,7 @@
         <div class="outer_bar bar">
             <div 
                 class="outer_item item" 
+                :class="outerItem.text == textActive && outerItem.text !='重 置' ?'active':''"
                 v-for="outerItem in items" 
                 :key="outerItem.id" 
                 @click="onActionItemClick(outerItem, 0)"
@@ -85,8 +86,9 @@ export default {
             icon: "",
             children: [
               { id: "satellite-view", text: "影像地图", icon: "" },
-              { id: "street-view", text: "街道地图", icon: "" },
-              { id: "DMA-view", text: "DMA区域", icon: "" }
+              { id: "street-view", text: "街道地图", icon: "" }
+              // ,
+              // { id: "DMA-view", text: "DMA区域", icon: "" }
             ]
           }
         ];
@@ -95,6 +97,7 @@ export default {
   },
   data() {
     return {
+      textActive:"",
       innerbarVisible: false,
       // 最近一次点击的外层bar的item，用于计算当前子bar的可选项
       currentClickedOuterItem: {},
@@ -117,6 +120,7 @@ export default {
   methods: {
     // 点击某一个某一个项时
     onActionItemClick(item, layer) {
+      this.textActive = item.text;
       // 点击的是外层工具条
       if (layer === 0) {
         if (item.id !== this.lastClickedOuterItem.id) {
@@ -160,6 +164,10 @@ export default {
       justify-content: space-around;
       .item {
         padding: 5px 5px 5px 5px;
+        flex-grow: 1;
+        &.active{
+          background: rgba(22,24,26,.24)
+        }
         .item_text {
           color: #11a4db;
         }
