@@ -31,11 +31,11 @@
       </li>
       <li>
         <span class="user_info_label">电子邮件</span>
-        <span class="user_info_content">{{userInfo.cAdminEmail}}</span>
+        <span class="user_info_content">{{userInfo.cAdminEmail?userInfo.cAdminEmail:'没有'}}</span>
       </li>
       <li>
         <span class="user_info_label">是否锁定</span>
-        <span class="user_info_content">{{userInfo.iIsLocked}}</span>
+        <span class="user_info_content">{{userInfo.iIsLocked?'是':'否'}}</span>
       </li>
       <li>
         <span class="user_info_label">账户过期时间</span>

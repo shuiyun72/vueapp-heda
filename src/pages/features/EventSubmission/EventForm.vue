@@ -562,9 +562,9 @@ export default {
               location.lat
             );
             //转换为地方坐标
-            // coordsFor84 = this.mapController.destinationCoordinateProj(
-            //   coordsFor84
-            // );
+            coordsFor84 = this.mapController.transformProjReturn(
+              coordsFor84
+            );
             //console.log(coordsFor84);
             //let coordsFor84 = [location.lng,location.lat];
             this.mapController.addPoiFeature(coordsFor84);
@@ -587,7 +587,7 @@ export default {
         let mapController = (this.mapController = new BaseMap());
         console.log("构建完成", mapController);
         mapController.Init("event_map");
-         this.mapController.SetMapLayerShow(2, 1);
+        this.mapController.SetMapLayerShow(2, 1);
         mapController.getInstance().on("map-click", data => {
           console.log("data", data);
           let coordinate = data.coords;

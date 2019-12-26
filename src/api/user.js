@@ -30,6 +30,10 @@ instance.interceptors.request.use(
 )
 
 export default {
+  // 检查移动端版本更新
+  CheckAppUpdate() {
+    return instance.get('/CellphoneManage/GetLatestVersionId')
+  },
   // 用户登录 
   UserLogin(loginContent, password, smid,type = 3) {
     //return instance.post('/System/Login?loginContent='+loginContent+"&password="+password+"$smid="+smid)

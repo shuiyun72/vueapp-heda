@@ -4,10 +4,14 @@
       <!-- 事件内容 -->
       <el-card>
         <div slot="header" class="clearfix card_header">
-          <span class="header_text">事件编号： {{orderInfo.EventCode}}</span>
+          <span class="header_text">工单编号： {{orderInfo.OrderCode}}</span>
         </div>
         <div class="card_body">
           <div class="left">
+            <li>
+              <span class="list_item_label">事件编号：</span>
+              <span class="list_item_content">{{orderInfo.EventCode}}</span>
+            </li>
             <li>
               <span class="list_item_label">上报时间：</span>
               <span class="list_item_content">{{orderInfo.UpTime}}</span>
@@ -147,6 +151,7 @@ import OrderActionsDialog from "@comp/order-detail/OrderActionsDialog.vue";
 // 引入nativeTransfer.js
 import nativeTransfer from '@JS/native/nativeTransfer';
 // import encodeHelper from "@common/encodeHelper";
+import BaseMap from "@JS/Map/BaseMap";
 
 export default {
   props: {
@@ -252,9 +257,15 @@ export default {
       }
     },
     onAddrRowClick() {
+      let mapController = new BaseMap();
+      mapController.Init("map");
       // 调用百度地图app导航
       if (this.orderInfo.EventX && this.orderInfo.EventY) {
-        nativeTransfer.startNavi(this.orderInfo.EventX, this.orderInfo.EventY, "");
+        let newPosition = Number(this.orderInfo.EventX) > 200 ? 
+            mapController.transformProjTurn([Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)]) : 
+            [Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)];  
+        console.log(newPosition)
+        nativeTransfer.startNavi(newPosition[0], newPosition[1], "");
       }
     },
     onTakeOrderClick() {

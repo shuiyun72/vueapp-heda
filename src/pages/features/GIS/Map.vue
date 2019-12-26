@@ -12,17 +12,17 @@
               <span class="popup-content_text">{{currentPoiPopupContent.name}}</span>
             </li>
             <li>
-              <span class="popup-content_label">地址</span>
+              <span class="popup-content_label">坐标</span>
               <span class="popup-content_text">{{currentPoiPopupContent.address}}</span>
             </li>
-            <li>
+            <!-- <li>
               <span class="popup-content_label">电话</span>
               <span class="popup-content_text">{{currentPoiPopupContent.mobile}}</span>
             </li>
             <li>
               <span class="popup-content_label">类别</span>
               <span class="popup-content_text">{{currentPoiPopupContent.type}}</span>
-            </li>
+            </li> -->
           </ul>
         </div>
       </div>
@@ -88,7 +88,16 @@
         class="input-with-select"
         @select="onSuggestionItemSelect"
         v-if="searchTypeSelectValue === 'keyword'"
-      ></el-autocomplete>
+      >
+        <!-- <i
+          class="el-icon-edit el-input__icon"
+          slot="suffix"
+          @click="handleIconClick">
+        </i> -->
+        <template slot-scope="{ item }">
+          <div class="name">{{ item.value }}</div>
+        </template>
+      </el-autocomplete>
       <el-input
         style="width: 32%"
         clearable
@@ -114,7 +123,7 @@
       class="gis_legend_table_container"
       style="position:fixed; top:46px;  height: 85vh; right:0;overflow:scroll;"
     >
-      <LegendTable @close="onLegendTableClose" v-if="legendTableVisible"></LegendTable>
+      <LegendTable @close="onLegendTableClose" v-if="legendTableVisible"  :allLayers="allLayers.allLayerImg"></LegendTable>
     </div>
     <div class="gis_point_detail_table_container">
       <PointDetailTable
@@ -125,6 +134,13 @@
     </div>
     <div class="gis_action_bar_container">
       <ActionBar :items="actionbarItems" @item-click="onActionBarItemClick"></ActionBar>
+    </div>
+    <div class="gis_action_equipment_layer" v-show="isEquipmentlayers">
+      <div class="title">请选择要点选的设备:</div>
+      <div class="li" v-for="item in equipmentLayersShow" :key="item.id" @click="selectEquipment(item.id)">
+        <img :src="items" v-for="(items,index) in item.url" :key="index">
+        <span>{{item.name}}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -138,17 +154,18 @@ import BaseMap from "@JS/Map/BaseMap";
 import apiGIS from "@api/gis";
 import apiInspection from "@api/inspection";
 import apiMonitor from "@api/monitor";
+import apiPipeLayer from "@api/pipe-layer";
 import { deepCopy, calcDistance ,getSessionItem } from "@common/util";
 import ActionBar from "./ActionBar";
 import LegendTable from "@comp/common/LegendTable";
 import PointDetailTable from "./PointDetailTable";
-//import ol from "openlayers";
+import ol from "openlayers";
 import "@supermap/iclient-openlayers";
 //ol 5.3.2
 import { Point as PointGeom } from "ol/geom";
 import { GeoJSON } from "ol/format";
 import { Style as StyleStyle, Stroke as StrokeStyle } from "ol/style";
-
+import ConfigBase from '@config/config';
 export default {
   props: {
     // gis || patrol
@@ -188,6 +205,7 @@ export default {
     this.fetchDMADistrictsTree().then(this.initDMADistrictsOnMap);
     // this.$hideLoading()
     // 为地图添加点击事件，用于点选功能
+    //获取设备列表
     let mapInstance = (this.mapInstance = window.m = mapController.getInstance());
     mapInstance.on("click", event => {
       console.log("currentPopupContent",this.currentPopupContent)
@@ -196,149 +214,36 @@ export default {
         "event对象",
         event
       );
-      if (this.currentPickMode === "pick-pipe") {
-        this.$showLoading();
-        // 清除掉原来的feature
-        this.mapController.objectQuerySource.clear();
-        // 关闭点选，若想重新点选需要在菜单中重新开启
-        this.currentPickMode = "";
-        console.log("开始点选pipe, 中心点为: ", event.coordinate);
-        let serviceUrl = config.superMapIServer.url;
-        // 添加查询中心点
-        let basePoint = new PointGeom(event.coordinate);
-        // 设置查询参数
-        let param = new SuperMap.QueryByDistanceParameters({
-          queryParams: {
-            name: config.superMapIServer.tablesName["普通给水管线"]
-          },
-          isNearest: true,
-          distance: 10,
-          expectCount: 1,
-          geometry: basePoint
-        });
-        // 创建距离查询实例
-        new ol.supermap.QueryService(serviceUrl).queryByDistance(
-          param,
-          function(serviceResult) {
-            //获取返回的features数据
-            console.log("获取点选查询结果", serviceResult);
-            // 将返回的结果feature做为标注点添加到地图上
-            let features = serviceResult.result.recordsets[0].features;
-            let parsedFeatures = new GeoJSON().readFeatures(features);
-            // 为选中的feature添加样式
-            parsedFeatures.forEach(feature => {
-              feature.setStyle(
-                new StyleStyle({
-                  stroke: new StrokeStyle({
-                    color: "#0070ff",
-                    width: 8
-                  })
-                })
-              );
-            });
-            this.mapController.objectQuerySource.addFeatures(parsedFeatures);
-            let feature = features.features[0];
-            let props = feature.properties;
-            console.log("props", props);
-            let longitude = Number(props["起始点横坐标"]);
-            let latitude = Number(props["起始点纵坐标"]);
-            // 设置中心点与缩放
-            this.setMapCenterAndZoom([longitude, latitude], 17);
-            // 组装table数据
-            const TableColumnConfig =
-              config.superMapIServer.tableColumnConfig[props["设备类型"]] ||
-              config.superMapIServer.tableColumnConfig[props["类型"]];
-            let formattedTableData = _.map(TableColumnConfig, columnConfig => {
-              return {
-                propertyName: columnConfig.title,
-                propertyValue: props[columnConfig.field]
-              };
-            });
-            formattedTableData.push({
-              propertyName: "设备类型",
-              propertyValue: props["设备类型"] || props["类型"]
-            });
-            // let formattedTableData = _.map(props, (val, key) => {
-            //   return {
-            //     propertyName: key,
-            //     propertyValue: val
-            //   };
-            // });
-            this.currentPickedPointDetailData = formattedTableData;
-            this.$hideLoading();
-            this.pointDetailTableVisible = true;
-          }.bind(this)
-        );
-      } else if (this.currentPickMode === "pick-device") {
-        this.$showLoading();
+      this.currentPickedPointDetailData = [];
+      if (this.currentPickMode === "pick-pipe") {   //管线
         // 清除掉原来的feature
         this.mapController.objectQuerySource.clear();
         // 关闭点选，若想重新点选需要在菜单中重新开启
         this.currentPickMode = "";
         console.log("开始点选device, 中心点为: ", event.coordinate);
-        let serviceUrl = config.superMapIServer.url;
-        // 添加查询中心点
-        let basePoint = new PointGeom(event.coordinate);
-        // 设置查询参数
-        let queryParams = _.map(
-          _.values(_.omit(config.superMapIServer.tablesName, "普通给水管线")),
-          val => {
-            return { name: val };
-          }
-        );
-        let param = new SuperMap.QueryByDistanceParameters({
-          queryParams,
-          isNearest: true,
-          distance: 10,
-          expectCount: 1,
-          geometry: basePoint
+        if(!this.selectEquipmentId){
+          mui.toast("请选择要查看的管网");
+          return;
+        }
+        this.$showLoading();
+        this.createSpatialSearch(event.coordinate,this.selectEquipmentId,resData=>{
+          this.selectPublic(event.coordinate,resData)
+        });          
+      } else if (this.currentPickMode === "pick-device") {  //设备
+        // 清除掉原来的feature
+        this.mapController.objectQuerySource.clear();
+        // 关闭点选，若想重新点选需要在菜单中重新开启
+        this.currentPickMode = "";
+        console.log("开始点选device, 中心点为: ", event.coordinate);
+        if(!this.selectEquipmentId){
+          mui.toast("请选择要查看的设备");
+          return;
+        }
+          this.$showLoading();
+          this.createSpatialSearch(event.coordinate,this.selectEquipmentId,resData=>{
+          this.selectPublic(event.coordinate,resData)
         });
-        // 创建距离查询实例
-        new ol.supermap.QueryService(serviceUrl).queryByDistance(
-          param,
-          function(serviceResult) {
-            //获取返回的features数据
-            console.log("获取点选查询结果", serviceResult);
-            // 将返回的结果feature做为标注点添加到地图上
-            let features = serviceResult.result.recordsets[0].features;
-            // let parsedFeatures = new GeoJSON().readFeatures(features);
-            // this.mapController.objectQuerySource.addFeatures(parsedFeatures);
-            let feature = features.features[0];
-            let props = feature.properties;
-            console.log("props", props);
-            let longitude = Number(props["经度"]);
-            let latitude = Number(props["纬度"]);
-            this.mapController.addQueryObjectFeature([
-              longitude,
-              latitude + 0.0002
-            ]);
-            // 设置中心点与缩放
-            this.setMapCenterAndZoom([longitude, latitude], 17);
-            // 组装table数据
-            const TableColumnConfig =
-              config.superMapIServer.tableColumnConfig[props["设备类型"]] ||
-              config.superMapIServer.tableColumnConfig[props["类型"]];
-            let formattedTableData = _.map(TableColumnConfig, columnConfig => {
-              return {
-                propertyName: columnConfig.title,
-                propertyValue: props[columnConfig.field]
-              };
-            });
-            formattedTableData.push({
-              propertyName: "设备类型",
-              propertyValue: props["设备类型"] || props["类型"]
-            });
-            // let formattedTableData = _.map(props, (val, key) => {
-            //   return {
-            //     propertyName: key,
-            //     propertyValue: val
-            //   };
-            // });
-            this.currentPickedPointDetailData = formattedTableData;
-            this.$hideLoading();
-            this.pointDetailTableVisible = true;
-          }.bind(this)
-        );
+       
       } else if (this.currentPickMode === "pick-coordinate") {
         console.log("coord", event.coordinate);
         this.mapController.addQueryObjectFeature(event.coordinate);
@@ -349,6 +254,8 @@ export default {
         this.pointDetailTableVisible = true;
       }
     });
+    //获取设备数据
+    this.getLayers();
   },
   beforeDestroy() {
     if (this.mapController) {
@@ -424,7 +331,16 @@ export default {
       // 当前任务所有的设备点(包括未巡检和已巡检的)
       deviceArr: [],
       // 当前是否已加载巡检点位（是否开始巡检）
-      STARTED: false
+      STARTED: false,
+      //设备信息
+      allLayers:{   
+        equipment:[], //设备储存的信息
+        pipe:[],  //管网储存的信息
+        allLayerImg:[]
+      },
+      equipmentLayersShow:[],//页面展示的设备信息
+      selectEquipmentId:undefined,
+      isEquipmentlayers:false
     };
   },
   computed: {
@@ -462,6 +378,156 @@ export default {
     // 计算出当前未巡检的设备点列表
   },
   methods: {
+    //点选设备或管网应用
+    selectPublic(coordinate,resData){
+       if(JSON.stringify(resData.data.features) != '[]'){
+        let props = resData.data.features[0].attributes;
+        let longitude = Number(props["coordinate_x"]);
+          let latitude = Number(props["coordinate_y"]);
+          this.mapController.addQueryObjectFeature(coordinate);
+          // 设置中心点与缩放
+          this.setMapCenterAndZoom(coordinate, 9);
+          // 组装table数据
+          const TableColumnConfig = resData.data.fieldAliases;
+          let allKey = [];
+          _.findKey(TableColumnConfig,function(value, key){
+            allKey.push(key);
+          })
+          let formattedTableData = [];
+            _.map(allKey,res=>{
+              if(props[res]){
+                formattedTableData.push({
+                  propertyName:resData.data.fieldAliases[res],
+                  propertyValue:props[res]
+                })
+              }
+            })
+          this.currentPickedPointDetailData = formattedTableData;
+          this.$hideLoading();
+          this.pointDetailTableVisible = true;
+        }else{
+          this.pointDetailTableVisible = true;
+          this.$hideLoading();
+        }
+    },
+    //初始化设备数据
+    getLayers(){
+      let this_ = this;
+      apiPipeLayer.GetLayers().then(res=>{
+         console.log( res)     
+        if(res.data.layers.length > 0){
+          let layers = [];
+          let layerPipe = [];
+          let allLayerImgs = [];
+          _.map(res.data.layers,(text,indexN)=>{
+            let textName = text.layerName;
+            if(textName.search("管网") == -1){
+              let legendsUrl = [];
+              _.map(text.legend,legends=>{
+                legendsUrl.push(ConfigBase.MapRelated.PipeLayer.url+'/'+(indexN)+'/images/'+legends.url);
+                allLayerImgs.push({
+                  name:legends.label || text.layerName,
+                  url:ConfigBase.MapRelated.PipeLayer.url+'/'+(indexN)+'/images/'+legends.url,
+                  sort:1
+                })
+              })
+              layers.push({
+                name:text.layerName,
+                id:text.layerId,
+                url:legendsUrl
+              })
+            }else{
+              let legendsUrl = [];
+              _.map(text.legend,legends=>{
+                legendsUrl.push(ConfigBase.MapRelated.PipeLayer.url+'/'+(indexN+1)+'/images/'+legends.url);
+                allLayerImgs.push({
+                  name:legends.label || text.layerName,
+                  url:ConfigBase.MapRelated.PipeLayer.url+'/'+(indexN+1)+'/images/'+legends.url,
+                  sort:2
+                })
+              })
+              layerPipe.push({
+                name:text.layerName,
+                id:text.layerId,
+                url:legendsUrl
+              })
+            }
+          })
+          console.log(allLayerImgs); 
+          allLayerImgs = _.sortBy(allLayerImgs, function(item) {
+            return -item.sort;
+          });
+          this.$set(this.allLayers,'equipment',layers);
+          this.$set(this.allLayers,'pipe',layerPipe);
+          this.$set(this.allLayers,'allLayerImg',allLayerImgs);        
+        }
+      })
+    },
+    selectEquipment(id){
+      this.selectEquipmentId = id; 
+      this.isEquipmentlayers = false;  
+    },
+    /**
+     * 创建矢量的Source 
+     * @param {矢量图层编号} _layerURL 
+     * @param {坐标对象} CoordinatesArray
+     */
+    createSpatialSearch(coordinate,_layerURL,callback) {
+      let deviation = 0;
+      if(_layerURL == 18 ){
+        deviation = 1;
+      }else{
+        deviation = 0.6;
+      }
+      let xmin = coordinate[0]-deviation;
+      let xmax = coordinate[0]+deviation;
+      let ymin = coordinate[1]-deviation;
+      let ymax = coordinate[1]+deviation;
+      let MapRelated = ConfigBase.MapRelated;
+      let geometryStr = {
+          "rings": [
+              [
+                  [xmin,ymax],
+                  [xmin,ymin],
+                  [xmax,ymin],
+                  [xmax,ymax],
+                  [xmin,ymax]
+              ]
+          ],
+          "_ring": 0,
+          "spatialReference": {
+              "wkid": MapRelated.EPSG.number,
+              "latestWkid": MapRelated.EPSG.number
+          },
+          "cache": {
+              "_extent": {
+                  "xmin": xmin,
+                  "ymin": ymin,
+                  "xmax": xmax,
+                  "ymax": ymax,
+                  "spatialReference": {
+                      "wkid":MapRelated.EPSG.number,
+                      "latestWkid":MapRelated.EPSG.number
+                  }
+              },
+              "_partwise": null
+          }
+      };
+      _layerURL = _layerURL?_layerURL:2;
+      let url = '/' + _layerURL + '/query/?f=json&' +
+          'returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=' + JSON.stringify(geometryStr) +
+          '&geometryType=esriGeometryPolygon&inSR=' +MapRelated.EPSG.number + '&outFields=*' +
+          '&outSR=' +MapRelated.EPSG.number;
+
+      apiPipeLayer.GetPipeLayer(url).then(resultValue => {
+        callback instanceof Function && callback(resultValue)
+      }).catch(err => {
+        callback instanceof Function && callback({"resData":"error"})
+      });
+  },
+    handleIconClick(el){
+      console.log(el)
+    },
     setMapCenterAndZoom(center, zoom, mapInstance = this.mapInstance) {
       mapInstance.getView().setCenter(center);
       mapInstance.getView().setZoom(zoom);
@@ -513,10 +579,12 @@ export default {
       }));
       this.$eventbus.$on("map-poi-popup", data => {
         this.currentPoiPopupContent = {
-          name: data["名称"],
-          address: data["地址"],
-          mobile: data["电话"],
-          type: data["类别"]
+          // name: data["名称"],
+          // address: data["地址"],
+          // mobile: data["电话"],
+          // type: data["类别"]
+          name: data.name,
+          address:data.address
         };
         popup.setPosition([data.X, data.Y]);
       });
@@ -527,12 +595,13 @@ export default {
       // 遍历关键点列表
       if (!_.isEmpty(this.unfinishedImportantArr)) {
         _.each(this.unfinishedImportantArr, point => {
+          let pointPosition = this.mapController.transformProjTurn([point.longitude,point.latitude])
           let distanceForMeter =
             calcDistance(
               position.longitude,
               position.latitude,
-              point.longitude,
-              point.latitude,
+              pointPosition[0],
+              pointPosition[1],
               6
             ) * 1000;
           console.log("计算得到的距离：", distanceForMeter);
@@ -540,7 +609,6 @@ export default {
             _.find(this.importantArr, { id: point.id }).state = 1;
             // mui.toast(`您已到位名称为 ${point.name} 的关键点`);
             this.mapController.reachPointWhichId(point.id);
-
             apiInspection.PostTaskEqument(
               this.taskId,
               point.name,
@@ -559,12 +627,13 @@ export default {
       // 遍历设备点列表
       if (!_.isEmpty(this.unfinishedDeviceArr)) {
         _.each(this.unfinishedDeviceArr, deivce => {
+          let deivcePosition = this.mapController.transformProjTurn([deivce.longitude,deivce.latitude])
           let distanceForMeter =
             calcDistance(
               position.longitude,
               position.latitude,
-              deivce.longitude,
-              deivce.latitude,
+              deivcePosition[0],
+              deivcePosition[1],
               6
             ) * 1000;
           if (distanceForMeter <= 30) {
@@ -696,8 +765,14 @@ export default {
         .GetPoiSearchSuggestions(querystr)
         .then(res => {
           console.log("%c搜索建议响应： ", "color: blue", res);
-          if (res.data.ErrCode == 0) {
-            let rawList = res.data.Data;
+          if (res.status == 200) {
+            let rawList = res.data.features;
+            console.log(rawList)
+            for (let i in rawList) {
+              rawList[i]["value"] = rawList[i].attributes.NAME;    //ps:必须为每个对象增加value字段！！因为autocomplete只识别value字段并在下拉列中显示
+            }
+            // rawList = querystr ? rawList.filter(this.createFilter(querystr)) : rawList;
+            console.log(rawList)
             callback(rawList);
           } else {
             callback([]);
@@ -710,13 +785,27 @@ export default {
     // 选中搜索建议的一项时，打印出数据对象
     onSuggestionItemSelect(item) {
       console.log("%c选中搜索建议中的一项", "color: green", item);
-      let coords = [item.X, item.Y];
+      let coords = [item.geometry.x, item.geometry.y];
       this.mapController.addPoiFeature(coords);
       // 弹出地点详情框，如果不用timeout，位置会偏移（暂不知原因）
+      item = {
+        name: item.value,
+        address: item.geometry.x+" "+item.geometry.y
+      }
       setTimeout(() => {
         this.$eventbus.$emit("map-poi-popup", item);
       }, 100);
     },
+    // 选中搜索建议的一项时，打印出数据对象
+    // onSuggestionItemSelect(item) {
+    //   console.log("%c选中搜索建议中的一项", "color: green", item);
+    //   let coords = [item.X, item.Y];
+    //   this.mapController.addPoiFeature(coords);
+    //   // 弹出地点详情框，如果不用timeout，位置会偏移（暂不知原因）
+    //   setTimeout(() => {
+    //     this.$eventbus.$emit("map-poi-popup", item);
+    //   }, 100);
+    // },
     onPoiPopupCloseClick() {
       this.mapController.removePoiFeature();
     },
@@ -749,6 +838,9 @@ export default {
     onPickPipeClick() {
       this.pointDetailTableVisible = false;
       this.currentPickMode = "pick-pipe";
+      this.selectEquipmentId = undefined;
+      this.equipmentLayersShow = this.allLayers.pipe;
+      this.isEquipmentlayers = true;
       this.onClearClick();
       // 关闭点选设备
       // 开启点选管线
@@ -757,6 +849,9 @@ export default {
     onPickDeviceClick() {
       this.pointDetailTableVisible = false;
       this.currentPickMode = "pick-device";
+      this.selectEquipmentId = undefined;
+      this.equipmentLayersShow = this.allLayers.equipment;
+      this.isEquipmentlayers = true;
       this.onClearClick();
       // 关闭点选管线
       // 开启点选设备
@@ -1134,6 +1229,7 @@ export default {
     onActionBarItemClick({ item, layer }) {
       console.log(`点击ActionBar中的一项！Layer=${layer}`, item);
       // 点击除图例外的任何一项时，如果图例表格开着，先关闭表格
+      this.isEquipmentlayers = false;
       this.legendTableVisible &&
         item.id !== "legend" &&
         (this.legendTableVisible = false);
@@ -1253,6 +1349,9 @@ export default {
 </script>
 
 <style lang="less">
+.tooltip-measure_dblock{
+  display: block;
+}
 .map_container {
   position: relative;
   .search_input_container {
@@ -1288,6 +1387,7 @@ export default {
   /* 提示框的样式信息 */
   .tooltip {
     position: relative;
+    display: block;
     background: rgba(0, 0, 0, 0.5);
     border-radius: 4px;
     color: white;
@@ -1356,8 +1456,8 @@ export default {
     padding: 15px;
     border-radius: 10px;
     border: 1px solid #cccccc;
-    bottom: 12px;
-    left: -50px;
+    bottom: 62px;
+    left: 62px;
   }
   .ol-popup:after,
   .ol-popup:before {
@@ -1413,6 +1513,35 @@ export default {
           display: inline-block;
         }
       }
+    }
+  }
+}
+.gis_action_equipment_layer{
+  position:absolute;
+  left: 0;
+  bottom:61px;
+  background: rgba(0,0,0,.7);
+  padding: 2px 0px 0px 4px;
+  text-align: left;
+  width: 100%;
+  box-shadow:0 2px 4px -1px rgba(0,0,0,.2);
+  .title{
+    color: #eee;
+    font-size: 14px;
+    padding: 6px 0 6px 2px;
+    border-bottom: 1px solid #222;
+    margin-bottom: 2px;
+    box-shadow:0 1px 1px -1px rgba(255,255,255,.6);
+  }
+  .li{
+    display:inline-block;
+    border: 1px solid #999;
+    padding: 6px 8px;
+    margin: 4px;
+    color: #eee;
+    border-radius:2px;
+    img{
+      vertical-align: middle;
     }
   }
 }

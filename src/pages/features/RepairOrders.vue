@@ -11,7 +11,7 @@
           @click.native="onOrderClick(order)"
         >
           <div slot="header" class="clearfix card_header">
-            <span class="header_text text_ellipsis">{{order.EventCode}}</span>
+            <span class="header_text text_ellipsis">{{order.OrderCode}}</span>
             <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
           </div>
           <div class="card_body">
@@ -55,7 +55,7 @@
           @click.native="onOrderClick(order)"
         >
           <div slot="header" class="clearfix card_header">
-            <span class="header_text text_ellipsis">{{order.EventCode}}</span>
+            <span class="header_text text_ellipsis">{{order.OrderCode}}</span>
             <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
           </div>
           <div class="card_body">
@@ -89,7 +89,7 @@
         </el-card>
       </el-tab-pane>
 
-      <el-tab-pane class="tab_panel" label="完成工单" name="done">
+      <el-tab-pane class="tab_panel" label="完成工单" name="done"> 
         <NoContent :visible="doneOrders.length === 0 && !fullscreenLoading" content="未查询到已完成工单"></NoContent>
         <!-- 已完成工单页内容 -->
         <el-card
@@ -99,7 +99,7 @@
           @click.native="onOrderClick(order)"
         >
           <div slot="header" class="clearfix card_header">
-            <span class="header_text text_ellipsis">{{order.EventCode}}</span>
+            <span class="header_text text_ellipsis">{{order.OrderCode}}</span>
             <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
           </div>
           <div class="card_body">
@@ -150,6 +150,7 @@ import {
   calcDistance
 } from "@common/util";
 import nativeTransfer from '@JS/native/nativeTransfer'
+import BaseMap from "@JS/Map/BaseMap";
 
 export default {
   created() {
@@ -272,6 +273,9 @@ export default {
             callback(newList);
           })
       } else {*/
+      let mapController = new BaseMap();
+      mapController.Init("map");
+
         nativeTransfer.getLocation(position => {
           if (position) {
             // 当前纬度
@@ -279,10 +283,13 @@ export default {
             // 当前经度
             let currentLongitude = position.lng;
             let newList = orderList.map(order => {
-              // 目的地纬度
-              let eventLatitude = Number(order.EventY);
-              // 目的地经度
-              let eventLongitude = Number(order.EventX);
+
+            let newPosition = Number(order.EventX) > 200 ? 
+             mapController.transformProjTurn([Number(order.EventX),Number(order.EventY)]) : 
+            [Number(order.EventX),Number(order.EventY)];  
+            
+            let eventLongitude = newPosition[0]; // 目的地经度   
+            let eventLatitude = newPosition[1];  // 目的地纬度
               // 计算距离，输出公里
               let distance = calcDistance(
                 currentLongitude,
@@ -290,6 +297,7 @@ export default {
                 eventLongitude,
                 eventLatitude
               );
+              console.log("000---",distance)
               return Object.assign({}, order, {
                 distance
               });

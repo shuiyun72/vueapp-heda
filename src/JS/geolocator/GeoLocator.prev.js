@@ -2,6 +2,7 @@ import Vue from 'vue'
 import _ from 'lodash'
 import CoordsHelper from 'coordtransform'
 import {
+    setSessionItem,
     calcDistance,
     deepCopy,
 } from "@common/util";
@@ -19,7 +20,7 @@ const defaultConfig = {
        因此本模块使用一个自定义的interval参数表示定时任务的周期
     */
     maximumAge: 5000,
-    interval: 2000,
+    interval: 1000,
     provider: "baidu",
     coordsType: "gcj02",
     timeout: 8000,
@@ -87,7 +88,6 @@ export default class GeoLocator {
             _taskId = window.setInterval(() => {
                 nativeTransfer.getLocation(
                     coords => {
-                    setSessionItem("coordsMsg", JSON.stringify(coords));
                     // 坐标转换
                     let coordsFor84 = CoordsHelper.gcj02towgs84(coords.lng, coords.lat)
                     // 组装数据对象
@@ -97,6 +97,12 @@ export default class GeoLocator {
                         latitude: coordsFor84[1],
                         timestamp
                     }
+                    let coordsMsg = {
+                        "addr":coords.addr,
+                        "lng":coords.lng,
+                        "lat":coords.lat
+                    }
+                    setSessionItem("coordsMsg",JSON.stringify(coordsMsg));
                     console.log("%cGeoLocator: 获取到一次位置： ", 'color: green', position);
                     // 判断位置是否超过约定范围
                     let extent = {}

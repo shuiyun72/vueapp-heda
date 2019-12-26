@@ -286,6 +286,7 @@ import apiMaintain from "@api/maintain";
 import OrderActionsDialog from "@comp/order-detail/OrderActionsDialog.vue";
 // 引入nativeTransfer.js
 import nativeTransfer from '@JS/native/nativeTransfer'
+import BaseMap from "@JS/Map/BaseMap";
 
 export default {
   props: {
@@ -509,14 +510,15 @@ export default {
         // 调用回复接口
         apiMaintain
           .PostReplyMessage(
-            this.replyMessage,
-            this.currentUserId,
-            this.orderInfo.EventID
+            this.orderInfo.EventID,
+            this.orderInfo.OrderId,
+            this.currentUser.iAdminID,
+            this.replyMessage
           )
           .then(res => {
             console.log("回复接口res", res);
-            if (res.data.ErrCode == 0) {
-              mui.toast("分派成功！");
+            if (res.data.Flag) {
+              mui.toast("回复成功！");
               this.actionDialogVisible.assign = false;
               // 刷新详情
               this.refreshOrderDetail();
@@ -705,37 +707,16 @@ export default {
     onAddrRowClick() {
       // 调用百度地图app导航
       if (this.orderInfo.EventX && this.orderInfo.EventY) {
-        nativeTransfer.startNavi(this.orderInfo.EventX,this.orderInfo.EventY, "");
-        /*if (window.plus && window.plus.maps && window.plus.geolocation) {
-          this.$showLoading();
-          window.plus.geolocation.getCurrentPosition(
-            position => {
-              let srcPoint = new plus.maps.Point(
-                position.coords.longitude,
-                position.coords.latitude
-              );
-              let destDesc = "目标设备";
-              let destPoint = new plus.maps.Point(
-                Number(this.orderInfo.EventX),
-                Number(this.orderInfo.EventY)
-              );
-              window.plus.maps.openSysMap(destPoint, destDesc, srcPoint);
-              this.$hideLoading();
-            },
-            err => {
-              this.$hideLoading();
-              window.mui.toast("定位失败，无法调起导航");
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 10000,
-              provider: "system",
-              coordsType: "wgs84"
-            }
-          );
-        }else{
-          nativeTransfer.startNavi(this.orderInfo.EventX, this.orderInfo.EventY, "");
-        }*/
+        let mapController = new BaseMap();
+        mapController.Init("map");
+        // 调用百度地图app导航
+        if (this.orderInfo.EventX && this.orderInfo.EventY) {
+          let newPosition = Number(this.orderInfo.EventX) > 200 ? 
+              mapController.transformProjTurn([Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)]) : 
+              [Number(this.orderInfo.EventX),Number(this.orderInfo.EventY)];  
+          console.log(newPosition)
+          nativeTransfer.startNavi(newPosition[0], newPosition[1], "");
+        }
       }
     },
 

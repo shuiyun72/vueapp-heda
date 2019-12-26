@@ -109,25 +109,23 @@
 </template>
 
 <script>
-import {
-  setSessionItem,
-  getSessionItem,
-  getLocalItem,
-  setLocalItem,
-  deepCopy
-} from "@common/util";
+import { getSessionItem, deepCopy } from "@common/util";
 import CoordsHelper from "coordtransform";
 import Timer from "@common/timer";
 import dateHelper from "@common/dateHelper";
 import { calcDistance } from "@common/util";
 import SignInDetail from "@comp/attendance/SignInDetail";
 import apiInspection from "@api/inspection";
-// 引入nativeTransfer.js
-import nativeTransfer from '@JS/native/nativeTransfer'
 
 import PositionUploader from "@JS/position-uploader/PositionUploader";
 export default {
   created() {},
+  mounted() {
+    let this_ = this;
+    this.locationInfoTimer = window.setInterval(function() {
+      this_.locationInfo = JSON.parse(getSessionItem("coordsMsg"));
+    }, 1000);
+  },
   beforeRouteEnter(to, from, next) {
     // 进入该路由的钩子函数，可通过next回调函数拿到组件的实例对象引用
     next(instance => {
@@ -151,13 +149,26 @@ export default {
         instance.dateValueFormat
       );
       instance.lastSelectedDate = instance.selectedDate;
-      instance.fetchAttendanceRecords();      
+      instance.fetchAttendanceRecords();
+      let positionRes = JSON.parse(getSessionItem("coordsMsg"));
+      if (positionRes) {
+        let coordsFor84 = CoordsHelper.gcj02towgs84(
+          positionRes.lng,
+          positionRes.lat
+        );
+        position.lng = coordsFor84[0];
+        position.lat = coordsFor84[1];
+        position.addr = positionRes.addr;
+        instance.locationInfo = deepCopy(position);
+      }
     });
   },
   data() {
     return {
       // 当前定位信息
       locationInfo: {},
+      //位置定时器
+      locationInfoTimer: null,
       // 今天的时间
       today: new Date(),
       // 当前日期选择器的值， 按照下方dateValueFormat格式
@@ -171,9 +182,7 @@ export default {
       // 签到表格数据
       tableData: [],
       // 当前（今天）出勤状态 （0：为签到  1：已签到未签退   2：已签退）
-      state: 0,
-      //当前位置获取状态 0 为为获取 1为已获取
-      TransferStatu:0
+      state: 0
     };
   },
   computed: {
@@ -201,7 +210,7 @@ export default {
     },
     currentAddressText() {
       let addr = this.locationInfo;
-      return ( JSON.stringify(addr) != '{}' )
+      return JSON.stringify(addr) != "{}"
         ? this.locationInfo.addr || "获取位置信息失败"
         : "定位中...";
     },
@@ -218,11 +227,7 @@ export default {
     reqSubmitAttendance() {
       // 当前经纬数据
       let xy = "";
-      if (
-        this.locationInfo &&
-        this.locationInfo.lng &&
-        this.locationInfo.lat
-      ) {
+      if (this.locationInfo && this.locationInfo.lng && this.locationInfo.lat) {
         xy = `${this.locationInfo.lng},${this.locationInfo.lat}`;
       }
       // 请求数据
@@ -247,33 +252,7 @@ export default {
       };
     }
   },
-  mounted() {   
-    //获取位置信息
-    this.getLocation(); 
-    console.log("11111+getLocation")
-  },
   methods: {
-    //获取位置信息
-    getLocation(){
-      console.log("diaoyon//获取位置信息")
-      
-      let position = JSON.parse(getSessionItem("coordsMsg"));
-      if (position) {
-        this.locationInfo = deepCopy(position); 
-        this.TransferStatu  = 1;       
-      } else {
-        console.warn("=====考勤管理定位错误");
-      }
-      let _this = this; 
-      let TransferTimer = setTimeout(function(){
-        if(this.TransferStatu == 0){
-          _this.getLocation();  
-        }else{
-          TransferTimer = null;
-          clearTimeout(TransferTimer)
-        }
-      },2000)
-    },
     // 获取考勤记录数据
     fetchAttendanceRecords() {
       // 发送请求
@@ -287,22 +266,30 @@ export default {
             let mappedRecords = records.map(record => {
               return {
                 date: record.Date.split("T")[0],
-                startTime: record.work_start ? record.work_start.split("T")[1] : "",
-                endTime: record.work_over ? record.work_over.split("T")[1]:"",
+                startTime: record.work_start
+                  ? record.work_start.split("T")[1]
+                  : "",
+                endTime: record.work_over ? record.work_over.split("T")[1] : "",
                 personStatus: record.Pos,
                 comments: record.Lwr_BeiZhu || ""
               };
             });
             // 将数据写进table
             this.tableData = mappedRecords;
-            console.log("!(mappedRecords[0].endTime)--315",!(mappedRecords[0].endTime))
+            console.log(
+              "!(mappedRecords[0].endTime)--315",
+              !mappedRecords[0].endTime
+            );
             // 计算当前的考勤状态
             if (
               dateHelper.format(new Date(), "yyyy-MM-dd") ==
               mappedRecords[0].date
             ) {
-               console.log("!(mappedRecords[0].endTime)--321",!(mappedRecords[0].endTime))
-              if (mappedRecords[0].startTime && !(mappedRecords[0].endTime) ) {
+              console.log(
+                "!(mappedRecords[0].endTime)--321",
+                !mappedRecords[0].endTime
+              );
+              if (mappedRecords[0].startTime && !mappedRecords[0].endTime) {
                 this.state = 1;
                 window.SIGN_STATUS = 1;
               } else if (
@@ -375,6 +362,10 @@ export default {
   },
   components: {
     SignInDetail
+  },
+  destroyed() {
+    window.clearInterval(this.locationInfoTimer);
+    this.locationInfoTimer = null;
   }
 };
 </script>
