@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@supermap/iclient-openlayers": "^9.1.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "babel-plugin-transform-remove-strict-mode": "0.0.2",
     "coordtransform": "^2.1.2",
     "coordtransform2": "^2.1.2",
